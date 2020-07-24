@@ -4,5 +4,6 @@
 int main()
 {
     OsuFile f{ std::ifstream{"1.osu"} };
-    std::cout << f << '\n';
+    for (auto i = 0; i < 10; ++i)
+        std::cout << f[i].time << '\n';
 }

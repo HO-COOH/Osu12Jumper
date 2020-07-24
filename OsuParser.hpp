@@ -1,5 +1,25 @@
 /*
+    PLEASE READ:
+    
     This is a header-only library for parsing and generating an osu file.
+    The hit object is stored as:
+        std::vector<std::variant<...>>
+        
+    So if you want to loop through the objects and process them, you can use a switch statement
+        switch(objects.index())
+        {
+            case 0:
+                ...
+            case 1:
+                ...
+        }
+    Or better, use my provided object-specific iterator, process them by one type at a time:
+        for(auto iter = file.begin<Type>(); iter != file.end<Type>(); ++iter)
+        {...}
+    
+    I feel guilty of using runtime polymorphism, something like:
+        std::vector<std::unique_ptr<HitObject>>
+    So PLEASE DO NOT JUDGE!
 */
 
 #pragma once
@@ -88,6 +108,7 @@ class OsuFile
 
     void init(std::ifstream& file, bool lazy);
 public:
+    using ObjectContainer = decltype(objects);
     OsuFile(std::filesystem::directory_entry const& file, bool lazy=false);
     OsuFile(std::ifstream&& file, bool lazy = false);
     OsuFile const& operator>>(std::ofstream& out) const;
@@ -96,10 +117,14 @@ public:
     template<typename ObjectType, typename = std::enable_if_t<std::is_base_of_v<HitObject, ObjectType>>>
     OsuFile& operator<<(ObjectType&& object);
 
-    std::variant<Circle, Slider, Spinner> operator[](size_t index) const;
+    HitObject& operator[](size_t index)
+    {
+        return *std::visit([](auto&& obj) {return static_cast<HitObject*>(&obj); }, objects[index]);
+    }
+
 
     [[nodiscard]]auto getLength() const { return length; }
-    [[nodiscard]]auto getBPM() const { return 600000.0 / interval; }
+    [[nodiscard]]auto getBPM() const { return 60000.0 / interval; }
     [[nodiscard]]auto getTitle() const { return title; }
     [[nodiscard]]auto getDifficultyName() const { return difficultyName; }
 
@@ -130,7 +155,7 @@ public:
                     break;
                 }
             }
-            os << "\tCircles:\t" << circles << "\n\tSliders:\t" << sliders << "\n\tSpinners:\t" << spinners;
+            os << "\t\tCircles:\t" << circles << "\n\t\tSliders:\t" << sliders << "\n\t\tSpinners:\t" << spinners;
         }
 
         return os; 
@@ -139,17 +164,39 @@ public:
     template<typename ObjectType>
     class ObjectIterator
     {
-        std::string& lineRef;
+        ObjectContainer::iterator iter;
     public:
-        ObjectIterator(std::string& ref):lineRef(ref){}
-        std::variant<Circle, Slider, Spinner> operator*() const;
-
+        ObjectIterator(ObjectContainer::iterator ref):iter(std::move(ref)){}
+        ObjectType& operator*() const { return std::get<ObjectType>(*iter); }
+        ObjectType* operator->() const { return &std::get<ObjectType>(*iter); }
+        ObjectIterator& operator++()
+        {
+            do {
+                ++iter;
+            } while (!std::holds_alternative<ObjectType>(*iter));
+            return *this;
+        }
+        ObjectIterator& operator--()
+        {
+            do {
+                --iter;
+            } while (!std::holds_alternative<ObjectType>(*iter));
+            return *this;
+        }
+        bool operator==(ObjectIterator const& rhs) const { return iter == rhs.iter; }
+        bool operator!=(ObjectIterator const& rhs) const { return iter != rhs.iter; }
     };
-    template<typename ObjectType, typename = std::enable_if_t<std::is_base_of_v<HitObject, ObjectType> || std::is_same_v<ObjectType, All>>>
-    ObjectIterator<ObjectType> begin();
 
     template<typename ObjectType, typename = std::enable_if_t<std::is_base_of_v<HitObject, ObjectType> || std::is_same_v<ObjectType, All>>>
-    ObjectIterator<ObjectType> end();
+    auto begin()
+    {
+        return ObjectIterator<ObjectType>{objects.begin()};
+    }
+    template<typename ObjectType, typename = std::enable_if_t<std::is_base_of_v<HitObject, ObjectType> || std::is_same_v<ObjectType, All>>>
+    auto end()
+    {
+        return ObjectIterator<ObjectType>{objects.end()};
+    }
 };
 
 inline void OsuFile::init(std::ifstream& file, bool lazy)
@@ -220,7 +267,7 @@ inline void OsuFile::init(std::ifstream& file, bool lazy)
                     else if (type & 2)
                     {
                         /*
-                            
+                            TODO: add slider parameters
                         */
                         objects.emplace_back(Slider{ {x,y}, t, static_cast<bool>(type & ComboBit) });
                     }
@@ -230,6 +277,7 @@ inline void OsuFile::init(std::ifstream& file, bool lazy)
                         sscanf(line.c_str(), "%d,%d,%d,%d,%d,%d", &x, &y, &t, &type, &sound, &endTime);
                         objects.emplace_back(Spinner{ t, endTime });
                     }
+                    length = t;
                 }
                 break;
             }
@@ -276,17 +324,9 @@ inline OsuFile const& OsuFile::operator>>(std::string_view fileName) const
     return *this;
 }
 
-
-inline std::variant<Circle, Slider, Spinner> OsuFile::operator[](size_t index) const
-{
-}
-
-inline std::variant<Circle, Slider, Spinner> OsuFile::ObjectIterator::operator*() const
-{
-}
-
 template<typename ObjectType, typename>
-inline OsuFile& OsuFile::operator<<(ObjectType&& object)
+OsuFile& OsuFile::operator<<(ObjectType&& object)
 {
-
+    objects.emplace_back(std::forward<ObjectType>(object));
+    return *this;
 }

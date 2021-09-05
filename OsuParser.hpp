@@ -46,10 +46,10 @@ constexpr int yMax = 384;
          8 Spinner
          *bit[2] set -> new combo 
  */
-constexpr unsigned CirCleBit = 0b1;
-constexpr unsigned SliderBit = 0b10;
-constexpr unsigned ComboBit = 0b100;
-constexpr unsigned SpinnerBit = 0b1000;
+constexpr unsigned char CirCleBit = 0b1;
+constexpr unsigned char SliderBit = 1<<1;
+constexpr unsigned char ComboBit = 1<<3;
+constexpr unsigned char SpinnerBit = 1<<4;
 
 struct Coord
 {

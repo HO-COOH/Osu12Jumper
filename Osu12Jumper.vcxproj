@@ -140,9 +140,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="JumpGenerater.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="JumpGenerater.h" />
     <ClInclude Include="OsuParser.hpp" />
   </ItemGroup>
   <ItemGroup>

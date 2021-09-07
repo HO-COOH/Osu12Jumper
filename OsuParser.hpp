@@ -32,6 +32,8 @@
 #include <variant>
 #include <vector>
 #include <string>
+#include <sstream>
+#include <string_view>
 
 using namespace std::literals;
 
@@ -46,10 +48,319 @@ constexpr int yMax = 384;
          8 Spinner
          *bit[2] set -> new combo 
  */
-constexpr unsigned CirCleBit = 0b1;
+constexpr unsigned CircleBit = 0b1;
 constexpr unsigned SliderBit = 0b10;
 constexpr unsigned ComboBit = 0b100;
 constexpr unsigned SpinnerBit = 0b1000;
+
+static inline auto TrimStr(std::string& s)
+{
+    s.erase(0, s.find_first_not_of("\t\n\v\f\r ")); // left trim
+    s.erase(s.find_last_not_of("\t\n\v\f\r ") + 1); // right trim
+}
+
+static inline auto SplitKeyVal(std::string_view line, char separator = ':')
+{
+    auto const splitPos = line.find(separator);
+    if (splitPos != std::string::npos)
+    {
+        auto const valuePos = line.find_first_not_of(" ", splitPos + 1);
+        return std::pair{
+            line.substr(0, splitPos),
+            valuePos != std::string::npos? line.substr(valuePos) : ""
+        };
+    }
+    
+    return std::pair<std::string_view, std::string_view>{"", ""};
+}
+
+template<typename T = std::string>
+static inline auto SplitString(std::string_view s)
+{
+    std::stringstream ss{ s.data() };
+    return std::vector(std::istream_iterator<T>{ss}, std::istream_iterator<T>{});
+}
+
+static inline auto SplitCommaSeperatedString(std::string_view s)
+{
+    std::vector<int> result;
+    std::stringstream ss{ s.data() };
+
+    for (int i{}; ss >> i; )
+    {
+        result.push_back(i);
+        if (ss.peek() == ',' || ss.peek() == ' ')
+            ss.ignore();
+    }
+
+    return result;
+}
+
+//static inline auto GetLine(std::ifstream& file)
+//{
+//    std::string s;
+//    std::getline(file, s);
+//
+//}
+
+
+enum class Countdown : int
+{
+    No = 0,
+    Normal = 1,
+    Half = 2,
+    Double = 3
+};
+
+enum class SampleSet
+{
+    Normal,
+    Soft,
+    Drum
+};
+
+enum class Mode
+{
+    Osu = 0,
+    Taiko = 1,
+    Catch = 2,
+    Mania = 3
+};
+
+enum class OverlayPosition
+{
+    NoChange,
+    Below,
+    Above
+};
+
+/**
+ * @brief General information about the beatmap
+ * @see https://github.com/ppy/osu-wiki/blob/master/wiki/osu!_File_Formats/Osu_(file_format)/en.md#general
+ */
+struct General
+{
+    /**
+     * @brief Location of the audio file relative to the current folder
+     */
+    std::string audioFile;
+
+    /**
+     * @brief Milliseconds of silence before the audio starts playing
+     */
+    int audioLeanIn = 0;
+
+    /**
+     * @brief Time in milliseconds when the audio preview should start
+     */
+    int previewTime = -1;
+
+    /**
+     * @brief Speed of the countdown before the first hit object
+     */
+    Countdown countdown = Countdown::Normal;
+
+    /**
+     * @brief Sample set that will be used if timing points do not override it (Normal, Soft, Drum)
+     */
+    SampleSet sampleSet = SampleSet::Normal;
+
+    /**
+     * @brief Multiplier for the threshold in time where hit objects placed close together stack (0–1)
+     */
+    float stackLeniency = 0.7f;
+
+    /**
+     * @brief Game mode
+     */
+    Mode mode = Mode::Osu;
+
+    /**
+     * @brief Whether or not breaks have a letterboxing effect
+     */
+    bool letterboxInBreaks = false;
+
+    /**
+     * @brief Whether or not the storyboard can use the user's skin images
+     */
+    bool useSkinSprites = false;
+
+    /**
+     * @brief Draw order of hit circle overlays compared to hit numbers
+     */
+    OverlayPosition overlayPosition = OverlayPosition::NoChange;
+
+    /**
+     * @brief Preferred skin to use during gameplay
+     */
+    std::string skinPreference;
+
+    /**
+     * @brief Whether or not a warning about flashing colours should be shown at the beginning of the map
+     */
+    bool epilepsyWarning = false;
+
+    /**
+     * @brief Time in beats that the countdown starts before the first hig object
+     */
+    int countdownOffset = 0;
+
+    /**
+     * @brief Whether or not the "N+1" style key layout is used for osu!mania
+     */
+    bool specialStyle = false;
+
+    /**
+     * @brief Whether or not the storyboard allows widescreen viewing
+     */
+    bool wideScreenStoryboard = false;
+
+    /**
+     * @brief Whether or not sound samples will change rate when playing with speed-changing mods
+     */
+    bool samplesMatchPlaybackRate = 0;
+
+    /**
+     * @brief Parse General info from osu file
+     */
+    General(std::ifstream& file)
+    {
+        std::string line;
+        while (std::getline(file, line))
+        {
+            auto [key, value] = SplitKeyVal(line);
+
+            if (key == "AudioFilename")  audioFile = value;
+            else if (key == "AudioLeadIn") audioLeanIn = std::stoi(value.data());
+            else if (key == "PreviewTime") previewTime = std::stoi(value.data());
+            else if (key == "Countdown") countdown = static_cast<Countdown>(std::stoi(value.data()));
+            else if (key == "SampleSet")
+            {
+                if (value == "Soft") sampleSet = SampleSet::Soft;
+                else if (value == "Normal") sampleSet = SampleSet::Normal;
+                else if (value == "Drum") sampleSet = SampleSet::Drum;
+            }
+            else if (key == "StackLeniency") stackLeniency = std::stof(value.data());
+            else if (key == "Mode") mode = static_cast<Mode>(std::stoi(value.data()));
+            else if (key == "LetterboxInBreaks") letterboxInBreaks = std::stoi(value.data());
+            else if (key == "UseSkinSprites") useSkinSprites = std::stoi(value.data());
+            else if (key == "OverlayPosition")
+            {
+                if (value == "NoChange") overlayPosition = OverlayPosition::NoChange;
+                else if (value == "Below") overlayPosition = OverlayPosition::Below;
+                else if (value == "Above") overlayPosition = OverlayPosition::Above;
+            }
+            else if (key == "SkinPreference") skinPreference = value;
+            else if (key == "EpilepsyWarning") epilepsyWarning = std::stoi(value.data());
+            else if (key == "CountdownOffset") countdownOffset = std::stoi(value.data());
+            else if (key == "SpecialStyle") specialStyle = std::stoi(value.data());
+            else if (key == "WidescreenStoryboard") wideScreenStoryboard = std::stoi(value.data());
+            else if (key == "samplesMatchPlaybackRate") samplesMatchPlaybackRate = std::stoi(value.data());
+        }
+    }
+};
+
+/**
+ * @brief Saved settings for the beatmap editor
+ */
+struct Editor
+{
+    /**
+     * @brief Time in milliseconds of bookmarks
+     */
+    std::vector<int> bookmarks;
+
+    /**
+     * @brief Distance snap multiplier
+     */
+    float distanceSpacing;
+
+    /**
+     * @brief Beat snap divisor
+     */
+    float beatDivisor;
+
+    /**
+     * @brief Grid size
+     */
+    int gridSize;
+
+    /**
+     * @brief Scale factor for the object timeline
+     */
+    float timelineZoom;
+
+    Editor(std::ifstream& file)
+    {
+        std::string line;
+
+        while (std::getline(file, line))
+        {
+            auto [key, value] = SplitKeyVal(line);
+            
+            if (key == "Bookmarks")             bookmarks = SplitCommaSeperatedString(value);
+            else if (key == "DistanceSpacing")  distanceSpacing = std::stof(value.data());
+            else if (key == "BeatDivisor")      beatDivisor = std::stof(value.data());
+            else if (key == "GridSize")         gridSize = std::stof(value.data());
+            else if (key == "TimelineZoom")      timelineZoom = std::stof(value.data());
+
+        }
+    }
+};
+
+
+
+/**
+ * @brief Difficulty settings
+ */
+struct Difficulty
+{
+    /**
+     * @brief HP setting (0–10)
+     */
+    float HPDrainRate;
+
+    /**
+     * @brief CS setting (0–10)
+     */
+    float circleSize;
+
+    /**
+     * @brief OD setting (0–10)
+     */
+    float overallDifficulty;
+
+    /**
+     * @brief AR setting (0–10)
+     */
+    float approachRate;
+
+    /**
+     * @brief Base slider velocity in hecto-osu! pixels per beat
+     */
+    float sliderMultiplier;
+
+    /**
+     * @brief Amount of slider ticks per beat
+     */
+    int sliderTickRate;
+
+    Difficulty(std::ifstream& file)
+    {
+        std::string line;
+        while (std::getline(file, line))
+        {
+            auto [key, value] = SplitKeyVal(line);
+
+            if (key == "HPDrainRate") HPDrainRate = std::stof(value.data());
+            else if (key == "CircleSize") circleSize = std::stof(value.data());
+            else if (key == "OverallDifficulty") overallDifficulty = std::stof(value.data());
+            else if (key == "ApproachRate") approachRate = std::stof(value.data());
+            else if (key == "SliderMultiplier") sliderMultiplier = std::stof(value.data());
+            else if (key == "SliderTickRate") sliderTickRate = std::stof(value.data());
+        }
+    }
+};
 
 struct Coord
 {
@@ -190,17 +501,13 @@ struct All{};
 class OsuFile
 {
     std::vector<std::variant<Circle, Slider, Spinner>> objects;
-    int length = 0;
-    double interval = 0.0;
-    std::string title;
-    std::string difficultyName;
+
 
     void init(std::ifstream& file, bool lazy, size_t count);
 public:
     using ObjectContainer = decltype(objects);
     OsuFile(std::filesystem::directory_entry const& file, bool lazy=false, size_t objCount=SIZE_MAX);
     OsuFile(std::ifstream&& file, bool lazy = false, size_t objCount=SIZE_MAX);
-    OsuFile(){}//TODO: implement
     OsuFile const& operator>>(std::ofstream& out);
     OsuFile const& operator>>(std::string_view fileName);
 
@@ -213,10 +520,7 @@ public:
     }
 
 
-    [[nodiscard]]auto getLength() const { return length; }
-    [[nodiscard]]auto getBPM() const { return 60000.0 / interval; }
-    [[nodiscard]]auto getTitle() const { return title; }
-    [[nodiscard]]auto getDifficultyName() const { return difficultyName; }
+
 
     template<typename ObjectType, typename = std::enable_if_t<std::is_base_of_v<HitObject, ObjectType> || std::is_same_v<ObjectType, All>>>
     [[nodiscard]]auto getCount() const
@@ -228,9 +532,6 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, OsuFile const& osuFile)
     {
-        os << "Title: " << osuFile.title << '[' << osuFile.difficultyName << "]\n";
-        os << "\tLength:\t\t" << osuFile.length << " ms\n";
-        os << "\tBPM: \t\t" << osuFile.getBPM() << '\n';
 
         if (!osuFile.objects.empty())
         {
@@ -350,38 +651,11 @@ inline void OsuFile::init(std::ifstream& file, bool lazy, size_t count)
     std::string line;
     line.reserve(100);
     /*get Title*/
-    while (file)
-    {
-        std::getline(file, line);
-        if (line.find("Title") != std::string::npos)
-        {
-            title = std::string{ line.cbegin() + 6, line.cend() };
-            break;
-        }
-    }
+
     /*get difficulty name*/
-    while (file)
-    {
-        std::getline(file, line);
-        if (line.find("Version") != std::string::npos)
-        {
-            difficultyName = std::string{ line.cbegin() + 8, line.cend() };
-            break;
-        }
-    }
+
     /*get bpm*/
-    while (file)
-    {
-        std::getline(file, line);
-        if (line.find("TimingPoints") != std::string::npos)
-        {
-            std::getline(file, line);
-            auto const numBegin = line.find(',') + 1;
-            auto const numEnd = line.find(',', numBegin);
-            interval = std::stod(std::string{ &line[numBegin],&line[numEnd] });
-            break;
-        }
-    }
+
     /*read hit objects*/
     if(!lazy)
     {
@@ -408,7 +682,7 @@ inline void OsuFile::init(std::ifstream& file, bool lazy, size_t count)
                     
                     int x, y, t, type, sound;
                     sscanf(line.c_str(), "%d,%d,%d,%d,%d", &x, &y, &t, &type, &sound);
-                    if(type & CirCleBit)    //circles do not have additional [objectParams]
+                    if(type & CircleBit)    //circles do not have additional [objectParams]
                         objects.emplace_back(Circle{ 
                             {x,y},
                             t,
@@ -468,7 +742,6 @@ inline void OsuFile::init(std::ifstream& file, bool lazy, size_t count)
                         sscanf(line.c_str(), "%d,%d,%d,%d,%d,%d", &x, &y, &t, &type, &sound, &endTime);
                         objects.emplace_back(Spinner{ t, endTime, static_cast<HitObject::HitSound>(sound) });
                     }
-                    length = t;
                 }
                 break;
             }
@@ -503,13 +776,9 @@ inline OsuFile const& OsuFile::operator>>(std::ofstream& out)
 {
     out << "osu file format v14"
         << "\n[Metadata]"
-        << "\nTitle:" << title
-        << "\nVersion:" << difficultyName
         << "\n[Difficulty]"
         << "\n[HitObjects]";
     std::copy(begin<All>(), end<All>(), std::ostream_iterator<std::string>{out, "\n"});
-    //for (auto i = 0; i < objects.size(); ++i)
-    //    out << (*this)[i].toLine() << '\n';
     return *this;
 }
 
@@ -528,3 +797,90 @@ OsuFile& OsuFile::operator<<(ObjectType&& object)
     objects.emplace_back(std::forward<ObjectType>(object));
     return *this;
 }
+
+
+
+
+/**
+ * @brief Information used to identify the beatmap
+ * @see https://github.com/ppy/osu-wiki/blob/master/wiki/osu!_File_Formats/Osu_(file_format)/en.md#metadata
+ */
+struct Metadata
+{
+    /**
+     * @brief Difficulty ID
+     * @note An osu beatmap relates to 1 difficulty, therefore it's actually 1 difficulty of a certain beatmap set.
+     * If not present, the value is -1
+     */
+    int beatmapId = -1;
+
+    /**
+     * @brief Beatmap ID
+     * @note If not present, the value is -1
+     */
+    int beatmapSetId = -1;
+
+    /**
+     * @brief Romanised song title
+     */
+    std::string title;
+
+    /**
+     * @brief Song title
+     */
+    std::string titleUnicode;
+
+    /**
+     * @brief Romanised song artist
+     */
+    std::string artist;
+
+    /**
+     * @brief Song artist
+     */
+    std::string artistUnicode;
+
+    /**
+     * @brief Beatmap creator
+     */
+    std::string creator;
+
+    /**
+     * @brief Difficulty name
+     */
+    std::string version;
+
+    /**
+     * @brief Original media the song was produced for
+     */
+    std::string source;
+
+    /**
+     * @brief Search terms
+     */
+    std::vector<std::string> tags;
+
+    /**
+     * @brief Parse Metadata from osu file
+     */
+    Metadata(std::ifstream& osuFile)
+    {
+        std::string line;
+        
+        while (std::getline(osuFile, line))
+        {
+            auto [key, value] = SplitKeyVal(line);
+
+            if (key == "Title")                 title = std::move(value);
+            else if (key == "TitleUnicode")     titleUnicode = std::move(value);
+            else if (key == "Artist")           artist = std::move(value);
+            else if (key == "ArtistUnicode")    artistUnicode = std::move(value);
+            else if (key == "Creator")          creator = std::move(value);
+            else if (key == "Version")          version = std::move(value);
+            else if (key == "Source")           source = std::move(value);
+            else if (key == "Tags")             tags = SplitString(value);
+            else if (key == "BeatmapId")        beatmapId = std::stoi(value.data());
+            else if (key == "BeatmapSetId")     beatmapSetId = std::stoi(value.data());
+        }
+    }
+};

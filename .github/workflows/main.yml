@@ -22,10 +22,8 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: lukka/run-vcpkg@v7.4
-          
-          
-      - name: Install GTest
-        run: vcpkg install gtest
+        with:
+          vcpkgArguments: "install gtest"
         
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2

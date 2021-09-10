@@ -9,6 +9,9 @@ Parser is implemented as a single header library in `OsuParser.hpp`.
 
 It is tested by 2 version of osu beatmap, `v11` and `v14` respectively.
 
+## Documentation
+Documentation is in `html/index.html`.
+
 ## Test
 Testing code is in `test/test.cpp`.
 There are also 2 beatmaps to be parsed, that will be automatically copied to the testing executable directory. So you do not need to do anything other than running `cmake .`.

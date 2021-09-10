@@ -27,7 +27,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          "cmake -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake .."
+          cmake -DCMAKE_TOOLCHAIN_FILE="/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake" ..
           "cmake --build --target Test"
       - name: Test
         run: ctest

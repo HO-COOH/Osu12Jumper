@@ -23,8 +23,8 @@ jobs:
       
       - name: Run vcpkg
         run: |
-          "vcpkg install gtest"
-          "vcpkg install gtest:x64-windows"
+          vcpkg install gtest
+          vcpkg install gtest:x64-windows
       - name: build
         run: |
           mkdir build

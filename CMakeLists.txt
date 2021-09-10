@@ -25,6 +25,13 @@ set(OsuTestFileDir "./test")
 function(CopyOsuTestFile fileName)
     file(COPY "${OsuTestFileDir}/${fileName}" DESTINATION ${CMAKE_BINARY_DIR})
     message("Copying ${OsuTestFileDir}/${fileName} -> ${CMAKE_BINARY_DIR}")
+    
+    #Remove carriage returns
+    #if(UNIX)
+    #    file(READ "${CMAKE_BINARY_DIR}/${fileName}" contentString)
+    #    string(REPLACE "\r\n" "\n" outputString ${contentString})
+    #    file(WRITE "${CMAKE_BINARY_DIR}/${fileName}" ${outputString})
+    #endif()    
 endfunction()
 
 CopyOsuTestFile(TestMapv11.osu)

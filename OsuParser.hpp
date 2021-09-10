@@ -16,6 +16,7 @@
 #include <array>
 #include <optional>
 #include <iostream>
+#include <cmath> //pow() on GCC need this header
 
 /**
  * @brief Osu editor play field size
@@ -562,7 +563,7 @@ struct HitObject
                         objects.emplace_back(std::make_unique<Hold>(line));
                         break;
                     default:
-                        throw std::exception{ "Hit object type not implemented" };
+                        throw std::runtime_error{ "Hit object type not implemented" };
                 }
             }
             catch (...)
@@ -612,14 +613,15 @@ protected:
 
 private:
         template<Type type> struct ToType;
-        template<> struct ToType<Type::Circle> { using type = Circle; };
-        template<> struct ToType<Type::Slider> { using type = Slider; };
-        template<> struct ToType<Type::Spinner> { using type = Spinner; };
-        template<> struct ToType<Type::Hold> { using type = Hold; };
-        template<> struct ToType<Type::All> { using type = HitObject; };
 
         template<Type type> using ToType_t = typename ToType<type>::type;
 };
+template<> struct HitObject::ToType<HitObject::Type::Circle> { using type = Circle; };
+template<> struct HitObject::ToType<HitObject::Type::Slider> { using type = Slider; };
+template<> struct HitObject::ToType<HitObject::Type::Spinner> { using type = Spinner; };
+template<> struct HitObject::ToType<HitObject::Type::Hold> { using type = Hold; };
+template<> struct HitObject::ToType<HitObject::Type::All> { using type = HitObject; };
+
 
 struct Circle final: HitObject
 {
@@ -1149,7 +1151,7 @@ private:
             while (iter != first && (*iter)->type != type)
                 --iter;
             //If iter is already the the first position but the type is not matched, we need to restore it to previous value pointing to the "correct" type of hit object
-            if ((*iter)->type != type && iter == first)
+            if (iter == first && (*iter)->type != type)
                 iter = iter_copy;
             return *this;
         }

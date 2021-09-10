@@ -22,7 +22,9 @@ jobs:
       - uses: actions/checkout@v1
       
       - name: Run vcpkg
-        run: "vcpkg install gtest"
+        run: |
+          "vcpkg install gtest"
+          "vcpkg install gtest:x64-windows"
       - name: build
         run: |
           mkdir build
@@ -31,5 +33,7 @@ jobs:
           cmake --build . --target Test
       - name: Test
         run: |
-          cd build
+          cd build/Debug
+          Copy-Item ../TestMapv11.osu .
+          Copy-Item ../TestMapv14.osu .
           ctest

@@ -22,12 +22,12 @@ jobs:
       - uses: actions/checkout@v1
       
       - name: Run vcpkg
-        run: vcpkg install gtest
+        run: "vcpkg install gtest"
       - name: build
         run: |
           mkdir build
           cd build
-          cmake -DCMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake ..
-          cmake --build --target Test
+          "cmake -DCMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake .."
+          "cmake --build --target Test"
       - name: Test
         run: ctest

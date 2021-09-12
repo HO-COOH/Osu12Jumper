@@ -1,3 +1,6 @@
+![Linux Build](https://github.com/HO-COOH/Osu12Jumper/actions/workflows/linux.yml/badge.svg)
+![Windows Build](https://github.com/HO-COOH/Osu12Jumper/actions/workflows/windows.yml/badge.svg)
+
 # Osu 1-2 Jumper
 This projects aims to automatically generate random 1-2 jumps to the beat.
 

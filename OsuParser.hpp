@@ -16,6 +16,7 @@
 #include <array>
 #include <optional>
 #include <iostream>
+#include <cmath> //pow() on GCC need this header
 
 /**
  * @brief Osu editor play field size
@@ -27,8 +28,8 @@ namespace PlayField
     template<typename T>
     constexpr T yMax = 384;
     
-    constexpr std::string_view xMid = "256";
-    constexpr std::string_view yMid = "192";
+    constexpr inline std::string_view xMid = "256";
+    constexpr inline std::string_view yMid = "192";
 }
 
 
@@ -130,20 +131,30 @@ namespace details {
         return line.empty() || line == "";
     }
 
-    static inline auto GetLine(std::ifstream& file, std::string& line)
+    static inline auto GetLine(std::ifstream& file, std::string& line, bool indicateEmptyLine = true)
     {
         while (std::getline(file, line))
         {
+            if (line.back() == '\r')
+                line = line.substr(0, line.size() - 1);
+
+
             if (line.empty())
-                return false;
+            {
+                if (indicateEmptyLine)
+                    return false;
+                else
+                    continue;
+            }
 
             if (line[0] == '/' && line[1] == '/')
                 continue;
+
             else if (auto const pos = line.find("//") != std::string::npos)
                 line = line.substr(0, pos);
             return true;
         }
-        return false;
+        return indicateEmptyLine ? false : static_cast<bool>(file);
     }
 }
 
@@ -271,7 +282,7 @@ struct General
     General(std::ifstream& file)
     {
         std::string line;
-        while (std::getline(file, line) && !details::IsEmptyLine(line))
+        while (details::GetLine(file, line))
         {
             auto [key, value] = details::SplitKeyVal(line);
 
@@ -562,7 +573,7 @@ struct HitObject
                         objects.emplace_back(std::make_unique<Hold>(line));
                         break;
                     default:
-                        throw std::exception{ "Hit object type not implemented" };
+                        throw std::runtime_error{ "Hit object type not implemented" };
                 }
             }
             catch (...)
@@ -612,14 +623,15 @@ protected:
 
 private:
         template<Type type> struct ToType;
-        template<> struct ToType<Type::Circle> { using type = Circle; };
-        template<> struct ToType<Type::Slider> { using type = Slider; };
-        template<> struct ToType<Type::Spinner> { using type = Spinner; };
-        template<> struct ToType<Type::Hold> { using type = Hold; };
-        template<> struct ToType<Type::All> { using type = HitObject; };
 
         template<Type type> using ToType_t = typename ToType<type>::type;
 };
+template<> struct HitObject::ToType<HitObject::Type::Circle> { using type = Circle; };
+template<> struct HitObject::ToType<HitObject::Type::Slider> { using type = Slider; };
+template<> struct HitObject::ToType<HitObject::Type::Spinner> { using type = Spinner; };
+template<> struct HitObject::ToType<HitObject::Type::Hold> { using type = Hold; };
+template<> struct HitObject::ToType<HitObject::Type::All> { using type = HitObject; };
+
 
 struct Circle final: HitObject
 {
@@ -1064,7 +1076,7 @@ struct OsuFile
     {
         std::string line;
         line.reserve(100);
-        while (std::getline(file, line))
+        while (details::GetLine(file, line, false))
         {
             if (line == "[General]")            general = General{ file };
             else if (line == "[Editor]")        editor = Editor{ file };
@@ -1149,7 +1161,7 @@ private:
             while (iter != first && (*iter)->type != type)
                 --iter;
             //If iter is already the the first position but the type is not matched, we need to restore it to previous value pointing to the "correct" type of hit object
-            if ((*iter)->type != type && iter == first)
+            if (iter == first && (*iter)->type != type)
                 iter = iter_copy;
             return *this;
         }

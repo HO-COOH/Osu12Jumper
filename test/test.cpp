@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+ï»¿#include <gtest/gtest.h>
 #include "../OsuParser.hpp"
 #include <array>
 
@@ -313,9 +313,9 @@ TEST_F(ParseV14, Meta)
 	Metadata const& m = *metadata;
 
 	EXPECT_EQ(m.title, "Colorful");
-	EXPECT_EQ(m.titleUnicode, u8"¥«¥é¥Õ¥ë");
+	EXPECT_EQ(m.titleUnicode, u8"ã‚«ãƒ©ãƒ•ãƒ«");
 	EXPECT_EQ(m.artist, "HAG");
-	EXPECT_EQ(m.artistUnicode, u8"H¡÷G");
+	EXPECT_EQ(m.artistUnicode, u8"Hâ–³G");
 	EXPECT_EQ(m.creator, "Sotarks");
 	EXPECT_EQ(m.version, "Prismatic");
 	EXPECT_EQ(m.source, "");

@@ -24,7 +24,7 @@ endif()
 set(OsuTestFileDir "./test")
 function(CopyOsuTestFile fileName)
     file(COPY "${OsuTestFileDir}/${fileName}" DESTINATION ${CMAKE_BINARY_DIR})
-    message("Copying ${OsuTestFileDir}/${fileName} -> ${CMAKE_BINARY_DIR}")
+    message("Copying ${OsuTestFileDir}/${fileName} -> ${CMAKE_BINARY_DIR}")   
 endfunction()
 
 CopyOsuTestFile(TestMapv11.osu)

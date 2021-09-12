@@ -28,8 +28,8 @@ namespace PlayField
     template<typename T>
     constexpr T yMax = 384;
     
-    constexpr std::string_view xMid = "256";
-    constexpr std::string_view yMid = "192";
+    constexpr inline std::string_view xMid = "256";
+    constexpr inline std::string_view yMid = "192";
 }
 
 
@@ -131,20 +131,30 @@ namespace details {
         return line.empty() || line == "";
     }
 
-    static inline auto GetLine(std::ifstream& file, std::string& line)
+    static inline auto GetLine(std::ifstream& file, std::string& line, bool indicateEmptyLine = true)
     {
         while (std::getline(file, line))
         {
+            if (line.back() == '\r')
+                line = line.substr(0, line.size() - 1);
+
+
             if (line.empty())
-                return false;
+            {
+                if (indicateEmptyLine)
+                    return false;
+                else
+                    continue;
+            }
 
             if (line[0] == '/' && line[1] == '/')
                 continue;
+
             else if (auto const pos = line.find("//") != std::string::npos)
                 line = line.substr(0, pos);
             return true;
         }
-        return false;
+        return indicateEmptyLine ? false : static_cast<bool>(file);
     }
 }
 
@@ -272,7 +282,7 @@ struct General
     General(std::ifstream& file)
     {
         std::string line;
-        while (std::getline(file, line) && !details::IsEmptyLine(line))
+        while (details::GetLine(file, line))
         {
             auto [key, value] = details::SplitKeyVal(line);
 
@@ -1066,7 +1076,7 @@ struct OsuFile
     {
         std::string line;
         line.reserve(100);
-        while (std::getline(file, line))
+        while (details::GetLine(file, line, false))
         {
             if (line == "[General]")            general = General{ file };
             else if (line == "[Editor]")        editor = Editor{ file };

@@ -60,6 +60,11 @@ namespace details {
         return std::pair<std::string_view, std::string_view>{"", ""};
     }
 
+    /**
+     * @brief Split a space separated string into individual elements (usually words)
+     * @tparam T the element type of the vector
+     * @return A vector of splited element
+     */
     template<typename T = std::string>
     static inline auto SplitWords(std::string_view s)
     {
@@ -67,7 +72,11 @@ namespace details {
         return std::vector(std::istream_iterator<T>{ss}, std::istream_iterator<T>{});
     }
 
-    static inline auto SplitCommaSeperatedString(std::string_view s)
+    /**
+     * @brief Split a comma separated string
+     * @return Splited inidividual sub-strings
+     */
+    static inline auto SplitCommaSeparatedString(std::string_view s)
     {
         std::vector<int> result;
         std::stringstream ss{ s.data() };
@@ -82,6 +91,12 @@ namespace details {
         return result;
     }
 
+    /**
+     * @brief Split a fixed number of separated string
+     * @details If the the split result array more needed, and the `appendRest` parameter is true, the last element will contain the rest of the string
+     * Otherwise, the last element contains only the sub-string part
+     * If the split result is less than required, the rest element are empty strings
+     */
     template<size_t N>
     static inline auto SplitString(std::string_view str, char delim = ',', bool appendRest = false)
     {
@@ -111,6 +126,7 @@ namespace details {
         return result;
     }
 
+
     static inline auto SplitString(std::string_view str, char delim = ',')
     {
         std::vector<std::string_view> result;
@@ -131,11 +147,14 @@ namespace details {
         return line.empty() || line == "";
     }
 
+    /**
+     * @brief 
+     */
     static inline auto GetLine(std::ifstream& file, std::string& line, bool indicateEmptyLine = true)
     {
         while (std::getline(file, line))
         {
-            if (line.back() == '\r')
+            if (!line.empty() && line.back() == '\r')
                 line = line.substr(0, line.size() - 1);
 
 
@@ -156,6 +175,76 @@ namespace details {
         }
         return indicateEmptyLine ? false : static_cast<bool>(file);
     }
+
+    class PrintHelper
+    {
+        std::ostream& os;
+    public:
+        PrintHelper(std::ostream& os) : os{ os } {}
+
+        template<typename T>
+        PrintHelper& print(std::vector<T> const& vec, char const* delim)
+        {
+            std::copy(vec.cbegin(), vec.cend() - 1, std::ostream_iterator<T>{os, delim});
+            if (!vec.empty())   os << vec.back();
+            return *this;
+        }
+
+        template<typename T>
+        PrintHelper& print(T&& arg)
+        {
+            os << arg;
+            return *this;
+        }
+
+        template<typename ...Args>
+        PrintHelper& printLn(Args&&... args)
+        {
+            ((os << args), ...) << '\n';
+            return *this;
+        }
+
+        template<typename Object>
+        PrintHelper& printLn(std::vector<std::unique_ptr<Object>> const& objects)
+        {
+            for (auto const& ptr : objects)
+                os << *ptr << '\n';
+            return *this;
+        }
+
+        template<typename T>
+        PrintHelper& printLn(std::vector<T> const& objects)
+        {
+            for (auto const& obj : objects)
+                os << obj << '\n';
+            return *this;
+        }
+
+        template<typename ...Args>
+        PrintHelper& printLn(char delim = ',', Args&&... args)
+        {
+            ((os << args << delim)...) << '\n';
+            return *this;
+        }
+
+        template<typename Key, typename Element>
+        PrintHelper& printLn(Key&& key, std::vector<Element> const& vec, char const* const delim = ",")
+        {
+            os << key;
+            std::copy(vec.cbegin(), vec.cend(), std::ostream_iterator<Element>{os, delim});
+            os << '\n';
+            return *this;
+        }
+
+        template<typename Key, typename Value>
+        PrintHelper& printIfValueNotEmpty(Key&& key, Value&& value)
+        {
+            if (value.empty())
+                return *this;
+            else
+                return printLn(key, value);
+        }
+    };
 }
 
 
@@ -167,6 +256,8 @@ enum class Countdown : int
     Double = 3
 };
 
+
+
 enum class SampleSet
 {
     Default,
@@ -174,6 +265,29 @@ enum class SampleSet
     Soft,
     Drum
 };
+
+inline std::ostream& operator<<(std::ostream& os, SampleSet sampleSet)
+{
+    switch (sampleSet)
+    {
+        case SampleSet::Default:
+            os << "Default";
+            break;
+        case SampleSet::Normal:
+            os << "Normal";
+            break;
+        case SampleSet::Soft:
+            os << "Soft";
+            break;
+        case SampleSet::Drum:
+            os << "Drum";
+            break;
+        default:
+            break;
+    }
+    return os;
+}
+
 
 enum class Mode
 {
@@ -183,12 +297,37 @@ enum class Mode
     Mania = 3
 };
 
+inline std::ostream& operator<<(std::ostream& os, Mode mode)
+{
+    os << static_cast<int>(mode);
+    return os;
+}
+
 enum class OverlayPosition
 {
     NoChange,
     Below,
     Above
 };
+
+inline std::ostream& operator<<(std::ostream& os, OverlayPosition overlayPosition)
+{
+    switch (overlayPosition)
+    {
+        case OverlayPosition::NoChange:
+            os << "NoChange";
+            break;
+        case OverlayPosition::Below:
+            os << "Below";
+            break;
+        case OverlayPosition::Above:
+            os << "Above";
+            break;
+        default:
+            break;
+    }
+    return os;
+}
 
 /**
  * @brief General information about the beatmap
@@ -311,11 +450,33 @@ struct General
             else if (key == "CountdownOffset") countdownOffset = std::stoi(value.data());
             else if (key == "SpecialStyle") specialStyle = std::stoi(value.data());
             else if (key == "WidescreenStoryboard") wideScreenStoryboard = std::stoi(value.data());
-            else if (key == "samplesMatchPlaybackRate") samplesMatchPlaybackRate = std::stoi(value.data());
+            else if (key == "SamplesMatchPlaybackRate") samplesMatchPlaybackRate = std::stoi(value.data());
         }
     }
 
     General() = default;
+
+    friend std::ostream& operator<<(std::ostream& os, General const& general)
+    {
+        details::PrintHelper helper{ os };
+        helper.printLn("[General]")
+            .printLn("AudioLeadIn: ", general.audioLeanIn)
+            .printLn("PreviewTime: ", general.previewTime)
+            .printLn("Countdown: ", static_cast<int>(general.countdown))
+            .printLn("SampleSet: ", general.sampleSet)
+            .printLn("StackLeniency: ", general.stackLeniency)
+            .printLn("Mode: ", general.mode)
+            .printLn("LetterboxInBreaks: ", general.letterboxInBreaks)
+            .printLn("UseSkinSprites: ", general.useSkinSprites)
+            .printLn("OverlayPosition: ", general.overlayPosition)
+            .printIfValueNotEmpty("SkinPreference: ", general.skinPreference)
+            .printLn("EpilepsyWarning: ", general.epilepsyWarning)
+            .printLn("CountdownOffset: ", general.countdownOffset);
+        if (general.mode == Mode::Mania) helper.printLn("SpecialStyle: ", general.specialStyle);
+        helper.printLn("WidescreenStoryboard", general.wideScreenStoryboard)
+            .printLn("SamplesMatchPlaybackRate", general.samplesMatchPlaybackRate);
+        return os;
+    }
 };
 
 /**
@@ -356,7 +517,7 @@ struct Editor
         {
             auto [key, value] = details::SplitKeyVal(line);
             
-            if (key == "Bookmarks")             bookmarks = details::SplitCommaSeperatedString(value);
+            if (key == "Bookmarks")             bookmarks = details::SplitCommaSeparatedString(value);
             else if (key == "DistanceSpacing")  distanceSpacing = std::stof(value.data());
             else if (key == "BeatDivisor")      beatDivisor = std::stof(value.data());
             else if (key == "GridSize")         gridSize = std::stoi(value.data());
@@ -365,6 +526,17 @@ struct Editor
     }
 
     Editor() = default;
+
+    friend std::ostream& operator<<(std::ostream & os, Editor const& editor)
+    {
+        details::PrintHelper{ os }
+            .printLn("[Editor]")
+            .printLn("Bookmarks: ", editor.bookmarks)
+            .printLn("DistanceSpacing: ", editor.distanceSpacing)
+            .printLn("BeatDivisor: ", editor.beatDivisor)
+            .printLn("TimelineZoom: ", editor.timelineZoom);
+        return os;
+    }
 };
 
 
@@ -421,11 +593,30 @@ struct Difficulty
     }
 
     Difficulty() = default;
+
+    friend std::ostream& operator<<(std::ostream& os, Difficulty const& difficulty)
+    {
+        details::PrintHelper{ os }
+            .printLn("[Difficulty]")
+            .printLn("HPDrainRate: ", difficulty.HPDrainRate)
+            .printLn("CircleSize: ", difficulty.circleSize)
+            .printLn("OverallDifficulty: ", difficulty.overallDifficulty)
+            .printLn("ApproachRate: ", difficulty.approachRate)
+            .printLn("SliderMultiplier: ", difficulty.sliderMultiplier)
+            .printLn("SliderTickRate: ", difficulty.sliderTickRate);
+        return os;
+    }
 };
 
 struct Coord
 {
     int x{}, y{};
+
+    friend std::ostream& operator<<(std::ostream& os, Coord coord)
+    {
+        os << coord.x << ':' << coord.y;
+        return os;
+    }
 };
 
 struct Circle;
@@ -437,6 +628,7 @@ struct Hold;
  * @brief Base class of all hit objects in osu
  * @details Hit object syntax: 
  *      x,y,time,type,hitSound,objectParams,hitSample
+ *      168,326,620,5,0,1:0:0:0:
 */
 struct HitObject
 {
@@ -467,6 +659,8 @@ struct HitObject
      * @brief Indicating the hitsound applied to the object
      */
     HitSound hitSound;
+
+    bool isNewCombo = false;
 
     struct HitSample
     {
@@ -501,16 +695,42 @@ struct HitObject
                 filename = result[4].empty() ? "" : result[4];
             }
         }
+
+        friend std::ostream& operator<<(std::ostream& os, HitSample const& hitSample)
+        {
+            os << hitSample.normalSet << ':'
+                << hitSample.additionSet << ':'
+                << hitSample.index << ':'
+                << hitSample.volume << ':'
+                << hitSample.filename;
+            return os;
+        }
     };
 
     HitSample hitSample;
 
+protected:
+    /*
+    Some special bits representing hit object type
+     [type] is an 8-bit integer:
+         1 Circle
+         2 Slider
+         8 Spinner
+         *bit[2] set -> new combo
+    */
+    constexpr static inline unsigned CircleBit = 0b1;
+    constexpr static inline unsigned SliderBit = 0b1 << 1;
+    constexpr static inline unsigned ComboBit = 0b1 << 2;
+    constexpr static inline unsigned SpinnerBit = 0b1 << 3;
+    constexpr static inline unsigned HoldBit = 0b1 << 7;
+
+public:
     enum class Type
     {
-        Circle,
-        Slider,
-        Spinner,
-        Hold,
+        Circle = CircleBit,
+        Slider = SliderBit,
+        Spinner = SpinnerBit,
+        Hold = HoldBit,
         All
     };
 
@@ -533,6 +753,7 @@ struct HitObject
             GetType(result[3])
         }
     {
+        isNewCombo = std::stoi(result[3].data()) & ComboBit;
     }
 
     HitObject(std::string_view line) : HitObject(details::SplitString<7>(line))
@@ -584,22 +805,33 @@ struct HitObject
         return objects;
     }
 
+    virtual void printObjectParam(std::ostream& os) const = 0;
+    
+    /* 
+        @details Hit object syntax :
+        x, y, time, type, hitSound, objectParams, hitSample
+         168, 326, 620, 5, 0, 1 : 0 : 0 : 0 
+    */
+    friend std::ostream& operator<<(std::ostream& os, HitObject const& hitObject)
+    {
+        os << hitObject.x << ','
+            << hitObject.y << ','
+            << hitObject.time << ','
+            << (hitObject.isNewCombo ? (static_cast<int>(hitObject.type) | HitObject::ComboBit) : static_cast<int>(hitObject.type)) << ',';
+        
+        os << static_cast<int>(hitObject.hitSound) << ',';
+
+        /*print object params*/
+        hitObject.printObjectParam(os);
+
+        os << hitObject.hitSample;
+        return os;
+    }
+
     virtual ~HitObject() = default;
 protected:
 
-    /*
-        Some special bits representing hit object type
-         [type] is an 8-bit integer:
-             1 Circle
-             2 Slider
-             8 Spinner
-             *bit[2] set -> new combo
-    */
-    constexpr static inline unsigned CircleBit = 0b1;
-    constexpr static inline unsigned SliderBit = 0b1 << 1;
-    constexpr static inline unsigned ComboBit = 0b1 << 2;
-    constexpr static inline unsigned SpinnerBit = 0b1 << 3;
-    constexpr static inline unsigned HoldBit = 0b1 << 7;
+
     Type type;
 
     static inline Type GetType(int num)
@@ -622,9 +854,9 @@ protected:
     friend struct OsuFile;
 
 private:
-        template<Type type> struct ToType;
+    template<Type type> struct ToType;
 
-        template<Type type> using ToType_t = typename ToType<type>::type;
+    template<Type type> using ToType_t = typename ToType<type>::type;
 };
 template<> struct HitObject::ToType<HitObject::Type::Circle> { using type = Circle; };
 template<> struct HitObject::ToType<HitObject::Type::Slider> { using type = Slider; };
@@ -652,6 +884,29 @@ struct Circle final: HitObject
             } 
         }
     {}
+
+
+    void printObjectParam(std::ostream& os) const override
+    {
+    }
+};
+
+struct EdgeSet
+{
+    int normalSet;
+    int additionSet;
+    EdgeSet(std::string_view str)
+    {
+        auto [normalSetStr, additionSetStr] = details::SplitKeyVal(str);
+        normalSet = std::stoi(normalSetStr.data());
+        additionSet = std::stoi(additionSetStr.data());
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, EdgeSet edgeSet)
+    {
+        os << edgeSet.normalSet << ':' << edgeSet.additionSet;
+        return os;
+    }
 };
 
 /**
@@ -668,17 +923,7 @@ struct Slider final: HitObject
         Circle='C'
     };
 
-    struct EdgeSet
-    {
-        int normalSet;
-        int additionSet;
-        EdgeSet(std::string_view str)
-        {
-            auto [normalSetStr, additionSetStr] = details::SplitKeyVal(str);
-            normalSet = std::stoi(normalSetStr.data());
-            additionSet = std::stoi(additionSetStr.data());
-        }
-    };
+
 
     CurveType curveType;
     std::vector<Coord> curvePoints;
@@ -708,7 +953,7 @@ struct Slider final: HitObject
         curveType = static_cast<CurveType>(curveTypeChar.front());
         for (auto const& curvePointStr : details::SplitString(curvePointsStr, '|'))
         {
-            auto [x, y] = details::SplitKeyVal(curvePointsStr);
+            auto [x, y] = details::SplitKeyVal(curvePointStr);
             curvePoints.push_back(Coord{ std::stoi(x.data()), std::stoi(y.data()) });
         }
 
@@ -727,10 +972,27 @@ struct Slider final: HitObject
                 edgeSets.push_back(edgeSetStr);
         }
     }
+
+    void printObjectParam(std::ostream& os) const override
+    {
+        details::PrintHelper helper{ os };
+        helper.print(static_cast<char>(curveType))
+            .print('|')
+            .print(curvePoints, "|")
+            .print(',')
+            .print(slides)
+            .print(',')
+            .print(length)
+            .print(',')
+            .print(edgeSounds, "|")
+            .print(',')
+            .print(edgeSets, "|")
+            .print(',');
+    }
 };
 
 
-struct Spinner final:HitObject
+struct Spinner final : HitObject
 {
     int endTime;
        
@@ -754,6 +1016,11 @@ struct Spinner final:HitObject
         }}
     {
         endTime = std::stoi(result[5].data());
+    }
+
+    void printObjectParam(std::ostream& os) const override
+    {
+        os << endTime << ',';
     }
 };
 
@@ -789,6 +1056,11 @@ struct Hold final : HitObject
         auto [endTimeStr, hitSampleStr] = details::SplitKeyVal(result.back());
         endTime = std::stoi(endTimeStr.data());
         hitSample = HitSample{ hitSampleStr };
+    }
+
+    void printObjectParam(std::ostream& os) const override
+    {
+        os << endTime << ':';
     }
 };
 
@@ -870,6 +1142,19 @@ struct TimingPoint
         }
         return timingPoints;
     }
+
+    friend std::ostream& operator<<(std::ostream& os, TimingPoint const& timingPoint)
+    {
+        os << timingPoint.time << ','
+            << timingPoint.beatLength << ','
+            << timingPoint.meter << ','
+            << static_cast<int>(timingPoint.sampleSet) << ','
+            << timingPoint.sampleIndex << ','
+            << timingPoint.volume << ','
+            << timingPoint.uninherited << ','
+            << timingPoint.effects;
+        return os;
+    }
 };
 
 
@@ -893,6 +1178,14 @@ struct Colors
         bool operator==(Color const& rhs) const
         {
             return (r == rhs.r) && (g == rhs.g) && (b == rhs.b);
+        }
+
+        friend std::ostream& operator<<(std::ostream& os, Color const& color)
+        {
+            os << static_cast<int>(color.r) << ',' 
+                << static_cast<int>(color.g) << ',' 
+                << static_cast<int>(color.b);
+            return os;
         }
     };
 
@@ -923,9 +1216,23 @@ struct Colors
             else if (key == "SliderTrackOverride") sliderTrackOverride = Color{ value };
             else if (key == "SliderBorder") sliderBorder = Color{ value };
         }
+
+
     }
 
     Colors() = default;
+
+    friend std::ostream& operator<<(std::ostream& os, Colors const& colors)
+    {
+        os << "[Colours]\n";
+        for (size_t i = 0; i < colors.comboColor.size(); ++i)
+            os << "Combo" << i << " : " << colors.comboColor[i] << '\n';
+        if (colors.sliderTrackOverride)
+            os << "SliderTrackOverride : " << *colors.sliderTrackOverride << '\n';
+        if (colors.sliderBorder)
+            os << "SliderBorder : " << *colors.sliderBorder << '\n';
+        return os;
+    }
 };
 
 
@@ -1015,6 +1322,23 @@ struct Metadata
     }
 
     Metadata() = default;
+
+    friend std::ostream& operator<<(std::ostream& os, Metadata const& data)
+    {
+        details::PrintHelper{ os }
+            .printLn("[Metadata]")
+            .printLn("Title: ", data.title)
+            .printLn("TitleUnicode: ", data.titleUnicode)
+            .printLn("Artist: ", data.artist)
+            .printLn("ArtistUnicode: ", data.artistUnicode)
+            .printLn("Creator: ", data.creator)
+            .printLn("Version: ", data.version)
+            .printLn("Source: ", data.source)
+            .printLn("BeatmapID: ", data.beatmapId)
+            .printLn("BeatmapSetID: ", data.beatmapSetId)
+            .printLn("Tags: ", data.tags, " ");
+        return os;
+    }
 };
 
 /**
@@ -1128,8 +1452,43 @@ struct OsuFile
         return timingPoints.empty() ? 0.0 : 60'000 / timingPoints.front().beatLength;
     }
 
+    /**
+     * @brief Serialize everything to the file stream
+     * @throw std::runtime_error if the file cannot open
+     */
+    void save(std::ofstream&& file) const
+    {
+        if (!file.is_open())
+            throw std::runtime_error{ "File not writable!" };
+        details::PrintHelper{ file }
+            .printLn(general)
+            .printLn(editor)
+            .printLn(metaData)
+            .printLn(difficulty)
+            .printLn("[TimingPoints]")
+            .printLn(timingPoints)
+            .printLn(colors)
+            .printLn("[HitObjects]")
+            .printLn(hitObjects);
+    }
+
+    /**
+     * @brief Serialize everything to a `<fileName>.osu`
+     * @throw std::runtime_error if the file cannot open
+     */
+    void save(char const* fileName) const
+    {
+        constexpr auto suffix = ".osu";
+        save(std::ofstream{ std::string{fileName} + suffix });
+    }
+
 private:
 
+    /**
+     * @brief Hit object iterator
+     * @tparam ObjectContainer The type of hit object container
+     * @tparam type Should be one of the enum values in `HitObject::Type`
+     */
     template<typename ObjectContainer, HitObject::Type type, typename HitObjectType>
     class ObjectIterator
     {
@@ -1141,7 +1500,8 @@ private:
         using pointer = value_type*;
         using reference = value_type&;
 
-        ObjectIterator(typename ObjectContainer::iterator iter, typename ObjectContainer::iterator begin, typename ObjectContainer::iterator end) : iter{ iter }, first { std::move(begin) }, last{ std::move(end) }
+        ObjectIterator(typename ObjectContainer::iterator iter, typename ObjectContainer::iterator begin, typename ObjectContainer::iterator end) 
+            : iter{ iter }, first { std::move(begin) }, last{ std::move(end) }
         {
             if (iter != last)
                 advanceIter();
@@ -1183,40 +1543,6 @@ private:
         }
     };
 
-    template<typename ObjectContainer, typename HitObjectType>
-    class ObjectIterator<ObjectContainer, HitObject::Type::All, HitObjectType>
-    {
-    public:
-        /*std::iterator<> is deprecated (in C++17) so we define these boilerplate ourselves*/
-        using iterator_category = std::bidirectional_iterator_tag;
-        using value_type = typename ObjectContainer::iterator::value_type;
-        using difference_type = typename ObjectContainer::iterator::difference_type;
-        using pointer = value_type*;
-        using reference = value_type&;
-
-        ObjectIterator(typename ObjectContainer::iterator iter, typename ObjectContainer::iterator begin, typename ObjectContainer::iterator end) : iter{ iter }, first{ std::move(begin) }, last{ std::move(end) } {}
-        HitObject& operator*() const { return *iter->get(); }
-        HitObject* operator->() const { return iter->get(); }
-        ObjectIterator& operator++()
-        {
-            if (iter + 1 != last)
-                ++iter;
-            return *this;
-        }
-        ObjectIterator& operator--()
-        {
-            if (iter != first)
-                --iter;
-            return *this;
-        }
-        bool operator==(ObjectIterator const& rhs) const { return iter == rhs.iter; }
-        bool operator!=(ObjectIterator const& rhs) const { return iter != rhs.iter; }
-    private:
-        typename ObjectContainer::iterator iter;
-        typename ObjectContainer::iterator const first;
-        typename ObjectContainer::iterator const last;
-    };
-
 public:
 
     /**
@@ -1238,4 +1564,41 @@ public:
     {
         return ObjectIterator<decltype(hitObjects), type, typename HitObject::ToType_t<type>>{hitObjects.end(), hitObjects.begin(), hitObjects.end()};
     }
+};
+
+/**
+ * @brief Specialized for generic `ObjectIterator`, that iterate to every hit objects
+ */
+template<typename ObjectContainer, typename HitObjectType>
+class OsuFile::ObjectIterator<ObjectContainer, HitObject::Type::All, HitObjectType>
+{
+public:
+    /*std::iterator<> is deprecated (in C++17) so we define these boilerplate ourselves*/
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = typename ObjectContainer::iterator::value_type;
+    using difference_type = typename ObjectContainer::iterator::difference_type;
+    using pointer = value_type*;
+    using reference = value_type&;
+
+    ObjectIterator(typename ObjectContainer::iterator iter, typename ObjectContainer::iterator begin, typename ObjectContainer::iterator end) : iter{ iter }, first{ std::move(begin) }, last{ std::move(end) } {}
+    HitObject& operator*() const { return *iter->get(); }
+    HitObject* operator->() const { return iter->get(); }
+    ObjectIterator& operator++()
+    {
+        if (iter + 1 != last)
+            ++iter;
+        return *this;
+    }
+    ObjectIterator& operator--()
+    {
+        if (iter != first)
+            --iter;
+        return *this;
+    }
+    bool operator==(ObjectIterator const& rhs) const { return iter == rhs.iter; }
+    bool operator!=(ObjectIterator const& rhs) const { return iter != rhs.iter; }
+private:
+    typename ObjectContainer::iterator iter;
+    typename ObjectContainer::iterator const first;
+    typename ObjectContainer::iterator const last;
 };

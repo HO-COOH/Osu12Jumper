@@ -97,7 +97,7 @@ TEST(Helper, SplitSpacedStringsEmpty)
 
 TEST(Helper, SplitCommaSeperatedStrings)
 {
-	auto const result = details::SplitCommaSeperatedString("1,2,3,4,5");
+	auto const result = details::SplitCommaSeparatedString("1,2,3,4,5");
 	CompareContainer(
 		result,
 		std::array{ 1,2,3,4,5 }
@@ -468,6 +468,7 @@ TEST_F(ParseV11, HitObject)
 	EXPECT_EQ(file->getCount(), 364 + 228 + 2);
 
 	auto firstSliderIter = file->begin<HitObject::Type::Slider>();
+	auto firstCircleIter = file->begin<HitObject::Type::Circle>();
 	firstSliderIter->x = 1;
 	auto firstAllIter = file->begin();
 	EXPECT_EQ(firstAllIter->x, 1);
@@ -479,4 +480,9 @@ TEST_F(ParseV14, HitObject)
 	EXPECT_EQ(file->getCount<HitObject::Type::Slider>(), 178);
 	EXPECT_EQ(file->getCount<HitObject::Type::Spinner>(), 0);
 	EXPECT_EQ(file->getCount(), 373 + 178 + 0);
+}
+
+TEST_F(ParseV14, Serialize)
+{
+	file->save("serialize.txt");
 }

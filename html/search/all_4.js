@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['edgeset_0',['EdgeSet',['../struct_slider_1_1_edge_set.html',1,'Slider']]],
+  ['edgeset_0',['EdgeSet',['../struct_edge_set.html',1,'']]],
   ['editor_1',['Editor',['../struct_editor.html',1,'']]],
   ['effects_2',['effects',['../struct_timing_point.html#ad89b8ae6e1de9015564e4f9c9668944d',1,'TimingPoint']]],
   ['end_3',['end',['../struct_osu_file.html#a610a4ec316ba84e09cc48e887c569b71',1,'OsuFile']]],

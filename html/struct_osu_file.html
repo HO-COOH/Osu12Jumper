@@ -91,6 +91,12 @@ $(document).ready(function(){initNavTree('struct_osu_file.html',''); initResizab
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_osu_file_1_1_object_iterator_3_01_object_container_00_01_hit_object_1_1_type_1_1_all_00_01_hit_object_type_01_4.html">ObjectIterator&lt; ObjectContainer, HitObject::Type::All, HitObjectType &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specialized for generic <code>ObjectIterator</code>, that iterate to every hit objects.  <a href="class_osu_file_1_1_object_iterator_3_01_object_container_00_01_hit_object_1_1_type_1_1_all_00_01_hit_object_type_01_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a2a6620c0d147f4f8b232cfee4c065db2"><td class="memItemLeft" align="right" valign="top"><a id="a2a6620c0d147f4f8b232cfee4c065db2" name="a2a6620c0d147f4f8b232cfee4c065db2"></a>
@@ -113,6 +119,16 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>getCount</b> () const
 <tr class="memitem:a1961e99e67eba692d886e28625b5b823"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_osu_file.html#a1961e99e67eba692d886e28625b5b823">getBPM</a> () const</td></tr>
 <tr class="memdesc:a1961e99e67eba692d886e28625b5b823"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the bpm from file.  <a href="struct_osu_file.html#a1961e99e67eba692d886e28625b5b823">More...</a><br /></td></tr>
 <tr class="separator:a1961e99e67eba692d886e28625b5b823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ec7cd3fe777f7c5d67bf51fd1b48d09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_osu_file.html#a0ec7cd3fe777f7c5d67bf51fd1b48d09">save</a> (std::ofstream &amp;&amp;file) const</td></tr>
+<tr class="memdesc:a0ec7cd3fe777f7c5d67bf51fd1b48d09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize everything to the file stream.  <a href="struct_osu_file.html#a0ec7cd3fe777f7c5d67bf51fd1b48d09">More...</a><br /></td></tr>
+<tr class="separator:a0ec7cd3fe777f7c5d67bf51fd1b48d09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0293895ca10c16a98198c9829ca71f29"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_osu_file.html#a0293895ca10c16a98198c9829ca71f29">save</a> (char const *fileName) const</td></tr>
+<tr class="memdesc:a0293895ca10c16a98198c9829ca71f29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize everything to a <code>&lt;fileName&gt;.osu</code>  <a href="struct_osu_file.html#a0293895ca10c16a98198c9829ca71f29">More...</a><br /></td></tr>
+<tr class="separator:a0293895ca10c16a98198c9829ca71f29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8df537c9e9d61bf67b080ad17f8ce682"><td class="memItemLeft" align="right" valign="top"><a id="a8df537c9e9d61bf67b080ad17f8ce682" name="a8df537c9e9d61bf67b080ad17f8ce682"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>save</b> () const</td></tr>
+<tr class="memdesc:a8df537c9e9d61bf67b080ad17f8ce682"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize everything to a <code>&lt;SongName&gt;[&lt;difficulty&gt;].osu</code> <br /></td></tr>
+<tr class="separator:a8df537c9e9d61bf67b080ad17f8ce682"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b7fceee8d680501e82439e0eaedd37d"><td class="memTemplParams" colspan="2">template&lt;HitObject::Type type = HitObject::Type::All&gt; </td></tr>
 <tr class="memitem:a5b7fceee8d680501e82439e0eaedd37d"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="struct_osu_file.html#a5b7fceee8d680501e82439e0eaedd37d">begin</a> ()</td></tr>
 <tr class="memdesc:a5b7fceee8d680501e82439e0eaedd37d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the iterator pointing to the first specified type of hit object.  <a href="struct_osu_file.html#a5b7fceee8d680501e82439e0eaedd37d">More...</a><br /></td></tr>
@@ -277,6 +293,74 @@ template&lt;HitObject::Type type&gt; </div>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">type</td><td>Hit object type </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0293895ca10c16a98198c9829ca71f29" name="a0293895ca10c16a98198c9829ca71f29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0293895ca10c16a98198c9829ca71f29">&#9670;&nbsp;</a></span>save() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void OsuFile::save </td>
+          <td>(</td>
+          <td class="paramtype">char const *&#160;</td>
+          <td class="paramname"><em>fileName</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Serialize everything to a <code>&lt;fileName&gt;.osu</code> </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if the file cannot open </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0ec7cd3fe777f7c5d67bf51fd1b48d09" name="a0ec7cd3fe777f7c5d67bf51fd1b48d09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ec7cd3fe777f7c5d67bf51fd1b48d09">&#9670;&nbsp;</a></span>save() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void OsuFile::save </td>
+          <td>(</td>
+          <td class="paramtype">std::ofstream &amp;&amp;&#160;</td>
+          <td class="paramname"><em>file</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Serialize everything to the file stream. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if the file cannot open </td></tr>
   </table>
   </dd>
 </dl>

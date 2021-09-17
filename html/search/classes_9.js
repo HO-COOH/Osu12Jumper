@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['timingpoint_0',['TimingPoint',['../struct_timing_point.html',1,'']]]
+  ['randomengine_0',['RandomEngine',['../class_random_engine.html',1,'']]],
+  ['range_1',['Range',['../struct_range.html',1,'']]]
 ];

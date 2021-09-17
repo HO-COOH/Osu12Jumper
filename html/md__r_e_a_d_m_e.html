@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Osu12Jumper: Osu 1-2 Jumper</title>
+<title>Osu12Jumper: README</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -82,22 +82,31 @@ $(document).ready(function(){initNavTree('md__r_e_a_d_m_e.html',''); initResizab
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">Osu 1-2 Jumper </div></div>
+  <div class="headertitle"><div class="title">README </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p >This projects aims to automatically generate random 1-2 jumps to the beat.</p>
+<div class="textblock"><p ><img src="https://github.com/HO-COOH/Osu12Jumper/actions/workflows/linux.yml/badge.svg" alt="Linux Build" style="pointer-events: none;" class="inline"/> <img src="https://github.com/HO-COOH/Osu12Jumper/actions/workflows/windows.yml/badge.svg" alt="Windows Build" style="pointer-events: none;" class="inline"/></p>
+<h1><a class="anchor" id="autotoc_md0"></a>
+Osu 1-2 Jumper</h1>
+<p >This projects aims to automatically generate random 1-2 jumps to the beat.</p>
 <p >Thanks Sotarks!</p>
-<h1><a class="anchor" id="autotoc_md1"></a>
-Parser</h1>
+<h2><a class="anchor" id="autotoc_md1"></a>
+Parser</h2>
 <p >Parser is implemented as a single header library in <code><a class="el" href="_osu_parser_8hpp.html" title="A simple header-only library for parsing osu file.">OsuParser.hpp</a></code>.</p>
 <p >It is tested by 2 version of osu beatmap, <code>v11</code> and <code>v14</code> respectively.</p>
-<h1><a class="anchor" id="autotoc_md2"></a>
-Test</h1>
-<p >Testing code is in <code>test/test.cpp</code>. There are also 2 beatmaps to be parsed, that will be automatically copied to the testing executable directory. So you do not need to do anything other than running <code>cmake .</code>.</p>
-<h1><a class="anchor" id="autotoc_md3"></a>
-Build</h1>
+<h2><a class="anchor" id="autotoc_md2"></a>
+1-2 Jump Generator</h2>
+<p >is in <code><a class="el" href="_jump_generator_8hpp_source.html">JumpGenerator.hpp</a></code></p>
+<h2><a class="anchor" id="autotoc_md3"></a>
+Documentation</h2>
+<p >Documentation is in <code>html/index.html</code>.</p>
 <h2><a class="anchor" id="autotoc_md4"></a>
-Requires</h2>
+Test</h2>
+<p >Testing code is in <code>test/test.cpp</code>. There are also 2 beatmaps to be parsed, that will be automatically copied to the testing executable directory. So you do not need to do anything other than running <code>cmake .</code>.</p>
+<h2><a class="anchor" id="autotoc_md5"></a>
+Build</h2>
+<h3><a class="anchor" id="autotoc_md6"></a>
+Requires</h3>
 <ol type="1">
 <li><a href="https://github.com/google/googletest">Google Test</a>, I recommend using <a href="https://vcpkg.io/en/index.html">vcpkg</a> to install the package.</li>
 <li>C++17 compatible compiler</li>

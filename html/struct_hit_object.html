@@ -93,7 +93,7 @@ $(document).ready(function(){initNavTree('struct_hit_object.html',''); initResiz
 <a href="#pro-static-attribs">Static Protected Attributes</a> &#124;
 <a href="#friends">Friends</a> &#124;
 <a href="struct_hit_object-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">HitObject Struct Reference</div></div>
+  <div class="headertitle"><div class="title">HitObject Struct Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -118,6 +118,16 @@ Inheritance diagram for HitObject:</div>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_hit_object_1_1_hit_sample.html">HitSample</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_hit_object_1_1_to_type_3_01_hit_object_1_1_type_1_1_all_01_4.html">ToType&lt; HitObject::Type::All &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_hit_object_1_1_to_type_3_01_hit_object_1_1_type_1_1_circle_01_4.html">ToType&lt; HitObject::Type::Circle &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_hit_object_1_1_to_type_3_01_hit_object_1_1_type_1_1_hold_01_4.html">ToType&lt; HitObject::Type::Hold &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_hit_object_1_1_to_type_3_01_hit_object_1_1_type_1_1_slider_01_4.html">ToType&lt; HitObject::Type::Slider &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_hit_object_1_1_to_type_3_01_hit_object_1_1_type_1_1_spinner_01_4.html">ToType&lt; HitObject::Type::Spinner &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -128,10 +138,10 @@ Public Types</h2></td></tr>
  }</td></tr>
 <tr class="separator:af5f45851ddf99dae31c2489a8852dd5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04a7f3604bb53eab8cbfb6747dd5b350"><td class="memItemLeft" align="right" valign="top"><a id="a04a7f3604bb53eab8cbfb6747dd5b350" name="a04a7f3604bb53eab8cbfb6747dd5b350"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Type</b> { <br />
-&#160;&#160;<b>Circle</b>
-, <b>Slider</b>
-, <b>Spinner</b>
-, <b>Hold</b>
+&#160;&#160;<b>Circle</b> = CircleBit
+, <b>Slider</b> = SliderBit
+, <b>Spinner</b> = SpinnerBit
+, <b>Hold</b> = HoldBit
 , <br />
 &#160;&#160;<b>All</b>
 <br />
@@ -143,6 +153,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9cc33e9491864bc1886ced37ed9d9d49"><td class="memItemLeft" align="right" valign="top"><a id="a9cc33e9491864bc1886ced37ed9d9d49" name="a9cc33e9491864bc1886ced37ed9d9d49"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>HitObject</b> (int <a class="el" href="struct_hit_object.html#abdd10775acb8e430111c5a9869842e72">x</a>, int <a class="el" href="struct_hit_object.html#a5cc35d81552ffe8c4102bedc9b46faff">y</a>, int <a class="el" href="struct_hit_object.html#a2e46464eaf2e5c0fbe5ee5f751d9f670">time</a>, HitSound <a class="el" href="struct_hit_object.html#a4541a4f95c7064a1259ae80ff541c3d6">hitSound</a>, std::string_view hitSample, Type type)</td></tr>
 <tr class="separator:a9cc33e9491864bc1886ced37ed9d9d49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7af82bf4ca316bda9286b44de49f767e"><td class="memItemLeft" align="right" valign="top"><a id="a7af82bf4ca316bda9286b44de49f767e" name="a7af82bf4ca316bda9286b44de49f767e"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>HitObject</b> (int <a class="el" href="struct_hit_object.html#abdd10775acb8e430111c5a9869842e72">x</a>, int <a class="el" href="struct_hit_object.html#a5cc35d81552ffe8c4102bedc9b46faff">y</a>, int <a class="el" href="struct_hit_object.html#a2e46464eaf2e5c0fbe5ee5f751d9f670">time</a>, HitSound <a class="el" href="struct_hit_object.html#a4541a4f95c7064a1259ae80ff541c3d6">hitSound</a>, <a class="el" href="struct_hit_object_1_1_hit_sample.html">HitSample</a> hitSample, Type type)</td></tr>
+<tr class="separator:a7af82bf4ca316bda9286b44de49f767e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2aa938e3817b0a927edf57504dc3091"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_hit_object.html#ab2aa938e3817b0a927edf57504dc3091">HitObject</a> (std::array&lt; std::string_view, 7 &gt; const &amp;result)</td></tr>
 <tr class="separator:ab2aa938e3817b0a927edf57504dc3091"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6bd776600fd1b09588f51653d4a5178e"><td class="memItemLeft" align="right" valign="top"><a id="a6bd776600fd1b09588f51653d4a5178e" name="a6bd776600fd1b09588f51653d4a5178e"></a>
@@ -151,6 +164,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2a9bf0c0680a75b3430be9b4eb7b60c2"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_hit_object.html#a2a9bf0c0680a75b3430be9b4eb7b60c2">distanceTo</a> (<a class="el" href="struct_hit_object.html">HitObject</a> const &amp;anotherObject) const</td></tr>
 <tr class="memdesc:a2a9bf0c0680a75b3430be9b4eb7b60c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the distance to another hit object.  <a href="struct_hit_object.html#a2a9bf0c0680a75b3430be9b4eb7b60c2">More...</a><br /></td></tr>
 <tr class="separator:a2a9bf0c0680a75b3430be9b4eb7b60c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50ba1b8bec76d8174e27fb49ee7736b6"><td class="memItemLeft" align="right" valign="top"><a id="a50ba1b8bec76d8174e27fb49ee7736b6" name="a50ba1b8bec76d8174e27fb49ee7736b6"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>printObjectParam</b> (std::ostream &amp;os) const =0</td></tr>
+<tr class="separator:a50ba1b8bec76d8174e27fb49ee7736b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -176,6 +192,9 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>time</b></td></tr>
 HitSound&#160;</td><td class="memItemRight" valign="bottom"><b>hitSound</b></td></tr>
 <tr class="memdesc:a4541a4f95c7064a1259ae80ff541c3d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicating the hitsound applied to the object. <br /></td></tr>
 <tr class="separator:a4541a4f95c7064a1259ae80ff541c3d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaac7596520b9bcfb3049cb8d645d764e"><td class="memItemLeft" align="right" valign="top"><a id="aaac7596520b9bcfb3049cb8d645d764e" name="aaac7596520b9bcfb3049cb8d645d764e"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isNewCombo</b> = false</td></tr>
+<tr class="separator:aaac7596520b9bcfb3049cb8d645d764e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae5b2b891253ac09e109941ab4e3a0f72"><td class="memItemLeft" align="right" valign="top"><a id="ae5b2b891253ac09e109941ab4e3a0f72" name="ae5b2b891253ac09e109941ab4e3a0f72"></a>
 <a class="el" href="struct_hit_object_1_1_hit_sample.html">HitSample</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hitSample</b></td></tr>
 <tr class="separator:ae5b2b891253ac09e109941ab4e3a0f72"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -224,10 +243,13 @@ Friends</h2></td></tr>
 <tr class="memitem:a6ad6ee9c9c96149e9f6b89d2c7f878ac"><td class="memItemLeft" align="right" valign="top"><a id="a6ad6ee9c9c96149e9f6b89d2c7f878ac" name="a6ad6ee9c9c96149e9f6b89d2c7f878ac"></a>
 struct&#160;</td><td class="memItemRight" valign="bottom"><b>OsuFile</b></td></tr>
 <tr class="separator:a6ad6ee9c9c96149e9f6b89d2c7f878ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a695af22cb46273073abceb3e521f183d"><td class="memItemLeft" align="right" valign="top"><a id="a695af22cb46273073abceb3e521f183d" name="a695af22cb46273073abceb3e521f183d"></a>
+std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;os, <a class="el" href="struct_hit_object.html">HitObject</a> const &amp;hitObject)</td></tr>
+<tr class="separator:a695af22cb46273073abceb3e521f183d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Base class of all hit objects in osu. </p>
-<p >Hit object syntax: x,y,time,type,hitSound,objectParams,hitSample </p>
+<p >Hit object syntax: x,y,time,type,hitSound,objectParams,hitSample 168,326,620,5,0,1:0:0:0: </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ab2aa938e3817b0a927edf57504dc3091" name="ab2aa938e3817b0a927edf57504dc3091"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab2aa938e3817b0a927edf57504dc3091">&#9670;&nbsp;</a></span>HitObject()</h2>

@@ -4,5 +4,5 @@ var struct_editor =
     [ "bookmarks", "struct_editor.html#a12329994b4ff55ea34acf3bedaaf5d66", null ],
     [ "distanceSpacing", "struct_editor.html#a529355bb7f15e18998e74fe8b04b259a", null ],
     [ "gridSize", "struct_editor.html#a2d1921137c804d7a852a0ec19b7bb5d7", null ],
-    [ "timelineZoom", "struct_editor.html#a667366270c7294eaeafc1a3ad17c1875", null ]
+    [ "timelineZoom", "struct_editor.html#a3b6973e82467afe735f8c53762eea682", null ]
 ];

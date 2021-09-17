@@ -486,3 +486,17 @@ TEST_F(ParseV14, Serialize)
 {
 	file->save("serialize.txt");
 }
+
+#include "../JumpGenerater.hpp"
+TEST(Generate12Jump, DegreeToRad)
+{
+	EXPECT_FLOAT_EQ(DegreeToRad(0.f), 0);
+	EXPECT_FLOAT_EQ(DegreeToRad(180.f), PI);
+	EXPECT_FLOAT_EQ(DegreeToRad(360.f), 2 * PI);
+}
+
+TEST(Generate12Jump, Trignometry)
+{
+	EXPECT_FLOAT_EQ(sinf(PI / 6), 0.5);
+	EXPECT_FLOAT_EQ(cosf(PI / 3), 0.5);
+}

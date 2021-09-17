@@ -23,10 +23,8 @@
  */
 namespace PlayField
 {
-    template<typename T>
-    constexpr T xMax = 512;
-    template<typename T>
-    constexpr T yMax = 384;
+    constexpr int xMax = 512;
+    constexpr int yMax = 384;
     
     constexpr inline std::string_view xMid = "256";
     constexpr inline std::string_view yMid = "192";
@@ -244,6 +242,13 @@ namespace details {
             else
                 return printLn(key, value);
         }
+
+        template<typename Key, typename OptionalValue>
+        PrintHelper& printIfValueNotEmpty(Key&& key, std::optional<OptionalValue> const& value)
+        {
+            if (value.has_value())
+                return printLn(key, *value);
+        }
     };
 }
 
@@ -460,6 +465,7 @@ struct General
     {
         details::PrintHelper helper{ os };
         helper.printLn("[General]")
+            .printLn("AudioFilename: ", general.audioFile)
             .printLn("AudioLeadIn: ", general.audioLeanIn)
             .printLn("PreviewTime: ", general.previewTime)
             .printLn("Countdown: ", static_cast<int>(general.countdown))
@@ -473,8 +479,8 @@ struct General
             .printLn("EpilepsyWarning: ", general.epilepsyWarning)
             .printLn("CountdownOffset: ", general.countdownOffset);
         if (general.mode == Mode::Mania) helper.printLn("SpecialStyle: ", general.specialStyle);
-        helper.printLn("WidescreenStoryboard", general.wideScreenStoryboard)
-            .printLn("SamplesMatchPlaybackRate", general.samplesMatchPlaybackRate);
+        helper.printLn("WidescreenStoryboard: ", general.wideScreenStoryboard)
+            .printLn("SamplesMatchPlaybackRate: ", general.samplesMatchPlaybackRate);
         return os;
     }
 };
@@ -507,7 +513,7 @@ struct Editor
     /**
      * @brief Scale factor for the object timeline
      */
-    float timelineZoom;
+    std::optional<float> timelineZoom;
 
     Editor(std::ifstream& file)
     {
@@ -534,7 +540,7 @@ struct Editor
             .printLn("Bookmarks: ", editor.bookmarks)
             .printLn("DistanceSpacing: ", editor.distanceSpacing)
             .printLn("BeatDivisor: ", editor.beatDivisor)
-            .printLn("TimelineZoom: ", editor.timelineZoom);
+            .printIfValueNotEmpty("TimelineZoom: ", editor.timelineZoom);
         return os;
     }
 };
@@ -739,6 +745,11 @@ public:
     {
     }
 
+    HitObject(int x, int y, int time, HitSound hitSound, HitSample hitSample, Type type)
+        :x{ x }, y{ y }, time{ time }, hitSound{ hitSound }, hitSample{ hitSample }, type{ type }
+    {
+    }
+
     /**
      * @details Hit object syntax :
      *      x, y, time, type, hitSound, objectParams, hitSample
@@ -871,6 +882,10 @@ struct Circle final: HitObject
     {
     }
 
+    Circle(int x, int y, int time, HitSound hitSound, HitSample hitSample)
+        : HitObject{x, y, time, hitSound, hitSample, Type::Circle}
+    {}
+
     Circle(std::array<std::string_view, 6> const& result) 
         : HitObject{
             std::array<std::string_view, 7>{
@@ -884,6 +899,8 @@ struct Circle final: HitObject
             } 
         }
     {}
+
+
 
 
     void printObjectParam(std::ostream& os) const override
@@ -1461,6 +1478,8 @@ struct OsuFile
         if (!file.is_open())
             throw std::runtime_error{ "File not writable!" };
         details::PrintHelper{ file }
+            .printLn("osu file format v14")
+            .printLn("")
             .printLn(general)
             .printLn(editor)
             .printLn(metaData)
@@ -1480,6 +1499,32 @@ struct OsuFile
     {
         constexpr auto suffix = ".osu";
         save(std::ofstream{ std::string{fileName} + suffix });
+    }
+
+private:
+    /**
+     * @brief Return the default file name according to song title, artist and difficulty
+     * @
+     */
+    auto getSaveFileName(bool withSuffix = false) const
+    {
+        return metaData.artistUnicode
+            + " - "
+            + metaData.titleUnicode
+            + " ("
+            + metaData.creator
+            + ") ["
+            + metaData.version
+            + (withSuffix ? "].osu" : "]");
+    }
+public:
+
+    /**
+     * @brief Serialize everything to a `<SongName>[<difficulty>].osu`
+     */
+    void save() const
+    {
+        save(getSaveFileName(false).data());
     }
 
 private:
@@ -1564,6 +1609,7 @@ public:
     {
         return ObjectIterator<decltype(hitObjects), type, typename HitObject::ToType_t<type>>{hitObjects.end(), hitObjects.begin(), hitObjects.end()};
     }
+
 };
 
 /**

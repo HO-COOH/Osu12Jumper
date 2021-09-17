@@ -12,6 +12,9 @@ Parser is implemented as a single header library in `OsuParser.hpp`.
 
 It is tested by 2 version of osu beatmap, `v11` and `v14` respectively.
 
+## 1-2 Jump Generator
+is in `JumpGenerator.hpp`
+
 ## Documentation
 Documentation is in `html/index.html`.
 

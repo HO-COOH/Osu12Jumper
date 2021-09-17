@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['jumpgenerater_0',['JumpGenerater',['../class_jump_generater.html',1,'']]]
+  ['jumpgenerator_0',['JumpGenerator',['../class_jump_generator.html',1,'']]]
 ];

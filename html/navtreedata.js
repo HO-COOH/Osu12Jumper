@@ -25,11 +25,15 @@
 var NAVTREE =
 [
   [ "Osu12Jumper", "index.html", [
-    [ "Osu 1-2 Jumper", "md__r_e_a_d_m_e.html", [
-      [ "Parser", "md__r_e_a_d_m_e.html#autotoc_md1", null ],
-      [ "Test", "md__r_e_a_d_m_e.html#autotoc_md2", null ],
-      [ "Build", "md__r_e_a_d_m_e.html#autotoc_md3", [
-        [ "Requires", "md__r_e_a_d_m_e.html#autotoc_md4", null ]
+    [ "README", "md__r_e_a_d_m_e.html", [
+      [ "Osu 1-2 Jumper", "md__r_e_a_d_m_e.html#autotoc_md0", [
+        [ "Parser", "md__r_e_a_d_m_e.html#autotoc_md1", null ],
+        [ "1-2 Jump Generator", "md__r_e_a_d_m_e.html#autotoc_md2", null ],
+        [ "Documentation", "md__r_e_a_d_m_e.html#autotoc_md3", null ],
+        [ "Test", "md__r_e_a_d_m_e.html#autotoc_md4", null ],
+        [ "Build", "md__r_e_a_d_m_e.html#autotoc_md5", [
+          [ "Requires", "md__r_e_a_d_m_e.html#autotoc_md6", null ]
+        ] ]
       ] ]
     ] ],
     [ "Namespaces", "namespaces.html", [
@@ -54,7 +58,7 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_for-example.html"
+"_difficulty_8hpp.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

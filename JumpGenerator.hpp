@@ -69,7 +69,16 @@ public:
 	template<typename T = int>
 	static auto getRand(T min, T max)
 	{
-		return std::uniform_int_distribution<T>{min, max}(eng);
+		if constexpr (std::is_integral_v<T>)
+			return std::uniform_int_distribution<T>{min, max}(eng);
+		else if constexpr (std::is_floating_point_v<T>)
+			return std::uniform_real_distribution<T>{min, max}(eng);
+	}
+
+	template<typename T = float, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+	static auto getRand()
+	{
+		return getRand(0.0, 1.0);
 	}
 	
 	template<typename T = int>

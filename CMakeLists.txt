@@ -5,7 +5,7 @@ project(OsuJump)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(Main main.cpp "JumpGenerator.cpp")
+add_executable(Main main.cpp "JumpGenerator.cpp" "BeatmapConvert.cpp")
 
 #Add testing if found gtest
 find_package(GTest CONFIG REQUIRED)

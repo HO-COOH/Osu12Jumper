@@ -781,6 +781,15 @@ public:
         return sqrt(pow(x - anotherObject.x, 2) + pow(y - anotherObject.y, 2));
     }
 
+    /**
+     * @brief Returns the columnIndex in mania mode
+     * @param columnCount number of total columns
+     */
+    [[nodiscard]] auto getColumnIndex(int columnCount) const
+    {
+        return std::clamp(x * columnCount / 512, 0, columnCount - 1);
+    }
+
     static auto HandleHitObjects(std::ifstream& file)
     {
         std::string line;

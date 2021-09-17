@@ -267,7 +267,7 @@ TEST_F(ParseV14, Editor)
 	EXPECT_FLOAT_EQ(e.distanceSpacing, 1.8f);
 	EXPECT_EQ(e.beatDivisor, 4);
 	EXPECT_EQ(e.gridSize, 4);
-	EXPECT_FLOAT_EQ(e.timelineZoom, 2.5f);
+	EXPECT_FLOAT_EQ(*e.timelineZoom, 2.5f);
 }
 
 TEST_F(ParseV11, Meta)
@@ -487,7 +487,7 @@ TEST_F(ParseV14, Serialize)
 	file->save("serialize.txt");
 }
 
-#include "../JumpGenerater.hpp"
+#include "../JumpGenerator.hpp"
 TEST(Generate12Jump, DegreeToRad)
 {
 	EXPECT_FLOAT_EQ(DegreeToRad(0.f), 0);

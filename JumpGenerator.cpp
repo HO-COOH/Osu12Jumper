@@ -1,4 +1,6 @@
 #include "JumpGenerator.hpp"
+#include <algorithm> //std::clamp
+
 
 void JumpGenerator::generate(int count)
 {

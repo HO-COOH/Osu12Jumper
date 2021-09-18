@@ -29,6 +29,7 @@ bld/
 out/*
 Testing/*
 build/*
+CMakeSettings.json
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/

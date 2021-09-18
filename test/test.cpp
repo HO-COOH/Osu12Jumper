@@ -484,7 +484,7 @@ TEST_F(ParseV14, HitObject)
 
 TEST_F(ParseV14, Serialize)
 {
-	file->save("serialize.txt");
+	EXPECT_NO_THROW(file->save("serialize.txt"));
 }
 
 #include "../JumpGenerator.hpp"

@@ -17,6 +17,8 @@
 #include <optional>
 #include <iostream>
 #include <cmath> //pow() on GCC need this header
+#include <iterator> //std::istream_iterator on GCC need this header
+#include <algorithm>//std::clamp
 
 /**
  * @brief Osu editor play field size
@@ -221,7 +223,7 @@ namespace details {
         template<typename ...Args>
         PrintHelper& printLn(char delim = ',', Args&&... args)
         {
-            ((os << args << delim)...) << '\n';
+            ((os << args << delim), ...) << '\n';
             return *this;
         }
 
@@ -248,6 +250,7 @@ namespace details {
         {
             if (value.has_value())
                 return printLn(key, *value);
+            else return *this;
         }
     };
 }
@@ -869,12 +872,13 @@ protected:
 
     Type type;
 
-    static inline Type GetType(int num)
+    static inline constexpr Type GetType(int num)
     {
         if (num & CircleBit)        return Type::Circle;
         else if (num & SliderBit)   return Type::Slider;
         else if (num & SpinnerBit)  return Type::Spinner;
         else if (num & HoldBit)     return Type::Hold;
+        else throw std::invalid_argument{ std::string{"Invalid hit object type: "} + std::to_string(num) };
     }
 
     static inline Type GetType(std::string_view str)

@@ -8,9 +8,17 @@
 #pragma once
 #include "OsuParser.hpp"
 #include <memory>
+#include <functional>
 
 namespace Mania
 {
+    enum class ColumnType
+    {
+        Even,
+        Odd, 
+        Special
+    };
+
 	struct Pattern
 	{
 		enum class Type : unsigned
@@ -104,13 +112,59 @@ namespace Mania
         std::vector<Pattern> generate();
 
     private:
+        OsuFile const& beatmap;
+
         Pattern const previousPattern;
         
         Pattern::Type stairType;
 
         Pattern::Type convertType;
 
+        std::unique_ptr<HitObject> hitObject;
+
+        int randomStart;
+
     protected:
+        /**
+         * @brief Generates a count of notes to be generated from probabilities.
+         * @param p2 Probability for 2 notes to be generated.
+         * @param 
+         * @param 
+         * @param 
+         * @param 
+         */
         static int GetRandomNoteCount(float p2, float p3, float p4 = 0, float p5 = 0, float p6 = 0);
+
+        Pattern generateRandomNotes(int noteCount);
+        
+        /**
+         * @brief Generates a count of notes to be generated from a list of probabilities.
+         */
+        int getRandomNoteCount(double p2, double p3, double p4, double p5) const;
+
+        /**
+         * @brief Generates a count of notes to be generated from a list of probabilities.
+         * @param centreProbability The probability for a note to be added to the centre column.
+         * @param p2 Probability for 2 notes to be generated.
+         * @param p3 Probability for 3 notes to be generated.
+         * @param addToCentre Whether to add a note to the centre column.
+         * @return The amount of notes to be generated. The note to be added to the centre column will NOT be part of this count.
+         */
+        int getRandomNoteMirrored(double centreProbability, double p2, double p3, bool& addToCentre);
+
+        /**
+         * @brief Returns a random column index in the range [lowerBound, upperBound].
+         */
+        int getRandomColumn(std::optional<int> lowerBound, std::optional<int> upperBound) const;
+
+        int findAvailableColumn(
+            int initialColumn, 
+            std::optional<int> lowerBound, 
+            std::optional<int> upperBound,
+            std::function<int(int, int)> nextColumn,
+            std::function<bool(int)> validator
+        );
+
+        double getConversionDifficulty() const;
     };
 }

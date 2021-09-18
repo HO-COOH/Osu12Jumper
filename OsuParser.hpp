@@ -702,6 +702,12 @@ struct HitObject
             }
         }
 
+        [[nodiscard]] constexpr bool has(HitSound hitSound) const
+        {
+            auto const val = static_cast<int>(hitSound);
+            return normalSet == val || additionSet == val;
+        }
+
         friend std::ostream& operator<<(std::ostream& os, HitSample const& hitSample)
         {
             os << hitSample.normalSet << ':'
@@ -779,6 +785,15 @@ public:
     [[nodiscard]] auto distanceTo(HitObject const& anotherObject) const
     {
         return sqrt(pow(x - anotherObject.x, 2) + pow(y - anotherObject.y, 2));
+    }
+
+    /**
+     * @brief Calculate the time duration to another hit object
+     * @param 
+     */
+    [[nodiscard]] auto timeTo(HitObject const& anotherObject) const
+    {
+        return std::abs(time - anotherObject.time);
     }
 
     /**
@@ -1242,8 +1257,6 @@ struct Colors
             else if (key == "SliderTrackOverride") sliderTrackOverride = Color{ value };
             else if (key == "SliderBorder") sliderBorder = Color{ value };
         }
-
-
     }
 
     Colors() = default;
@@ -1619,6 +1632,19 @@ public:
         return ObjectIterator<decltype(hitObjects), type, typename HitObject::ToType_t<type>>{hitObjects.end(), hitObjects.begin(), hitObjects.end()};
     }
 
+    /**
+     * @brief Get drain time in milliseconds
+     */
+    [[nodiscard]] auto getDrainTime() const
+    {
+        if (auto const count = hitObjects.size(); count == 0 || count == 1)
+            return 0;
+
+        if (auto const drainTime = hitObjects.back()->time - hitObjects.front()->time; drainTime > 0)
+            return drainTime;
+
+        throw std::logic_error{ "Drain time <= 0" };
+    }
 };
 
 /**

@@ -181,7 +181,7 @@ protected:
 	Difficulty const* difficulty;
 	Metadata const* metadata;
 	Editor const* editor;
-	std::vector<Event> const* events;
+	Events const* events;
 	std::vector<TimingPoint> const* timingPoints;
 	Colors const* colors;
 	std::vector<std::unique_ptr<HitObject>> const* hitObjects;
@@ -390,10 +390,25 @@ TEST_F(ParseV14, Difficulty)
 }
 
 
-TEST_F(ParseV11, Events)
+TEST_F(ParseV11, BackgroundEvents)
 {
+	auto const& e = events->backgrounds.front();
 
+	EXPECT_EQ(e.xOffset, 0);
+	EXPECT_EQ(e.yOffset, 0);
+	EXPECT_EQ(e.fileName, "bg.jpg");
 }
+
+TEST_F(ParseV11, BreakEvents)
+{
+	auto const& e = events->breaks.front();
+
+	EXPECT_EQ(e.startTime, 155718);
+	EXPECT_EQ(e.endTime, 168502);
+	EXPECT_EQ(e.getDuration(), 168502 - 155718);
+	EXPECT_EQ(events->breaks.size(), 1);
+}
+
 
 TEST_F(ParseV14, Events)
 {
@@ -410,11 +425,6 @@ static inline void Compare(TimingPoint const& lhs, TimingPoint const& rhs)
 	EXPECT_EQ(lhs.volume, rhs.volume);
 	EXPECT_EQ(lhs.uninherited, rhs.uninherited);
 	EXPECT_EQ(lhs.effects, rhs.effects);
-}
-
-TEST_F(ParseV11, TimingPoints)
-{
-
 }
 
 TEST_F(ParseV14, TimingPoints)

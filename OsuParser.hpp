@@ -19,6 +19,8 @@
 #include <cmath> //pow() on GCC need this header
 #include <iterator> //std::istream_iterator on GCC need this header
 #include <algorithm>//std::clamp
+#include <numeric>
+#include <variant>
 
 /**
  * @brief Osu editor play field size
@@ -33,11 +35,20 @@ namespace PlayField
 }
 
 
-namespace details {
-    static inline auto TrimStr(std::string& s)
+namespace details 
+{
+    static inline auto TrimStr(std::string& s, const char* contentToTrim = "\t\n\v\f\r ")
     {
-        s.erase(0, s.find_first_not_of("\t\n\v\f\r ")); // left trim
-        s.erase(s.find_last_not_of("\t\n\v\f\r ") + 1); // right trim
+        s.erase(0, s.find_first_not_of(contentToTrim)); // left trim
+        s.erase(s.find_last_not_of(contentToTrim) + 1); // right trim
+        return s;
+    }
+
+    static inline auto TrimStr(std::string_view s, const char* contentToTrim = "\t\n\v\f\r ")
+    {
+        auto const start = s.find_first_not_of(contentToTrim);
+        auto const end = s.find_last_not_of(contentToTrim);
+        return s.substr(start, end - start + 1);
     }
 
     /**
@@ -501,17 +512,17 @@ struct Editor
     /**
      * @brief Distance snap multiplier
      */
-    float distanceSpacing;
+    float distanceSpacing{};
 
     /**
      * @brief Beat snap divisor
      */
-    float beatDivisor;
+    float beatDivisor{};
 
     /**
      * @brief Grid size
      */
-    int gridSize;
+    int gridSize{};
 
     /**
      * @brief Scale factor for the object timeline
@@ -558,32 +569,32 @@ struct Difficulty
     /**
      * @brief HP setting (0–10)
      */
-    float HPDrainRate;
+    float HPDrainRate{};
 
     /**
      * @brief CS setting (0–10)
      */
-    float circleSize;
+    float circleSize{};
 
     /**
      * @brief OD setting (0–10)
      */
-    float overallDifficulty;
+    float overallDifficulty{};
 
     /**
      * @brief AR setting (0–10)
      */
-    float approachRate;
+    float approachRate{};
 
     /**
      * @brief Base slider velocity in hecto-osu! pixels per beat
      */
-    float sliderMultiplier;
+    float sliderMultiplier{};
 
     /**
      * @brief Amount of slider ticks per beat
      */
-    int sliderTickRate;
+    int sliderTickRate{};
 
     Difficulty(std::ifstream& file)
     {
@@ -621,6 +632,15 @@ struct Coord
 {
     int x{}, y{};
 
+    /**
+     * @brief Calculate the distance to another hit object
+     * @param anotherObject the other hit object
+     */
+    [[nodiscard]] auto distanceTo(Coord another) const
+    {
+        return sqrt(pow(x - another.x, 2) + pow(y - another.y, 2));
+    }
+
     friend std::ostream& operator<<(std::ostream& os, Coord coord)
     {
         os << coord.x << ':' << coord.y;
@@ -643,10 +663,10 @@ struct HitObject
 {
     enum class HitSound
     {
-        Normal = 0,
-        Whistle = 1,
-        Finish = 2,
-        Clap = 3
+        Normal = 1,
+        Whistle = 1 << 1,
+        Finish = 1 << 2,
+        Clap = 1 << 3
     };
 
     /**
@@ -808,6 +828,19 @@ public:
         return std::clamp(x * columnCount / 512, 0, columnCount - 1);
     }
 
+    /**
+     * @brief Calculate the X coordinate in terms of columnIndex and total columns
+     */
+    [[nodiscard]] static int columnToX(int columnIndex, int columnCount)
+    {
+        /*
+        *   columnIndex = x * columnCount / 512
+        *   x = columnIndex * 512 / columnCount;
+        */
+
+        return std::clamp(columnIndex * 512 / columnCount, 0, 512);
+    }
+
     static auto HandleHitObjects(std::ifstream& file)
     {
         std::string line;
@@ -867,11 +900,9 @@ public:
     }
 
     virtual ~HitObject() = default;
-protected:
-
 
     Type type;
-
+protected:
     static inline constexpr Type GetType(int num)
     {
         if (num & CircleBit)        return Type::Circle;
@@ -928,11 +959,13 @@ struct Circle final: HitObject
         }
     {}
 
-
-
-
     void printObjectParam(std::ostream& os) const override
     {
+    }
+
+    static auto MakeManiaHitObject(int columnIndex, int totalColumns, int time, HitSound hitSound = HitSound::Normal, HitSample hitSample = HitSample{})
+    {
+        return std::make_unique<Circle>(HitObject::columnToX(columnIndex, totalColumns), 0, time, hitSound, std::move(hitSample));
     }
 };
 
@@ -1088,6 +1121,11 @@ struct Hold final : HitObject
         : HitObject{x, y, time, hitSound, hitSample, Type::Hold }, endTime{endTime}
     {}
 
+    Hold(int x, int y, int time, HitSound hitSound, int endTime, HitSample hitSample)
+        : HitObject{x, y, time, hitSound, std::move(hitSample), Type::Hold}, endTime{endTime}
+    {}
+
+
     Hold(std::array<std::string_view, 6> const& result)
         : Hold{
             std::stoi(result[0].data()),
@@ -1102,6 +1140,12 @@ struct Hold final : HitObject
         endTime = std::stoi(endTimeStr.data());
         hitSample = HitSample{ hitSampleStr };
     }
+
+    static auto MakeManiaHitObject(int columnIndex, int totalColumns, int time, int endTime, HitSound hitSound = HitSound::Normal, HitSample hitSample = HitSample{})
+    {
+        return std::make_unique<Hold>(HitObject::columnToX(columnIndex, totalColumns), 0, time, hitSound, endTime, std::move(hitSample));
+    }
+
 
     void printObjectParam(std::ostream& os) const override
     {
@@ -1387,46 +1431,193 @@ struct Metadata
 /**
  * @warning Not implemented!
  */
-struct Event
+
+struct Background;
+struct Video;
+struct Break;
+
+struct EventBase
 {
     /**
-     * @brief Type of the event. Some events may be referred to by either a name or a number.
+     * @brief Type of the event.
+     * @details Some events may be referred to by either a name or a number.
      */
-    std::string eventType;
+    std::variant<int, std::string> eventType;
 
     /**
      * @brief Start time of the event, in milliseconds from the beginning of the beatmap's audio.
-     * For events that do not use a start time, the default is 0.
      */
     int startTime;
 
+    EventBase(std::string_view eventTypeStr, int startTime) : startTime{ startTime }
+    {
+        try
+        {
+            eventType = std::stoi(eventTypeStr.data());
+        }
+        catch (const std::invalid_argument&)
+        {
+            eventType = std::string{ eventTypeStr };
+        }
+    }
+
+    EventBase(std::string_view eventTypeStr) : EventBase(eventTypeStr, 0) {}
+
+    EventBase(int eventType, int startTime) : eventType{ eventType }, startTime{ startTime }{}
+
+    virtual ~EventBase() = default;
+};
+
+struct Background final : EventBase
+{
     /**
-     * @brief Extra parameters specific to the event's type
+     * @brief Location of the background image relative to the beatmap directory.
+     * @details Double quotes are usually included surrounding the filename, but they are not required.
      */
-    std::string eventParams;
+    std::string fileName;
 
-    Event(std::string_view line) : Event(details::SplitString<3>(line))
+    /**
+     * @brief Offset in osu! pixels from the center of the screen.
+     * @details For example, an offset of 50,100 would have the background shown 50 osu! pixels to the right and 100 osu! pixels down from the center of the screen.
+     * @note If the offset is 0,0, writing it is optional.
+     */
+    int xOffset;
+
+    /**
+     * @brief Offset in osu! pixels from the center of the screen.
+     * @details For example, an offset of 50,100 would have the background shown 50 osu! pixels to the right and 100 osu! pixels down from the center of the screen.
+     * @note If the offset is 0,0, writing it is optional.
+     */
+    int yOffset;
+
+    Background(std::string_view fileName, int xOffset, int yOffset)
+        : EventBase{ 0, 0 }, xOffset{ xOffset }, yOffset{ yOffset }, fileName{ details::TrimStr(fileName, "\"")}
+    {}
+private:
+    Background(std::array<std::string_view, 5> const& data)
+        : Background(data[2], data[3].empty()? 0:  std::stoi(data[3].data()), data[4].empty()?  0: std::stoi(data[4].data()))
+    {}
+public:
+    Background(std::string_view line)
+        :Background(details::SplitString<5>(line, ','))
     {
     }
+};
 
-    Event(std::array<std::string_view, 3> const& result)
-        : eventType{ result[0] },
-        startTime{ std::stoi(result[1].data()) },
-        eventParams{ result[2] }
+struct Video final : EventBase
+{
+    /**
+     * @brief Location of the background image relative to the beatmap directory.
+     * @details Double quotes are usually included surrounding the filename, but they are not required.
+     */
+    std::string fileName;
+
+    /**
+     * @brief Offset in osu! pixels from the center of the screen.
+     * @details For example, an offset of 50,100 would have the background shown 50 osu! pixels to the right and 100 osu! pixels down from the center of the screen.
+     * @note If the offset is 0,0, writing it is optional.
+     */
+    int xOffset;
+
+    /**
+     * @brief Offset in osu! pixels from the center of the screen.
+     * @details For example, an offset of 50,100 would have the background shown 50 osu! pixels to the right and 100 osu! pixels down from the center of the screen.
+     * @note If the offset is 0,0, writing it is optional.
+     */
+    int yOffset;
+
+    Video(std::string_view video, std::string_view startTime, std::string_view fileName, int xOffset, int yOffset)
+        : EventBase{ video, std::stoi(startTime.data()) }, xOffset{ xOffset }, yOffset{ yOffset }
+    {}
+private:
+    Video(std::array<std::string_view, 5> const& data)
+        : Video(data[0], data[1], data[2], std::stoi(data[3].data()), std::stoi(data[4].data()))
+    {}
+public:
+    Video(std::string_view line)
+        :Video(details::SplitString<5>(line, ','))
     {
     }
+};
 
-    static auto HandleEvents(std::ifstream& file)
+struct Break final : EventBase
+{
+    /**
+     * @brief End time of the break, in milliseconds from the beginning of the beatmap's audio.
+     */
+    int endTime;
+
+    Break(int startTime, int endTime)
+        : EventBase{ 2, startTime }, endTime{ endTime }
+    {}
+private:
+    Break(std::array<std::string_view, 3> const& data)
+        : Break(std::stoi(data[1].data()), std::stoi(data[2].data()))
+    {}
+public:
+    Break(std::string_view line)
+        : Break(details::SplitString<3>(line, ','))
+    {}
+
+    [[nodiscard]] auto getDuration() const
     {
-        std::vector<Event> events;
+        return endTime - startTime;
+    }
+};
+
+struct Events
+{
+    std::vector<Background> backgrounds;
+    std::vector<Video> videos;
+    std::vector<Break> breaks;
+
+    Events(std::ifstream& file)
+    {
         std::string line;
         while (details::GetLine(file, line))
         {
-            //events.emplace_back(std::move(line));
+            auto [eventType, _, __] = details::SplitString<3>(line);
+            try {
+                auto const eventId = static_cast<Type>(std::stoi(eventType.data()));
+                switch (eventId)
+                {
+                    case Type::Background:
+                        backgrounds.emplace_back(line);
+                        break;
+                    case Type::Video:
+                        videos.emplace_back(line);
+                        break;
+                    case Type::Break:
+                        breaks.emplace_back(line);
+                        break;
+                    default:
+                        continue;
+                }
+            }
+            catch (...)
+            {
+                continue;
+            }
         }
-        return events;
     }
+
+    Events() = default;
+
+    Events& operator+=(Background backgroundEvent) { backgrounds.emplace_back(std::move(backgroundEvent)); return *this; }
+    Events& operator+=(Video videoEvent) { videos.emplace_back(std::move(videoEvent)); return *this; }
+    Events& operator+=(Break breakEvent) { breaks.emplace_back(std::move(breakEvent)); return *this; }
+
+private:
+
+    enum class Type
+    {
+        Background = 0,
+        Video = 1,
+        Break = 2,
+    };
+
 };
+
 
 struct OsuFile
 {
@@ -1434,7 +1625,7 @@ struct OsuFile
     Editor editor;
     Metadata metaData;
     Difficulty difficulty;
-    std::vector<Event> events;
+    Events events;
     std::vector<TimingPoint> timingPoints;
     Colors colors;
     std::vector<std::unique_ptr<HitObject>> hitObjects;
@@ -1449,12 +1640,19 @@ struct OsuFile
             else if (line == "[Editor]")        editor = Editor{ file };
             else if (line == "[Metadata]")      metaData = Metadata{ file };
             else if (line == "[Difficulty]")    difficulty = Difficulty{ file };
-            else if (line == "[Events]")        events = Event::HandleEvents(file);
+            else if (line == "[Events]")        events = Events(file);
             else if (line == "[TimingPoints]")  timingPoints = TimingPoint::HandleTimingPoints(file);
             else if (line == "[Colours]")       colors = Colors{ file };
             else if (line == "[HitObjects]")    hitObjects = HitObject::HandleHitObjects(file);
         }
     }
+
+    OsuFile(General const& general, Editor const& editor, Metadata const& metaData, Events const& events, std::vector<TimingPoint> const& timingPoints = {}, Colors const& colors = {})
+        : general{general}, editor{editor}, metaData{metaData}, events{events}, timingPoints{timingPoints}, colors{colors}
+    {
+    }
+
+    OsuFile() = default;
     
     auto& operator[](size_t index)
     {
@@ -1495,6 +1693,38 @@ struct OsuFile
         return timingPoints.empty() ? 0.0 : 60'000 / timingPoints.front().beatLength;
     }
 
+    [[nodiscard]] TimingPoint const& getTimingPointAt(int time) const
+    {
+        if (auto it = std::lower_bound(timingPoints.cbegin(), timingPoints.cend(), time, [](TimingPoint const& timingPoint, int time)
+        {
+            return timingPoint.time < time;
+        }); it != timingPoints.begin())
+            return *(it - 1);
+        else
+            return *timingPoints.begin();
+    }
+
+    [[nodiscard]] int getTotalBreakTime() const
+    {
+        return std::accumulate(events.breaks.cbegin(), events.breaks.cend(), 0, 
+            [](auto value, auto const& breakEvent)
+            {
+                return value + (breakEvent.endTime - breakEvent.startTime);
+            });
+    }
+
+    template<HitObject::Type type>
+    [[nodiscard]] float getPercentOf() const
+    {
+        return getCount<type>() / static_cast<float>(hitObjects.size());
+    }
+
+    template<HitObject::Type... types>
+    [[nodiscard]] float getPercentOf() const
+    {
+        return getPercentOf<types>() + ...;
+    }
+
     /**
      * @brief Serialize everything to the file stream
      * @throw std::runtime_error if the file cannot open
@@ -1512,6 +1742,7 @@ struct OsuFile
             .printLn(difficulty)
             .printLn("[TimingPoints]")
             .printLn(timingPoints)
+            .printLn("")
             .printLn(colors)
             .printLn("[HitObjects]")
             .printLn(hitObjects);

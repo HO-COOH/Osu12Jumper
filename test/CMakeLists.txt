@@ -1,0 +1,10 @@
+    set(TestTarget Test)
+
+    include(GoogleTest) 
+    add_executable(${TestTarget} test.cpp)
+    add_executable(ManiaTest ManiaParse.cpp)
+    enable_testing()
+    target_link_libraries(${TestTarget} PRIVATE GTest::gtest GTest::gtest_main)
+    target_link_libraries(ManiaTest PRIVATE GTest::gtest GTest::gtest_main)
+    gtest_discover_tests(${TestTarget})
+    gtest_discover_tests(ManiaTest)

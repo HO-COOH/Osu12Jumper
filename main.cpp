@@ -1,10 +1,29 @@
 #include <iostream>
-#include "JumpGenerator.hpp"
+#include "OsuParser.hpp"
+#include "BeatmapConvert/include/BeatmapConvert.hpp"
 
 int main()
 {
-	OsuFile file{ std::ifstream{"TestMapv11.osu"} };
-	file.metaData.version = "test";
-	JumpGenerator gen{ file };
-	gen.setDistance(Range{ 50, 200 }).generate(50);
+	//auto maps = Utils::GetAllBeatmapsFrom(std::filesystem::directory_entry{
+	//	std::filesystem::path{ "C:\\Users\\peterwhli\\AppData\\Local\\osu!\\Songs\\59631 3L - Three Magic" }
+	//	});
+
+	//std::transform(maps.cbegin(), maps.cend(), std::ostream_iterator<std::string>{std::cout, "\n"}, [](auto const& entry)
+	//{
+	//	return entry.path().string();
+	//});
+
+	OsuFile f{ std::ifstream{"TestMapv11.osu"} };
+	Mania::ManiaBeatmapConverter converter{ f };
+
+	auto convertedMap = converter.convertBeatmap();
+	convertedMap.metaData.version = "converted";
+
+	{
+		std::cout << "Generate:\n\t"
+			<< convertedMap.getCount<HitObject::Type::Circle>() << " circles\n"
+			<< '\t' << convertedMap.getCount<HitObject::Type::Hold>() << " holds \n";
+	}
+
+	convertedMap.save();
 }

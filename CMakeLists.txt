@@ -5,7 +5,16 @@ project(OsuJump)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(Main main.cpp "JumpGenerator.cpp" "BeatmapConvert.cpp")
+include_directories(include)
+include_directories(${CMAKE_SOURCE_DIR})
+
+#TODO: Add test map to executable
+add_executable(Main main.cpp 
+    "JumpGenerator.cpp" 
+    "BeatmapConvert/BeatmapConvert.cpp" 
+    "BeatmapConvert/PatternGenerator.cpp"
+    "BeatmapConvert/Mania.Pattern.cpp"
+)
 
 #Add testing if found gtest
 find_package(GTest CONFIG REQUIRED)
@@ -13,11 +22,12 @@ find_package(GTest CONFIG REQUIRED)
 set(OsuTestFileDir "./test")
 
 function(CopyOsuTestFile fileName)
-    file(COPY "${OsuTestFileDir}/${fileName}" DESTINATION ${CMAKE_BINARY_DIR})
-    message("Copying ${OsuTestFileDir}/${fileName} -> ${CMAKE_BINARY_DIR}")   
+    file(COPY "${OsuTestFileDir}/${fileName}" DESTINATION ${CMAKE_BINARY_DIR}/test)
+    message("Copying ${OsuTestFileDir}/${fileName} -> ${CMAKE_BINARY_DIR}/test")   
 endfunction()
 
 if(GTest_FOUND)
+    enable_testing()
     add_subdirectory(${OsuTestFileDir})
     CopyOsuTestFile(TestMapv11.osu)
     CopyOsuTestFile(TestMapv14.osu)

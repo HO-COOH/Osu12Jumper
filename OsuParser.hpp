@@ -21,6 +21,7 @@
 #include <algorithm>//std::clamp
 #include <numeric>
 #include <variant>
+#include <cassert>
 
 /**
  * @brief Osu editor play field size
@@ -37,13 +38,23 @@ namespace PlayField
 
 namespace details 
 {
+    /**
+     * @brief Remove spacing or specified characters of both side of the string
+     * @param s The source string to be trimmed
+     * @param contentToTrim String of characters that needs to be removed from the source string
+     */
     static inline auto TrimStr(std::string& s, const char* contentToTrim = "\t\n\v\f\r ")
     {
         s.erase(0, s.find_first_not_of(contentToTrim)); // left trim
         s.erase(s.find_last_not_of(contentToTrim) + 1); // right trim
-        return s;
     }
 
+    /**
+     * @brief Remove specing of specified characters of both side of the string and return the new string
+     * @param s The source string
+     * @param contentToTrim String of characters that needs to be removed from the source string
+     * @return The new trimmed string
+     */
     static inline auto TrimStr(std::string_view s, const char* contentToTrim = "\t\n\v\f\r ")
     {
         auto const start = s.find_first_not_of(contentToTrim);
@@ -137,7 +148,9 @@ namespace details
         return result;
     }
 
-
+    /**
+     * @brief 
+     */
     static inline auto SplitString(std::string_view str, char delim = ',')
     {
         std::vector<std::string_view> result;
@@ -152,14 +165,21 @@ namespace details
         return result;
     }
 
-
+    /**
+     * @brief Determines whether the string is empty or containing nothing
+     */
     static inline auto IsEmptyLine(std::string const& line)
     {
         return line.empty() || line == "";
     }
 
     /**
-     * @brief 
+     * @brief Get a line that is not empty nor starting with "//"
+     * @param indicateEmptyLine Return false when the line is empty
+     * @param file The input file stream
+     * @param line The string to store the line
+     * @return Return false when the file has reached the end, 
+     * additionally return false when `indicateEmptyLine` is true and the file has reached an empty line.
      */
     static inline auto GetLine(std::ifstream& file, std::string& line, bool indicateEmptyLine = true)
     {
@@ -187,6 +207,23 @@ namespace details
         return indicateEmptyLine ? false : static_cast<bool>(file);
     }
 
+    /**
+     * @brief Keep reading the file line by line until a target string is found
+     * @param target A line to be found
+     * @param line The input string, and when the `target` is found, the line should contain the `target` string
+     * @param file The input file stream
+     */
+    static void SkipUntil(std::string_view target, std::string& line, std::ifstream& file)
+    {
+        do {
+            if(!GetLine(file, line, false))
+                break;
+        } while (line != target);
+    }
+
+    /**
+     * @brief A helper class to wrap calls to `std::ostream::operator<<`
+     */
     class PrintHelper
     {
         std::ostream& os;
@@ -349,7 +386,7 @@ inline std::ostream& operator<<(std::ostream& os, OverlayPosition overlayPositio
 }
 
 /**
- * @brief General information about the beatmap
+ * @brief General information about the originalBeatmap
  * @see https://github.com/ppy/osu-wiki/blob/master/wiki/osu!_File_Formats/Osu_(file_format)/en.md#general
  */
 struct General
@@ -436,10 +473,17 @@ struct General
 
     /**
      * @brief Parse General info from osu file
+     * @param file The input file stream
+     * @param partial Whether this is a partial parse
      */
-    General(std::ifstream& file)
+    General(std::ifstream& file, bool partial = true)
     {
         std::string line;
+        
+        /*If this is a partial parse, get line until [General] appears */
+        if (partial)
+            details::SkipUntil("[General]", line, file);
+
         while (details::GetLine(file, line))
         {
             auto [key, value] = details::SplitKeyVal(line);
@@ -500,7 +544,7 @@ struct General
 };
 
 /**
- * @brief Saved settings for the beatmap editor
+ * @brief Saved settings for the originalBeatmap editor
  */
 struct Editor
 {
@@ -529,9 +573,19 @@ struct Editor
      */
     std::optional<float> timelineZoom;
 
-    Editor(std::ifstream& file)
+    /**
+     * @brief Parse Editor info from osu file
+     * @param file The input file stream
+     * @param partial Whether this is a partial parse
+     */
+    Editor(std::ifstream& file, bool partial = true)
     {
         std::string line;
+
+        /*If this is a partial parse, get line until [Editor] appears*/
+        if (partial)
+            details::SkipUntil("[Editor]", line, file);
+
 
         while(details::GetLine(file, line))
         {
@@ -573,6 +627,7 @@ struct Difficulty
 
     /**
      * @brief CS setting (0–10)
+     * @note CS determines the number of columns in osu!mania mode.
      */
     float circleSize{};
 
@@ -596,9 +651,19 @@ struct Difficulty
      */
     int sliderTickRate{};
 
-    Difficulty(std::ifstream& file)
+    /**
+     * @brief Parse Difficulty info from osu file
+     * @param file The input file stream
+     * @param partial Whether this is a partial parse
+     */
+    Difficulty(std::ifstream& file, bool partial = true)
     {
         std::string line;
+
+        /*If this is a partial parse, skip until [Difficulty] appears*/
+        if (partial)
+            details::SkipUntil("[Difficulty]", line, file);
+
         while (details::GetLine(file, line))
         {
             auto [key, value] = details::SplitKeyVal(line);
@@ -641,6 +706,8 @@ struct Coord
         return sqrt(pow(x - another.x, 2) + pow(y - another.y, 2));
     }
 
+    constexpr bool operator==(Coord rhs) const { return x == rhs.x && y == rhs.y; }
+
     friend std::ostream& operator<<(std::ostream& os, Coord coord)
     {
         os << coord.x << ':' << coord.y;
@@ -680,7 +747,7 @@ struct HitObject
     int y;
 
     /**
-     * @brief Time when the object is to be hit, in milliseconds from the beginning of the beatmap's audio.
+     * @brief Time when the object is to be hit, in milliseconds from the beginning of the originalBeatmap's audio.
      */
     int time;
 
@@ -831,20 +898,31 @@ public:
     /**
      * @brief Calculate the X coordinate in terms of columnIndex and total columns
      */
-    [[nodiscard]] static int columnToX(int columnIndex, int columnCount)
+    [[nodiscard]] static int ColumnToX(int columnIndex, int columnCount)
     {
         /*
         *   columnIndex = x * columnCount / 512
         *   x = columnIndex * 512 / columnCount;
         */
-
-        return std::clamp(columnIndex * 512 / columnCount, 0, 512);
+        assert(!(columnIndex < 0 || columnIndex >= columnCount));
+        return std::clamp(columnIndex * 512 / (columnCount % 2 == 0? columnCount : columnCount - 1), 0, 512);
     }
 
-    static auto HandleHitObjects(std::ifstream& file)
+    /**
+     * @brief Parse hit objects
+     * @param file The `.osu` file stream
+     * @param partial Whether this is a partial parse, when true, it keeps reading the file until "[HitObjects]" is found
+     * @return `std::vector<std::unique_ptr<HitObject>>`
+     */
+    static auto HandleHitObjects(std::ifstream& file, bool partial = true)
     {
         std::string line;
         std::vector<std::unique_ptr<HitObject>> objects;
+
+        /*If this is a partial parse, skip until [HitObjects] appears*/
+        if (partial)
+            details::SkipUntil("[HitObjects]", line, file);
+
         while (details::GetLine(file, line))
         {
             auto [_, __, ___, typeStr] = details::SplitString<4>(line);
@@ -873,10 +951,28 @@ public:
                 std::cerr << "Parsing Line: " << line << "failed!\n";
             }
         }
+
+        /*
+            I found an old map (osu file format v11) that doesn't set the first object's comboBit while it should be a new combo
+            eg. Title:Three Magic
+                TitleUnicode:Three Magic
+                Artist:3L
+                ArtistUnicode:3L
+                Creator:cRyo[iceeicee]
+                Version:Collab
+            That has the first object like this:
+                168,256,33011,2,0,B|120:272|80:240,1,90,4|0,0:0|0:0,0:0:0
+                              ^
+        */
+        if (!objects.empty())
+            objects.front()->isNewCombo = true;
+        
         return objects;
     }
 
     virtual void printObjectParam(std::ostream& os) const = 0;
+
+    virtual std::unique_ptr<HitObject> clone() const = 0;
     
     /* 
         @details Hit object syntax :
@@ -909,7 +1005,7 @@ protected:
         else if (num & SliderBit)   return Type::Slider;
         else if (num & SpinnerBit)  return Type::Spinner;
         else if (num & HoldBit)     return Type::Hold;
-        else throw std::invalid_argument{ std::string{"Invalid hit object type: "} + std::to_string(num) };
+        else throw std::logic_error{ std::string{"Invalid hit object type: "} + std::to_string(num) };
     }
 
     static inline Type GetType(std::string_view str)
@@ -934,6 +1030,27 @@ template<> struct HitObject::ToType<HitObject::Type::Spinner> { using type = Spi
 template<> struct HitObject::ToType<HitObject::Type::Hold> { using type = Hold; };
 template<> struct HitObject::ToType<HitObject::Type::All> { using type = HitObject; };
 
+inline std::ostream& operator<<(std::ostream& os, HitObject::Type type)
+{
+    switch (type)
+    {
+        case HitObject::Type::Circle:
+            os << "Circle";
+            break;
+        case HitObject::Type::Slider:
+            os << "Slider";
+            break;
+        case HitObject::Type::Spinner:
+            os << "Spinner";
+            break;
+        case HitObject::Type::Hold:
+            os << "Hold";
+            break;
+        default:
+            break;
+    }
+    return os;
+}
 
 struct Circle final: HitObject
 {
@@ -963,9 +1080,14 @@ struct Circle final: HitObject
     {
     }
 
+    std::unique_ptr<HitObject> clone() const override
+    {
+        return std::unique_ptr<HitObject>(new Circle(*this));
+    }
+
     static auto MakeManiaHitObject(int columnIndex, int totalColumns, int time, HitSound hitSound = HitSound::Normal, HitSample hitSample = HitSample{})
     {
-        return std::make_unique<Circle>(HitObject::columnToX(columnIndex, totalColumns), 0, time, hitSound, std::move(hitSample));
+        return std::make_unique<Circle>(HitObject::ColumnToX(columnIndex, totalColumns), 0, time, hitSound, std::move(hitSample));
     }
 };
 
@@ -1015,15 +1137,17 @@ struct Slider final: HitObject
     }
 
     Slider(std::array<std::string_view, 11> const& result)
-        : HitObject(std::array<std::string_view, 7>{
-            result[0],  //x
-            result[1],  //y
-            result[2],  //time
-            result[3],  //type
-            result[4],  //hitSound
-            "",         //objectParams(unused)
-            result[10]
-        })
+        : HitObject(std::array<std::string_view, 7>
+            {
+                result[0],  //x
+                result[1],  //y
+                result[2],  //time
+                result[3],  //type
+                result[4],  //hitSound
+                "",         //objectParams(unused)
+                result[10]
+            }
+        )
     {
         auto const& sliderParam = result[5];
         
@@ -1067,6 +1191,22 @@ struct Slider final: HitObject
             .print(edgeSets, "|")
             .print(',');
     }
+
+    //[[nodiscard]] auto getDistance() const
+    //{
+    //    //double distance = 0;
+    //    //for (int i = 0; i<curvePoints.size() - 1; ++i)
+    //    //    distance += curvePoints[i].distanceTo(curvePoints[i + 1]);
+    //    //distance += Coord{ x, y }.distanceTo(curvePoints[0]);
+    //    //return distance;
+    //    return length;
+    //}
+
+
+    std::unique_ptr<HitObject> clone() const override
+    {
+        return std::unique_ptr<Slider>(new Slider(*this));
+    }
 };
 
 
@@ -1099,6 +1239,11 @@ struct Spinner final : HitObject
     void printObjectParam(std::ostream& os) const override
     {
         os << endTime << ',';
+    }
+
+    std::unique_ptr<HitObject> clone() const override
+    {
+        return std::unique_ptr<HitObject>(new Spinner(*this));
     }
 };
 
@@ -1143,7 +1288,7 @@ struct Hold final : HitObject
 
     static auto MakeManiaHitObject(int columnIndex, int totalColumns, int time, int endTime, HitSound hitSound = HitSound::Normal, HitSample hitSample = HitSample{})
     {
-        return std::make_unique<Hold>(HitObject::columnToX(columnIndex, totalColumns), 0, time, hitSound, endTime, std::move(hitSample));
+        return std::make_unique<Hold>(HitObject::ColumnToX(columnIndex, totalColumns), 0, time, hitSound, endTime, std::move(hitSample));
     }
 
 
@@ -1151,12 +1296,32 @@ struct Hold final : HitObject
     {
         os << endTime << ':';
     }
+
+    std::unique_ptr<HitObject> clone() const override
+    {
+        return std::unique_ptr<HitObject>(new Hold(*this));
+    }
 };
 
 struct TimingPoint
 {
+    enum class Effect
+    {
+        Kiai = 1,
+        OmitBarline = 1 << 3
+    };
+
+    enum class Type
+    {
+        TimingControlPoint,
+        DifficultyControlPoint,
+        SampleControlPoint,
+        EffectControlPoint,
+        All
+    };
+
     /**
-     * @brief Start time of the timing section, in milliseconds from the beginning of the beatmap's audio.
+     * @brief Start time of the timing section, in milliseconds from the beginning of the originalBeatmap's audio.
      * The end of the timing section is the next timing point's time (or never, if this is the last timing point).
      */
     int time{};
@@ -1175,7 +1340,7 @@ struct TimingPoint
     int meter{};
 
     /**
-     * @brief Default sample set for hit objects (0 = beatmap default, 1 = normal, 2 = soft, 3 = drum).
+     * @brief Default sample set for hit objects (0 = originalBeatmap default, 1 = normal, 2 = soft, 3 = drum).
      */
     SampleSet sampleSet{};
 
@@ -1221,15 +1386,33 @@ struct TimingPoint
     {
     }
 
-    static auto HandleTimingPoints(std::ifstream& file)
+    /**
+     * @brief Parse timing points
+     * @param file The `.osu` file stream
+     * @param partial 
+     */
+    static auto HandleTimingPoints(std::ifstream& file, bool partial = true)
     {
         std::vector<TimingPoint> timingPoints;
         std::string line;
+
+        if (partial)
+            details::SkipUntil("[TimingPoints]", line, file);
+
         while (details::GetLine(file, line))
         {
             timingPoints.emplace_back(line);
         }
         return timingPoints;
+    }
+
+    template<Type type>
+    [[nodiscard]] constexpr bool isType() const
+    {
+        if constexpr (type == Type::All)
+            return true;
+        else if constexpr (type == Type::TimingControlPoint)
+            return uninherited;
     }
 
     friend std::ostream& operator<<(std::ostream& os, TimingPoint const& timingPoint)
@@ -1293,9 +1476,12 @@ struct Colors
      */
     std::optional<Color> sliderBorder;
 
-    Colors(std::ifstream& file)
+    Colors(std::ifstream& file, bool partial = true)
     {
         std::string line;
+
+        if (partial)
+            details::SkipUntil("[Colours]", line, file);
 
         while (details::GetLine(file, line))
         {
@@ -1326,14 +1512,14 @@ struct Colors
 
 
 /**
- * @brief Information used to identify the beatmap
+ * @brief Information used to identify the originalBeatmap
  * @see https://github.com/ppy/osu-wiki/blob/master/wiki/osu!_File_Formats/Osu_(file_format)/en.md#metadata
  */
 struct Metadata
 {
     /**
      * @brief Difficulty ID
-     * @note An osu beatmap relates to 1 difficulty, therefore it's actually 1 difficulty of a certain beatmap set.
+     * @note An osu originalBeatmap relates to 1 difficulty, therefore it's actually 1 difficulty of a certain originalBeatmap set.
      * If not present, the value is -1
      */
     int beatmapId = -1;
@@ -1387,9 +1573,12 @@ struct Metadata
     /**
      * @brief Parse Metadata from osu file
      */
-    Metadata(std::ifstream& osuFile)
+    Metadata(std::ifstream& osuFile, bool partial = true)
     {
         std::string line;
+
+        if (partial)
+            details::SkipUntil("[Metadata]", line, osuFile);
 
         while (details::GetLine(osuFile, line))
         {
@@ -1428,10 +1617,6 @@ struct Metadata
     }
 };
 
-/**
- * @warning Not implemented!
- */
-
 struct Background;
 struct Video;
 struct Break;
@@ -1445,7 +1630,7 @@ struct EventBase
     std::variant<int, std::string> eventType;
 
     /**
-     * @brief Start time of the event, in milliseconds from the beginning of the beatmap's audio.
+     * @brief Start time of the event, in milliseconds from the beginning of the originalBeatmap's audio.
      */
     int startTime;
 
@@ -1471,7 +1656,7 @@ struct EventBase
 struct Background final : EventBase
 {
     /**
-     * @brief Location of the background image relative to the beatmap directory.
+     * @brief Location of the background image relative to the originalBeatmap directory.
      * @details Double quotes are usually included surrounding the filename, but they are not required.
      */
     std::string fileName;
@@ -1507,7 +1692,7 @@ public:
 struct Video final : EventBase
 {
     /**
-     * @brief Location of the background image relative to the beatmap directory.
+     * @brief Location of the background image relative to the originalBeatmap directory.
      * @details Double quotes are usually included surrounding the filename, but they are not required.
      */
     std::string fileName;
@@ -1543,7 +1728,7 @@ public:
 struct Break final : EventBase
 {
     /**
-     * @brief End time of the break, in milliseconds from the beginning of the beatmap's audio.
+     * @brief End time of the break, in milliseconds from the beginning of the originalBeatmap's audio.
      */
     int endTime;
 
@@ -1571,9 +1756,13 @@ struct Events
     std::vector<Video> videos;
     std::vector<Break> breaks;
 
-    Events(std::ifstream& file)
+    Events(std::ifstream& file, bool partial = true)
     {
         std::string line;
+
+        if (partial)
+            details::SkipUntil("[Events]", line, file);
+
         while (details::GetLine(file, line))
         {
             auto [eventType, _, __] = details::SplitString<3>(line);
@@ -1636,21 +1825,37 @@ struct OsuFile
         line.reserve(100);
         while (details::GetLine(file, line, false))
         {
-            if (line == "[General]")            general = General{ file };
-            else if (line == "[Editor]")        editor = Editor{ file };
-            else if (line == "[Metadata]")      metaData = Metadata{ file };
-            else if (line == "[Difficulty]")    difficulty = Difficulty{ file };
-            else if (line == "[Events]")        events = Events(file);
-            else if (line == "[TimingPoints]")  timingPoints = TimingPoint::HandleTimingPoints(file);
-            else if (line == "[Colours]")       colors = Colors{ file };
-            else if (line == "[HitObjects]")    hitObjects = HitObject::HandleHitObjects(file);
+            if (line == "[General]")            general = General{ file, false };
+            else if (line == "[Editor]")        editor = Editor{ file, false };
+            else if (line == "[Metadata]")      metaData = Metadata{ file, false };
+            else if (line == "[Difficulty]")    difficulty = Difficulty{ file, false };
+            else if (line == "[Events]")        events = Events(file, false);
+            else if (line == "[TimingPoints]")  timingPoints = TimingPoint::HandleTimingPoints(file, false);
+            else if (line == "[Colours]")       colors = Colors{ file, false };
+            else if (line == "[HitObjects]")    hitObjects = HitObject::HandleHitObjects(file, false);
         }
     }
 
-    OsuFile(General const& general, Editor const& editor, Metadata const& metaData, Events const& events, std::vector<TimingPoint> const& timingPoints = {}, Colors const& colors = {})
-        : general{general}, editor{editor}, metaData{metaData}, events{events}, timingPoints{timingPoints}, colors{colors}
+    OsuFile(General const& general, Editor const& editor, Metadata const& metaData, Difficulty const& difficulty, Events const& events, std::vector<TimingPoint> const& timingPoints = {}, Colors const& colors = {})
+        : general{ general }, editor{ editor }, metaData{ metaData }, difficulty{ difficulty }, events{ events }, timingPoints{ timingPoints }, colors{ colors }
     {
     }
+
+    OsuFile(General const& general, Editor const& editor, Metadata const& metaData, Difficulty const& difficulty, Events const& events, std::vector<TimingPoint> const& timingPoints, Colors const& colors, std::vector<std::unique_ptr<HitObject>> hitObjects)
+        : general{ general }, editor{ editor }, metaData{ metaData }, difficulty{ difficulty }, events{ events }, timingPoints{ timingPoints }, colors{ colors }, hitObjects{ std::move(hitObjects) }
+    {
+    }
+
+    /**
+     * @brief Construct a new originalBeatmap with the original originalBeatmap's information and no hit objects
+     */
+    OsuFile(OsuFile const& original)
+        : OsuFile{ original.general, original.editor, original.metaData, original.difficulty, original.events, original.timingPoints, original.colors }
+    {
+    }
+
+    OsuFile(OsuFile&& temp) = default;
+
 
     OsuFile() = default;
     
@@ -1688,12 +1893,15 @@ struct OsuFile
      *    The bpm is stored in the first line in the [TimingPoints] section, as beatLength in milliseconds
      *    As a result, to get BPM, use 60000 (milliseconds per minute) / this number
      */
-    [[nodiscard]] float getBPM() const
+    [[nodiscard]] auto getBPM() const
     {
         return timingPoints.empty() ? 0.0 : 60'000 / timingPoints.front().beatLength;
     }
 
-    [[nodiscard]] TimingPoint const& getTimingPointAt(int time) const
+    /**
+     * @brief Get the nearest timing point to `time`, that is the one nearest timing point before time
+     */
+    [[nodiscard]] TimingPoint const& getNearestTimingPointAt(int time) const
     {
         if (auto it = std::lower_bound(timingPoints.cbegin(), timingPoints.cend(), time, [](TimingPoint const& timingPoint, int time)
         {
@@ -1704,6 +1912,27 @@ struct OsuFile
             return *timingPoints.begin();
     }
 
+    /**
+     * @brief Get timing point that actually controls `time`. If none, returns the first timing point
+     */
+    template<TimingPoint::Type type = TimingPoint::Type::All>
+    [[nodiscard]] TimingPoint const& getTimingPointAt(int time) const
+    {
+        if (timingPoints.empty())
+            throw std::logic_error{ "No timing points!" };
+
+        if (auto const it = std::find_if(timingPoints.cbegin(), timingPoints.cend(), [time](TimingPoint const& point)
+        {
+            return point.time == time && point.isType<;
+        }); it != timingPoints.cend())
+            return *it;
+        else
+            return *timingPoints.cbegin();
+    }
+
+    /**
+     * @brief Calculate total break time (in milliseconds) of a map
+     */
     [[nodiscard]] int getTotalBreakTime() const
     {
         return std::accumulate(events.breaks.cbegin(), events.breaks.cend(), 0, 
@@ -1713,16 +1942,18 @@ struct OsuFile
             });
     }
 
-    template<HitObject::Type type>
-    [[nodiscard]] float getPercentOf() const
-    {
-        return getCount<type>() / static_cast<float>(hitObjects.size());
-    }
 
+    /**
+     * @brief Get percent of a certain type of hit objects
+     * @tparam types One of hit object type in `HitObject::Type` enumeration
+     */
     template<HitObject::Type... types>
     [[nodiscard]] float getPercentOf() const
     {
-        return getPercentOf<types>() + ...;
+        if constexpr (sizeof...(types) == 0)
+            return 0;
+        else
+            return (getCount<types>() + ...) / static_cast<float>(hitObjects.size());
     }
 
     /**
@@ -1761,9 +1992,9 @@ struct OsuFile
 private:
     /**
      * @brief Return the default file name according to song title, artist and difficulty
-     * @
+     * @param withExtension Controls whether `.osu` should be added
      */
-    auto getSaveFileName(bool withSuffix = false) const
+    auto getSaveFileName(bool withExtension = false) const
     {
         return metaData.artistUnicode
             + " - "
@@ -1772,15 +2003,111 @@ private:
             + metaData.creator
             + ") ["
             + metaData.version
-            + (withSuffix ? "].osu" : "]");
+            + (withExtension ? "].osu" : "]");
     }
 public:
+
+    /**
+     * @brief Get artist (singer) from an osu file name
+     */
+    [[nodiscard]] static auto ParseArtistFrom(std::string_view fileName)
+    {
+        if (auto const pos = fileName.find(" - "); pos != std::string::npos)
+            return std::string{ fileName.substr(0, pos) };
+        return std::string{};
+    }
+
+    /**
+     * @brief Get artist (singer) from an osu file path
+     */
+    [[nodiscard]] static auto ParseArtistFrom(std::filesystem::path const& path)
+    {
+        return ParseArtistFrom(std::string_view{ path.filename().string() });
+    }
+
+    /**
+     * @brief Get song title (song name) from an osu file name
+     */
+    [[nodiscard]] static auto ParseTitleFrom(std::string_view fileName)
+    {
+        auto const start = fileName.find(" - ");
+        auto const end = fileName.find(" (", start);
+
+        if (start != std::string::npos && end != std::string::npos)
+        {
+            auto const realStart = start + sizeof(" - ") - 1;
+            return std::string{ &fileName[realStart], end - realStart };
+        }
+
+        return std::string{};
+    }
+
+    /**
+     * @brief Get song title (song name) from an osu file path
+     */
+    [[nodiscard]] static auto ParseTitleFrom(std::filesystem::path const& path)
+    {
+        return ParseTitleFrom(std::string_view{ path.filename().string() });
+    }
+
+    /**
+     * @brief Get map creator (mapper) from an osu file name
+     */
+    [[nodiscard]] static auto ParseCreatorFrom(std::string_view fileName)
+    {
+        auto const start = fileName.find(" (");
+        auto const end = fileName.find('[', start);
+
+        if (start != std::string::npos && end != std::string::npos)
+        {
+            auto const realStart = start + sizeof(" (") - 1;
+            return std::string{ &fileName[realStart], end - realStart };
+        }
+
+        return std::string{};
+    }
+
+    /**
+     * @breif Get map creator (mapper) from an osu file path
+     */
+    [[nodiscard]] static auto ParseCreatorFrom(std::filesystem::path const& path)
+    {
+        return ParseCreatorFrom(std::string_view{ path.filename().string() });
+    }
+
+    /**
+     * @brief Get version (difficulty) from an osu file name
+     */
+    [[nodiscard]] static auto ParseVersionFrom(std::string_view fileName)
+    {
+        auto const start = fileName.find(" [");
+        auto const end = fileName.find(']', start);
+
+        if (start != std::string::npos && end != std::string::npos)
+        {
+            auto const realStart = start + sizeof(" [") - 1;
+            return std::string{ &fileName[realStart], end - realStart };
+        }
+
+        return std::string{};
+    }
+
+    /**
+     * @brief Get version (difficulty) from an osu file name
+     */
+    [[nodiscard]] static auto ParseVersionFrom(std::filesystem::path const& path)
+    {
+        return ParseVersionFrom(std::string_view{ path.filename().string() });
+    }
 
     /**
      * @brief Serialize everything to a `<SongName>[<difficulty>].osu`
      */
     void save() const
     {
+#ifdef _DEBUG
+        std::cout << "Map saved -> " << getSaveFileName() << '\n';
+#endif
         save(getSaveFileName(false).data());
     }
 
@@ -1901,14 +2228,16 @@ public:
     HitObject* operator->() const { return iter->get(); }
     ObjectIterator& operator++()
     {
-        if (iter + 1 != last)
-            ++iter;
+        //if (iter + 1 != last)
+        //    ++iter;
+        ++iter;
         return *this;
     }
     ObjectIterator& operator--()
     {
-        if (iter != first)
-            --iter;
+        //if (iter != first)
+        //    --iter;
+        --iter;
         return *this;
     }
     bool operator==(ObjectIterator const& rhs) const { return iter == rhs.iter; }
@@ -1918,3 +2247,28 @@ private:
     typename ObjectContainer::iterator const first;
     typename ObjectContainer::iterator const last;
 };
+
+namespace Utils
+{
+    /**
+     * @brief Get all the entries of beatmaps from a folder
+     * @param folder The folder to enumerate
+     * @return A vector of `std::filesystem::directory_entry` that have the extension of `.osu`
+     */
+    inline std::vector<std::filesystem::directory_entry> GetAllBeatmapsFrom(std::filesystem::directory_entry const& folder)
+    {
+        if (!folder.exists() || !folder.is_directory())
+            return {};
+        
+        std::vector<std::filesystem::directory_entry> result;
+        std::copy_if(std::filesystem::directory_iterator{ folder.path() }, std::filesystem::directory_iterator{}, std::back_inserter(result), []
+        (auto const& entry)
+        {
+            return entry.path().extension() == ".osu";
+        });
+
+        return result;
+    }
+
+
+}

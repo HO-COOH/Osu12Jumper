@@ -1,4 +1,12 @@
-﻿#include <gtest/gtest.h>
+﻿/*****************************************************************//**
+ * \file   StdParse.cpp
+ * \brief  Test cases for parsing std game mode osu files
+ * 
+ * \author peterwhli
+ * \date   October 2021
+ *********************************************************************/
+
+#include <gtest/gtest.h>
 #include "../OsuParser.hpp"
 #include <array>
 
@@ -18,161 +26,7 @@ void CompareContainer(Actual const& actual, Expected const& expected)
 	}
 }
 
-TEST(Helper, SplitKeyValueNormal)
-{
-	auto [key, value] = details::SplitKeyVal("key: value");
-	EXPECT_EQ(key, "key");
-	EXPECT_EQ(value, "value");
-}
 
-TEST(Helper, SplitKeyValueBothSpaces)
-{
-	auto [key, value] = details::SplitKeyVal("key : value");
-	EXPECT_EQ(key, "key");
-	EXPECT_EQ(value, "value");
-}
-
-TEST(Helper, SplitKeyValueNoSpace)
-{
-	auto [key, value] = details::SplitKeyVal("key:value");
-	EXPECT_EQ(key, "key");
-	EXPECT_EQ(value, "value");
-}
-
-TEST(Helper, SplitKeyValueEmpty)
-{
-	auto [key, value] = details::SplitKeyVal("");
-	EXPECT_EQ(key, "");
-	EXPECT_EQ(value, "");
-}
-
-TEST(Helper, SplitKeyEmpty)
-{
-	auto [key, value] = details::SplitKeyVal(":value");
-	EXPECT_EQ(key, "");
-	EXPECT_EQ(value, "value");
-}
-
-TEST(Helper, SplitValueEmpty)
-{
-	auto [key, value] = details::SplitKeyVal("key:");
-	EXPECT_EQ(key, "key");
-	EXPECT_EQ(value, "");
-}
-
-TEST(Helper, SplitSpacedStrings)
-{
-	auto const result = details::SplitWords("hello world you are");
-	CompareContainer(
-		result,
-		std::array{
-			"hello",
-			"world",
-			"you",
-			"are"
-		}
-	);
-}
-
-TEST(Helper, SplitSpacedInts)
-{
-	auto const result = details::SplitWords<int>("1 2 3 4 5");
-	CompareContainer(
-		result,
-		std::array{1, 2, 3, 4, 5}
-	);
-}
-
-TEST(Helper, SplitSpacedStringsSingle)
-{
-	auto const result = details::SplitWords("hello");
-	CompareContainer(result, std::array{ "hello" });
-}
-
-TEST(Helper, SplitSpacedStringsEmpty)
-{
-	auto const result = details::SplitWords("");
-	CompareContainer(result, std::array<std::string, 0>{});
-}
-
-TEST(Helper, SplitCommaSeperatedStrings)
-{
-	auto const result = details::SplitCommaSeparatedString("1,2,3,4,5");
-	CompareContainer(
-		result,
-		std::array{ 1,2,3,4,5 }
-	);
-}
-
-TEST(Helper, SplitFixed)
-{
-	auto const result = details::SplitString<3>("1,2,3");
-	CompareContainer(
-		std::array{
-			std::stoi(result[0].data()),
-			std::stoi(result[1].data()),
-			std::stoi(result[2].data())
-		},
-		std::array{ 1,2,3 }
-	);
-}
-
-TEST(Helper, SplitFixedColon)
-{
-	auto const result = details::SplitString<5>("0:1:2:3:", ':');
-	CompareContainer(
-		std::array{
-			std::stoi(result[0].data()),
-			std::stoi(result[1].data()),
-			std::stoi(result[2].data()),
-			std::stoi(result[3].data()),
-			result[4].empty()? 0 : std::stoi(result[4].data()),
-		},
-		std::array{ 0,1,2,3,0 }
-	);
-}
-
-TEST(Helper, SplitCurvePoints)
-{
-	auto const result = details::SplitString("120:272|80:240", '|');
-	CompareContainer(
-		result,
-		std::array{ "120:272", "80:240" }
-	);
-}
-
-TEST(Helper, SplitEvent)
-{
-	auto const result = details::SplitString<3>(R"(Sprite,Foreground,Centre,"neimuu\Mythol.png",320,240)", ',', true);
-	CompareContainer(
-		result,
-		std::array{
-			"Sprite",
-			"Foreground",
-			R"(Centre,"neimuu\Mythol.png",320,240)"
-		}
-	);
-}
-TEST(Helper, SplitOptionalSliderParam)
-{
-	auto const result = details::SplitString<11>("404,120,44741,2,0,B|420:16,1,90");
-	CompareContainer(
-		result,
-		std::array{
-			"404",
-			"120",
-			"44741",
-			"2",
-			"0",
-			"B|420:16",
-			"1",
-			"90",
-			"",
-			"",
-			""
-		}
-	);
-}
 
 class Fixture
 {
@@ -456,6 +310,24 @@ TEST_F(ParseV14, TimingPoints)
 	Compare(t.back(), last);
 }
 
+TEST_F(ParseV11, GetTimingPointAt)
+{
+	auto const& actual = file->getNearestTimingPointAt(33200);
+	EXPECT_EQ(actual.time, 33124);
+}
+
+TEST_F(ParseV11, GetTimingPointBeforeFirst)
+{
+	auto const& actual = file->getNearestTimingPointAt(10000);
+	EXPECT_EQ(actual.time, 33012);
+}
+
+TEST_F(ParseV11, GetTimingPointAfterLast)
+{
+	auto const& actual = file->getNearestTimingPointAt(228000);
+	EXPECT_EQ(actual.time, 227899);
+}
+
 TEST_F(ParseV11, Colors)
 {
 	Colors const& c = *colors;
@@ -484,6 +356,14 @@ TEST_F(ParseV11, HitObject)
 	EXPECT_EQ(firstAllIter->x, 1);
 }
 
+TEST_F(ParseV11, NewCombo)
+{
+	auto const& objects = *hitObjects;
+	EXPECT_TRUE(objects.front()->isNewCombo); //first hit object should be a new combo
+	EXPECT_TRUE(objects[5]->isNewCombo);
+	EXPECT_TRUE(objects.back()->isNewCombo);
+}
+
 TEST_F(ParseV14, HitObject)
 {
 	EXPECT_EQ(file->getCount<HitObject::Type::Circle>(), 373);
@@ -497,7 +377,7 @@ TEST_F(ParseV14, Serialize)
 	EXPECT_NO_THROW(file->save("serialize.txt"));
 }
 
-#include "../JumpGenerator.hpp"
+#include "JumpGenerator.hpp"
 TEST(Generate12Jump, DegreeToRad)
 {
 	EXPECT_FLOAT_EQ(DegreeToRad(0.f), 0);

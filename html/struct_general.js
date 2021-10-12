@@ -1,6 +1,6 @@
 var struct_general =
 [
-    [ "General", "struct_general.html#ac6a4cbd21e66e27eefaaef323544db4a", null ],
+    [ "General", "struct_general.html#a64b000c467ca7cdd850db71914905fdd", null ],
     [ "audioFile", "struct_general.html#a869e61b920d0c1a24c5fd0a8613f979c", null ],
     [ "audioLeanIn", "struct_general.html#ac03802491ed089a09ce52976866d4c7c", null ],
     [ "countdown", "struct_general.html#a5bb8610ff1141d064dc854e1977a6e4b", null ],

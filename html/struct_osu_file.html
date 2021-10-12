@@ -85,6 +85,7 @@ $(document).ready(function(){initNavTree('struct_osu_file.html',''); initResizab
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="struct_osu_file-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">OsuFile Struct Reference</div></div>
@@ -102,6 +103,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2a6620c0d147f4f8b232cfee4c065db2"><td class="memItemLeft" align="right" valign="top"><a id="a2a6620c0d147f4f8b232cfee4c065db2" name="a2a6620c0d147f4f8b232cfee4c065db2"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>OsuFile</b> (std::ifstream &amp;&amp;file)</td></tr>
 <tr class="separator:a2a6620c0d147f4f8b232cfee4c065db2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adefc1fdecc19d5af1a216126b362c192"><td class="memItemLeft" align="right" valign="top"><a id="adefc1fdecc19d5af1a216126b362c192" name="adefc1fdecc19d5af1a216126b362c192"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>OsuFile</b> (<a class="el" href="struct_general.html">General</a> const &amp;general, <a class="el" href="struct_editor.html">Editor</a> const &amp;editor, <a class="el" href="struct_metadata.html">Metadata</a> const &amp;metaData, <a class="el" href="struct_difficulty.html">Difficulty</a> const &amp;difficulty, <a class="el" href="struct_events.html">Events</a> const &amp;events, std::vector&lt; <a class="el" href="struct_timing_point.html">TimingPoint</a> &gt; const &amp;timingPoints={}, <a class="el" href="struct_colors.html">Colors</a> const &amp;colors={})</td></tr>
+<tr class="separator:adefc1fdecc19d5af1a216126b362c192"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a818e476248d56116fd8686875676d464"><td class="memItemLeft" align="right" valign="top"><a id="a818e476248d56116fd8686875676d464" name="a818e476248d56116fd8686875676d464"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>OsuFile</b> (<a class="el" href="struct_general.html">General</a> const &amp;general, <a class="el" href="struct_editor.html">Editor</a> const &amp;editor, <a class="el" href="struct_metadata.html">Metadata</a> const &amp;metaData, <a class="el" href="struct_difficulty.html">Difficulty</a> const &amp;difficulty, <a class="el" href="struct_events.html">Events</a> const &amp;events, std::vector&lt; <a class="el" href="struct_timing_point.html">TimingPoint</a> &gt; const &amp;timingPoints, <a class="el" href="struct_colors.html">Colors</a> const &amp;colors, std::vector&lt; std::unique_ptr&lt; <a class="el" href="struct_hit_object.html">HitObject</a> &gt; &gt; hitObjects)</td></tr>
+<tr class="separator:a818e476248d56116fd8686875676d464"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af913da10093f0f34a99f46b272b5dd2c"><td class="memItemLeft" align="right" valign="top"><a id="af913da10093f0f34a99f46b272b5dd2c" name="af913da10093f0f34a99f46b272b5dd2c"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>OsuFile</b> (<a class="el" href="struct_osu_file.html">OsuFile</a> const &amp;original)</td></tr>
+<tr class="memdesc:af913da10093f0f34a99f46b272b5dd2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new originalBeatmap with the original originalBeatmap's information and no hit objects. <br /></td></tr>
+<tr class="separator:af913da10093f0f34a99f46b272b5dd2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaadf93833cbdc91735c3905b825481cf"><td class="memItemLeft" align="right" valign="top"><a id="aaadf93833cbdc91735c3905b825481cf" name="aaadf93833cbdc91735c3905b825481cf"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>OsuFile</b> (<a class="el" href="struct_osu_file.html">OsuFile</a> &amp;&amp;temp)=default</td></tr>
+<tr class="separator:aaadf93833cbdc91735c3905b825481cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c141d3c496ff5f6b09f985f09d5b531"><td class="memItemLeft" align="right" valign="top"><a id="a5c141d3c496ff5f6b09f985f09d5b531" name="a5c141d3c496ff5f6b09f985f09d5b531"></a>
 auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (size_t index)</td></tr>
 <tr class="separator:a5c141d3c496ff5f6b09f985f09d5b531"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -116,9 +130,26 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>getCount</b> () const
 <tr class="memitem:ac8d9b1d863c69e5ba1373e913c86bfc0"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="struct_osu_file.html#ac8d9b1d863c69e5ba1373e913c86bfc0">getCount</a> () const</td></tr>
 <tr class="memdesc:ac8d9b1d863c69e5ba1373e913c86bfc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of a certain type of hit objects.  <a href="struct_osu_file.html#ac8d9b1d863c69e5ba1373e913c86bfc0">More...</a><br /></td></tr>
 <tr class="separator:ac8d9b1d863c69e5ba1373e913c86bfc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1961e99e67eba692d886e28625b5b823"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_osu_file.html#a1961e99e67eba692d886e28625b5b823">getBPM</a> () const</td></tr>
-<tr class="memdesc:a1961e99e67eba692d886e28625b5b823"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the bpm from file.  <a href="struct_osu_file.html#a1961e99e67eba692d886e28625b5b823">More...</a><br /></td></tr>
-<tr class="separator:a1961e99e67eba692d886e28625b5b823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94136af51238d43d75cbedbad2db3ec9"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_osu_file.html#a94136af51238d43d75cbedbad2db3ec9">getBPM</a> () const</td></tr>
+<tr class="memdesc:a94136af51238d43d75cbedbad2db3ec9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the bpm from file.  <a href="struct_osu_file.html#a94136af51238d43d75cbedbad2db3ec9">More...</a><br /></td></tr>
+<tr class="separator:a94136af51238d43d75cbedbad2db3ec9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba9d72029a4985b916d1a8edb010df80"><td class="memItemLeft" align="right" valign="top"><a id="aba9d72029a4985b916d1a8edb010df80" name="aba9d72029a4985b916d1a8edb010df80"></a>
+<a class="el" href="struct_timing_point.html">TimingPoint</a> const &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getNearestTimingPointAt</b> (int time) const</td></tr>
+<tr class="memdesc:aba9d72029a4985b916d1a8edb010df80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the nearest timing point to <code>time</code>, that is the one nearest timing point before time. <br /></td></tr>
+<tr class="separator:aba9d72029a4985b916d1a8edb010df80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a756a8b5702226a517868bb7c619c8877"><td class="memTemplParams" colspan="2"><a id="a756a8b5702226a517868bb7c619c8877" name="a756a8b5702226a517868bb7c619c8877"></a>
+template&lt;TimingPoint::Type type = TimingPoint::Type::All&gt; </td></tr>
+<tr class="memitem:a756a8b5702226a517868bb7c619c8877"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="struct_timing_point.html">TimingPoint</a> const &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getTimingPointAt</b> (int time) const</td></tr>
+<tr class="memdesc:a756a8b5702226a517868bb7c619c8877"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get timing point that actually controls <code>time</code>. If none, returns the first timing point. <br /></td></tr>
+<tr class="separator:a756a8b5702226a517868bb7c619c8877"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d38da1e44f3193574bac89fefdf39f5"><td class="memItemLeft" align="right" valign="top"><a id="a4d38da1e44f3193574bac89fefdf39f5" name="a4d38da1e44f3193574bac89fefdf39f5"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>getTotalBreakTime</b> () const</td></tr>
+<tr class="memdesc:a4d38da1e44f3193574bac89fefdf39f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate total break time (in milliseconds) of a map. <br /></td></tr>
+<tr class="separator:a4d38da1e44f3193574bac89fefdf39f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9e6fae1e3e564abe8944d58239dad8b"><td class="memTemplParams" colspan="2">template&lt;HitObject::Type... types&gt; </td></tr>
+<tr class="memitem:ab9e6fae1e3e564abe8944d58239dad8b"><td class="memTemplItemLeft" align="right" valign="top">float&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="struct_osu_file.html#ab9e6fae1e3e564abe8944d58239dad8b">getPercentOf</a> () const</td></tr>
+<tr class="memdesc:ab9e6fae1e3e564abe8944d58239dad8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get percent of a certain type of hit objects.  <a href="struct_osu_file.html#ab9e6fae1e3e564abe8944d58239dad8b">More...</a><br /></td></tr>
+<tr class="separator:ab9e6fae1e3e564abe8944d58239dad8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ec7cd3fe777f7c5d67bf51fd1b48d09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_osu_file.html#a0ec7cd3fe777f7c5d67bf51fd1b48d09">save</a> (std::ofstream &amp;&amp;file) const</td></tr>
 <tr class="memdesc:a0ec7cd3fe777f7c5d67bf51fd1b48d09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize everything to the file stream.  <a href="struct_osu_file.html#a0ec7cd3fe777f7c5d67bf51fd1b48d09">More...</a><br /></td></tr>
 <tr class="separator:a0ec7cd3fe777f7c5d67bf51fd1b48d09"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -137,6 +168,43 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>save</b> () const</td
 <tr class="memitem:a610a4ec316ba84e09cc48e887c569b71"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="struct_osu_file.html#a610a4ec316ba84e09cc48e887c569b71">end</a> ()</td></tr>
 <tr class="memdesc:a610a4ec316ba84e09cc48e887c569b71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the iterator pointing to the last specified type of hit object.  <a href="struct_osu_file.html#a610a4ec316ba84e09cc48e887c569b71">More...</a><br /></td></tr>
 <tr class="separator:a610a4ec316ba84e09cc48e887c569b71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb1916411fdf1344267d148239db90ef"><td class="memItemLeft" align="right" valign="top"><a id="acb1916411fdf1344267d148239db90ef" name="acb1916411fdf1344267d148239db90ef"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>getDrainTime</b> () const</td></tr>
+<tr class="memdesc:acb1916411fdf1344267d148239db90ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get drain time in milliseconds. <br /></td></tr>
+<tr class="separator:acb1916411fdf1344267d148239db90ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a3560cb7ed553ddfb4ad02ea1f1580133"><td class="memItemLeft" align="right" valign="top"><a id="a3560cb7ed553ddfb4ad02ea1f1580133" name="a3560cb7ed553ddfb4ad02ea1f1580133"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>ParseArtistFrom</b> (std::string_view fileName)</td></tr>
+<tr class="memdesc:a3560cb7ed553ddfb4ad02ea1f1580133"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get artist (singer) from an osu file name. <br /></td></tr>
+<tr class="separator:a3560cb7ed553ddfb4ad02ea1f1580133"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08054a8f917c9444c9ec7d3bf52994f2"><td class="memItemLeft" align="right" valign="top"><a id="a08054a8f917c9444c9ec7d3bf52994f2" name="a08054a8f917c9444c9ec7d3bf52994f2"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>ParseArtistFrom</b> (std::filesystem::path const &amp;path)</td></tr>
+<tr class="memdesc:a08054a8f917c9444c9ec7d3bf52994f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get artist (singer) from an osu file path. <br /></td></tr>
+<tr class="separator:a08054a8f917c9444c9ec7d3bf52994f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8f6646319071c9615b75028cc66711d"><td class="memItemLeft" align="right" valign="top"><a id="ab8f6646319071c9615b75028cc66711d" name="ab8f6646319071c9615b75028cc66711d"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>ParseTitleFrom</b> (std::string_view fileName)</td></tr>
+<tr class="memdesc:ab8f6646319071c9615b75028cc66711d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get song title (song name) from an osu file name. <br /></td></tr>
+<tr class="separator:ab8f6646319071c9615b75028cc66711d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0b2ec8bb923e7401374a361921fa93a"><td class="memItemLeft" align="right" valign="top"><a id="aa0b2ec8bb923e7401374a361921fa93a" name="aa0b2ec8bb923e7401374a361921fa93a"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>ParseTitleFrom</b> (std::filesystem::path const &amp;path)</td></tr>
+<tr class="memdesc:aa0b2ec8bb923e7401374a361921fa93a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get song title (song name) from an osu file path. <br /></td></tr>
+<tr class="separator:aa0b2ec8bb923e7401374a361921fa93a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7976df34733376adcfed3627926a9724"><td class="memItemLeft" align="right" valign="top"><a id="a7976df34733376adcfed3627926a9724" name="a7976df34733376adcfed3627926a9724"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>ParseCreatorFrom</b> (std::string_view fileName)</td></tr>
+<tr class="memdesc:a7976df34733376adcfed3627926a9724"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get map creator (mapper) from an osu file name. <br /></td></tr>
+<tr class="separator:a7976df34733376adcfed3627926a9724"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a583969de5533d23cdfd1009c827971"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_osu_file.html#a6a583969de5533d23cdfd1009c827971">ParseCreatorFrom</a> (std::filesystem::path const &amp;path)</td></tr>
+<tr class="separator:a6a583969de5533d23cdfd1009c827971"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d071545348b6ada68dd097b0f920553"><td class="memItemLeft" align="right" valign="top"><a id="a6d071545348b6ada68dd097b0f920553" name="a6d071545348b6ada68dd097b0f920553"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>ParseVersionFrom</b> (std::string_view fileName)</td></tr>
+<tr class="memdesc:a6d071545348b6ada68dd097b0f920553"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get version (difficulty) from an osu file name. <br /></td></tr>
+<tr class="separator:a6d071545348b6ada68dd097b0f920553"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d1272b5718f8575a77936bbde79e292"><td class="memItemLeft" align="right" valign="top"><a id="a1d1272b5718f8575a77936bbde79e292" name="a1d1272b5718f8575a77936bbde79e292"></a>
+static auto&#160;</td><td class="memItemRight" valign="bottom"><b>ParseVersionFrom</b> (std::filesystem::path const &amp;path)</td></tr>
+<tr class="memdesc:a1d1272b5718f8575a77936bbde79e292"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get version (difficulty) from an osu file name. <br /></td></tr>
+<tr class="separator:a1d1272b5718f8575a77936bbde79e292"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -152,9 +220,9 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:aa75e33626550cb6deb0d23e57b128491"><td class="memItemLeft" align="right" valign="top"><a id="aa75e33626550cb6deb0d23e57b128491" name="aa75e33626550cb6deb0d23e57b128491"></a>
 <a class="el" href="struct_difficulty.html">Difficulty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>difficulty</b></td></tr>
 <tr class="separator:aa75e33626550cb6deb0d23e57b128491"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c7b7ea04a5f65d523c07bd674bf7d55"><td class="memItemLeft" align="right" valign="top"><a id="a7c7b7ea04a5f65d523c07bd674bf7d55" name="a7c7b7ea04a5f65d523c07bd674bf7d55"></a>
-std::vector&lt; <a class="el" href="struct_event.html">Event</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>events</b></td></tr>
-<tr class="separator:a7c7b7ea04a5f65d523c07bd674bf7d55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c69acfe1d3a2b9654c6b159733d8870"><td class="memItemLeft" align="right" valign="top"><a id="a9c69acfe1d3a2b9654c6b159733d8870" name="a9c69acfe1d3a2b9654c6b159733d8870"></a>
+<a class="el" href="struct_events.html">Events</a>&#160;</td><td class="memItemRight" valign="bottom"><b>events</b></td></tr>
+<tr class="separator:a9c69acfe1d3a2b9654c6b159733d8870"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48fd346b8c79cafda923c5d8d6a4d9ab"><td class="memItemLeft" align="right" valign="top"><a id="a48fd346b8c79cafda923c5d8d6a4d9ab" name="a48fd346b8c79cafda923c5d8d6a4d9ab"></a>
 std::vector&lt; <a class="el" href="struct_timing_point.html">TimingPoint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>timingPoints</b></td></tr>
 <tr class="separator:a48fd346b8c79cafda923c5d8d6a4d9ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -236,8 +304,8 @@ template&lt;HitObject::Type type = HitObject::Type::All&gt; </div>
 
 </div>
 </div>
-<a id="a1961e99e67eba692d886e28625b5b823" name="a1961e99e67eba692d886e28625b5b823"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1961e99e67eba692d886e28625b5b823">&#9670;&nbsp;</a></span>getBPM()</h2>
+<a id="a94136af51238d43d75cbedbad2db3ec9" name="a94136af51238d43d75cbedbad2db3ec9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94136af51238d43d75cbedbad2db3ec9">&#9670;&nbsp;</a></span>getBPM()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -246,7 +314,7 @@ template&lt;HitObject::Type type = HitObject::Type::All&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">float OsuFile::getBPM </td>
+          <td class="memname">auto OsuFile::getBPM </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -296,6 +364,68 @@ template&lt;HitObject::Type type&gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="ab9e6fae1e3e564abe8944d58239dad8b" name="ab9e6fae1e3e564abe8944d58239dad8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9e6fae1e3e564abe8944d58239dad8b">&#9670;&nbsp;</a></span>getPercentOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;HitObject::Type... types&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float OsuFile::getPercentOf </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get percent of a certain type of hit objects. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">types</td><td>One of hit object type in <code>HitObject::Type</code> enumeration </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a6a583969de5533d23cdfd1009c827971" name="a6a583969de5533d23cdfd1009c827971"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a583969de5533d23cdfd1009c827971">&#9670;&nbsp;</a></span>ParseCreatorFrom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static auto OsuFile::ParseCreatorFrom </td>
+          <td>(</td>
+          <td class="paramtype">std::filesystem::path const &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >@breif Get map creator (mapper) from an osu file path </p>
 
 </div>
 </div>

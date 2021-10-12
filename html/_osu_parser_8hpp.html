@@ -105,18 +105,24 @@ $(document).ready(function(){initNavTree('_osu_parser_8hpp.html',''); initResiza
 <code>#include &lt;optional&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;iterator&gt;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;numeric&gt;</code><br />
+<code>#include &lt;variant&gt;</code><br />
+<code>#include &lt;cassert&gt;</code><br />
 </div>
 <p><a href="_osu_parser_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdetails_1_1_print_helper.html">details::PrintHelper</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A helper class to wrap calls to <code>std::ostream::operator&lt;&lt;</code>  <a href="classdetails_1_1_print_helper.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_general.html">General</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="struct_general.html" title="General information about the beatmap.">General</a> information about the beatmap.  <a href="struct_general.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="struct_general.html" title="General information about the originalBeatmap.">General</a> information about the originalBeatmap.  <a href="struct_general.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_editor.html">Editor</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saved settings for the beatmap editor.  <a href="struct_editor.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saved settings for the originalBeatmap editor.  <a href="struct_editor.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_difficulty.html">Difficulty</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="struct_difficulty.html" title="Difficulty settings.">Difficulty</a> settings.  <a href="struct_difficulty.html#details">More...</a><br /></td></tr>
@@ -155,9 +161,17 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_colors_1_1_color.html">Colors::Color</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_metadata.html">Metadata</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Information used to identify the beatmap.  <a href="struct_metadata.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Information used to identify the originalBeatmap.  <a href="struct_metadata.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_event.html">Event</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_event_base.html">EventBase</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_background.html">Background</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_video.html">Video</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_break.html">Break</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_events.html">Events</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_osu_file.html">OsuFile</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -208,6 +222,12 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
 <tr class="memitem:ac838aa263c25b9cea62be3ed4a45dd92"><td class="memItemLeft" align="right" valign="top"><a id="ac838aa263c25b9cea62be3ed4a45dd92" name="ac838aa263c25b9cea62be3ed4a45dd92"></a>
 std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;os, OverlayPosition overlayPosition)</td></tr>
 <tr class="separator:ac838aa263c25b9cea62be3ed4a45dd92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a020aa3bb0cc19d8c71647323cb8ab695"><td class="memItemLeft" align="right" valign="top"><a id="a020aa3bb0cc19d8c71647323cb8ab695" name="a020aa3bb0cc19d8c71647323cb8ab695"></a>
+std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;os, HitObject::Type type)</td></tr>
+<tr class="separator:a020aa3bb0cc19d8c71647323cb8ab695"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee9c2058fd3e9477417abeadd2c9a22a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::filesystem::directory_entry &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_osu_parser_8hpp.html#aee9c2058fd3e9477417abeadd2c9a22a">Utils::GetAllBeatmapsFrom</a> (std::filesystem::directory_entry const &amp;folder)</td></tr>
+<tr class="memdesc:aee9c2058fd3e9477417abeadd2c9a22a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get all the entries of beatmaps from a folder.  <a href="_osu_parser_8hpp.html#aee9c2058fd3e9477417abeadd2c9a22a">More...</a><br /></td></tr>
+<tr class="separator:aee9c2058fd3e9477417abeadd2c9a22a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -228,7 +248,43 @@ constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b
 <div class="textblock"><p >A simple header-only library for parsing osu file. </p>
 <dl class="section author"><dt>Author</dt><dd>peter </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>September 2021 </dd></dl>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="aee9c2058fd3e9477417abeadd2c9a22a" name="aee9c2058fd3e9477417abeadd2c9a22a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee9c2058fd3e9477417abeadd2c9a22a">&#9670;&nbsp;</a></span>GetAllBeatmapsFrom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::filesystem::directory_entry &gt; Utils::GetAllBeatmapsFrom </td>
+          <td>(</td>
+          <td class="paramtype">std::filesystem::directory_entry const &amp;&#160;</td>
+          <td class="paramname"><em>folder</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get all the entries of beatmaps from a folder. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">folder</td><td>The folder to enumerate </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A vector of <code>std::filesystem::directory_entry</code> that have the extension of <code>.osu</code> </dd></dl>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

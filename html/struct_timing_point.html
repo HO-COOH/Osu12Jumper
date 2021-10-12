@@ -83,6 +83,7 @@ $(document).ready(function(){initNavTree('struct_timing_point.html',''); initRes
 
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
@@ -92,6 +93,23 @@ $(document).ready(function(){initNavTree('struct_timing_point.html',''); initRes
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:ad3a62f5328615f162696e50b5d6f6ae2"><td class="memItemLeft" align="right" valign="top"><a id="ad3a62f5328615f162696e50b5d6f6ae2" name="ad3a62f5328615f162696e50b5d6f6ae2"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Effect</b> { <b>Kiai</b> = 1
+, <b>OmitBarline</b> = 1 &lt;&lt; 3
+ }</td></tr>
+<tr class="separator:ad3a62f5328615f162696e50b5d6f6ae2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68cb9daa7e01262e228f64f08839fb59"><td class="memItemLeft" align="right" valign="top"><a id="a68cb9daa7e01262e228f64f08839fb59" name="a68cb9daa7e01262e228f64f08839fb59"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Type</b> { <br />
+&#160;&#160;<b>TimingControlPoint</b>
+, <b>DifficultyControlPoint</b>
+, <b>SampleControlPoint</b>
+, <b>EffectControlPoint</b>
+, <br />
+&#160;&#160;<b>All</b>
+<br />
+ }</td></tr>
+<tr class="separator:a68cb9daa7e01262e228f64f08839fb59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a8ceaab577d91ae5b1b46522281868723"><td class="memItemLeft" align="right" valign="top"><a id="a8ceaab577d91ae5b1b46522281868723" name="a8ceaab577d91ae5b1b46522281868723"></a>
@@ -99,18 +117,22 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8ceaab577d91ae5b1b46522281868723"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8bfd73b90d32f089d0efd6b942ac301"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_timing_point.html#ac8bfd73b90d32f089d0efd6b942ac301">TimingPoint</a> (std::array&lt; std::string_view, 8 &gt; const &amp;result)</td></tr>
 <tr class="separator:ac8bfd73b90d32f089d0efd6b942ac301"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad0531d82839505f71b67aa0fc57768c"><td class="memTemplParams" colspan="2"><a id="aad0531d82839505f71b67aa0fc57768c" name="aad0531d82839505f71b67aa0fc57768c"></a>
+template&lt;Type type&gt; </td></tr>
+<tr class="memitem:aad0531d82839505f71b67aa0fc57768c"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>isType</b> () const</td></tr>
+<tr class="separator:aad0531d82839505f71b67aa0fc57768c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ae6dca4a1f5beecbc4da370c2c3dcbf54"><td class="memItemLeft" align="right" valign="top"><a id="ae6dca4a1f5beecbc4da370c2c3dcbf54" name="ae6dca4a1f5beecbc4da370c2c3dcbf54"></a>
-static auto&#160;</td><td class="memItemRight" valign="bottom"><b>HandleTimingPoints</b> (std::ifstream &amp;file)</td></tr>
-<tr class="separator:ae6dca4a1f5beecbc4da370c2c3dcbf54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a682c460679153a17904f13fc4bb47372"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_timing_point.html#a682c460679153a17904f13fc4bb47372">HandleTimingPoints</a> (std::ifstream &amp;file, bool partial=true)</td></tr>
+<tr class="memdesc:a682c460679153a17904f13fc4bb47372"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse timing points.  <a href="struct_timing_point.html#a682c460679153a17904f13fc4bb47372">More...</a><br /></td></tr>
+<tr class="separator:a682c460679153a17904f13fc4bb47372"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:af585ec084ca5c4d0b99241d78754d5a7"><td class="memItemLeft" align="right" valign="top"><a id="af585ec084ca5c4d0b99241d78754d5a7" name="af585ec084ca5c4d0b99241d78754d5a7"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>time</b> {}</td></tr>
-<tr class="memdesc:af585ec084ca5c4d0b99241d78754d5a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start time of the timing section, in milliseconds from the beginning of the beatmap's audio. The end of the timing section is the next timing point's time (or never, if this is the last timing point). <br /></td></tr>
+<tr class="memdesc:af585ec084ca5c4d0b99241d78754d5a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start time of the timing section, in milliseconds from the beginning of the originalBeatmap's audio. The end of the timing section is the next timing point's time (or never, if this is the last timing point). <br /></td></tr>
 <tr class="separator:af585ec084ca5c4d0b99241d78754d5a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0139b07ad3f44da0e906532ae6c4310d"><td class="memItemLeft" align="right" valign="top"><a id="a0139b07ad3f44da0e906532ae6c4310d" name="a0139b07ad3f44da0e906532ae6c4310d"></a>
 float&#160;</td><td class="memItemRight" valign="bottom"><b>beatLength</b> {}</td></tr>
@@ -121,7 +143,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>meter</b> {}</td></tr>
 <tr class="separator:a72cd2b7f5ef424faeac7999c1fd6de0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67346c6bbbfaaab1b751bfd6691a2546"><td class="memItemLeft" align="right" valign="top"><a id="a67346c6bbbfaaab1b751bfd6691a2546" name="a67346c6bbbfaaab1b751bfd6691a2546"></a>
 SampleSet&#160;</td><td class="memItemRight" valign="bottom"><b>sampleSet</b> {}</td></tr>
-<tr class="memdesc:a67346c6bbbfaaab1b751bfd6691a2546"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default sample set for hit objects (0 = beatmap default, 1 = normal, 2 = soft, 3 = drum). <br /></td></tr>
+<tr class="memdesc:a67346c6bbbfaaab1b751bfd6691a2546"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default sample set for hit objects (0 = originalBeatmap default, 1 = normal, 2 = soft, 3 = drum). <br /></td></tr>
 <tr class="separator:a67346c6bbbfaaab1b751bfd6691a2546"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07d681ea84190d1b28cefa316f3678f7"><td class="memItemLeft" align="right" valign="top"><a id="a07d681ea84190d1b28cefa316f3678f7" name="a07d681ea84190d1b28cefa316f3678f7"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>sampleIndex</b> {}</td></tr>
@@ -171,6 +193,52 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
 </table>
 </div><div class="memdoc">
 <p >Timing point syntax: time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a682c460679153a17904f13fc4bb47372" name="a682c460679153a17904f13fc4bb47372"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a682c460679153a17904f13fc4bb47372">&#9670;&nbsp;</a></span>HandleTimingPoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static auto TimingPoint::HandleTimingPoints </td>
+          <td>(</td>
+          <td class="paramtype">std::ifstream &amp;&#160;</td>
+          <td class="paramname"><em>file</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>partial</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse timing points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">file</td><td>The <code>.osu</code> file stream </td></tr>
+    <tr><td class="paramname">partial</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

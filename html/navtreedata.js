@@ -27,12 +27,17 @@ var NAVTREE =
   [ "Osu12Jumper", "index.html", [
     [ "README", "md__r_e_a_d_m_e.html", [
       [ "Osu 1-2 Jumper", "md__r_e_a_d_m_e.html#autotoc_md0", [
-        [ "Parser", "md__r_e_a_d_m_e.html#autotoc_md1", null ],
-        [ "1-2 Jump Generator", "md__r_e_a_d_m_e.html#autotoc_md2", null ],
-        [ "Documentation", "md__r_e_a_d_m_e.html#autotoc_md3", null ],
-        [ "Test", "md__r_e_a_d_m_e.html#autotoc_md4", null ],
-        [ "Build", "md__r_e_a_d_m_e.html#autotoc_md5", [
-          [ "Requires", "md__r_e_a_d_m_e.html#autotoc_md6", null ]
+        [ "Parser", "md__r_e_a_d_m_e.html#autotoc_md1", [
+          [ "Quick Start", "md__r_e_a_d_m_e.html#autotoc_md2", [
+            [ "Data Members", "md__r_e_a_d_m_e.html#autotoc_md3", null ],
+            [ "Parsing", "md__r_e_a_d_m_e.html#autotoc_md4", null ]
+          ] ]
+        ] ],
+        [ "1-2 Jump Generator", "md__r_e_a_d_m_e.html#autotoc_md5", null ],
+        [ "Documentation", "md__r_e_a_d_m_e.html#autotoc_md6", null ],
+        [ "Test", "md__r_e_a_d_m_e.html#autotoc_md7", null ],
+        [ "Build", "md__r_e_a_d_m_e.html#autotoc_md8", [
+          [ "Requires", "md__r_e_a_d_m_e.html#autotoc_md9", null ]
         ] ]
       ] ]
     ] ],
@@ -46,7 +51,9 @@ var NAVTREE =
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", null ],
         [ "Functions", "functions_func.html", null ],
-        [ "Variables", "functions_vars.html", null ]
+        [ "Variables", "functions_vars.html", null ],
+        [ "Enumerations", "functions_enum.html", null ],
+        [ "Enumerator", "functions_eval.html", null ]
       ] ]
     ] ],
     [ "Files", "files.html", [
@@ -58,7 +65,8 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_difficulty_8hpp.html"
+"_beatmap_convert_8hpp.html",
+"struct_timing_point.html#a07d681ea84190d1b28cefa316f3678f7"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

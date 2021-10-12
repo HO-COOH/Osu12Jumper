@@ -91,17 +91,17 @@ $(document).ready(function(){initNavTree('struct_metadata.html',''); initResizab
 </div><!--header-->
 <div class="contents">
 
-<p>Information used to identify the beatmap.  
+<p>Information used to identify the originalBeatmap.  
  <a href="struct_metadata.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_osu_parser_8hpp_source.html">OsuParser.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:abeb4646b7520621462334e66e49cdc6a"><td class="memItemLeft" align="right" valign="top"><a id="abeb4646b7520621462334e66e49cdc6a" name="abeb4646b7520621462334e66e49cdc6a"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Metadata</b> (std::ifstream &amp;osuFile)</td></tr>
-<tr class="memdesc:abeb4646b7520621462334e66e49cdc6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse <a class="el" href="struct_metadata.html" title="Information used to identify the beatmap.">Metadata</a> from osu file. <br /></td></tr>
-<tr class="separator:abeb4646b7520621462334e66e49cdc6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37da43087a0a526e2aed14b8d843c36d"><td class="memItemLeft" align="right" valign="top"><a id="a37da43087a0a526e2aed14b8d843c36d" name="a37da43087a0a526e2aed14b8d843c36d"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Metadata</b> (std::ifstream &amp;osuFile, bool partial=true)</td></tr>
+<tr class="memdesc:a37da43087a0a526e2aed14b8d843c36d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse <a class="el" href="struct_metadata.html" title="Information used to identify the originalBeatmap.">Metadata</a> from osu file. <br /></td></tr>
+<tr class="separator:a37da43087a0a526e2aed14b8d843c36d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -151,7 +151,7 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
 <tr class="separator:a99936913868c3f800a169532ed6d7671"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Information used to identify the beatmap. </p>
+<div class="textblock"><p >Information used to identify the originalBeatmap. </p>
 <dl class="section see"><dt>See also</dt><dd><a href="https://github.com/ppy/osu-wiki/blob/master/wiki/osu!_File_Formats/Osu_(file_format)/en.md#metadata">https://github.com/ppy/osu-wiki/blob/master/wiki/osu!_File_Formats/Osu_(file_format)/en.md#metadata</a> </dd></dl>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="a046d9b2370122ee9c52a4c7115d8a36f" name="a046d9b2370122ee9c52a4c7115d8a36f"></a>
@@ -167,7 +167,7 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
 </div><div class="memdoc">
 
 <p><a class="el" href="struct_difficulty.html" title="Difficulty settings.">Difficulty</a> ID. </p>
-<dl class="section note"><dt>Note</dt><dd>An osu beatmap relates to 1 difficulty, therefore it's actually 1 difficulty of a certain beatmap set. If not present, the value is -1 </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>An osu originalBeatmap relates to 1 difficulty, therefore it's actually 1 difficulty of a certain originalBeatmap set. If not present, the value is -1 </dd></dl>
 
 </div>
 </div>

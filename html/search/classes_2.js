@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['edgeset_0',['EdgeSet',['../struct_edge_set.html',1,'']]],
-  ['editor_1',['Editor',['../struct_editor.html',1,'']]],
-  ['event_2',['Event',['../struct_event.html',1,'']]]
+  ['difficulty_0',['Difficulty',['../struct_difficulty.html',1,'']]],
+  ['distanceobjectpatterngenerator_1',['DistanceObjectPatternGenerator',['../class_mania_1_1_distance_object_pattern_generator.html',1,'Mania']]]
 ];

@@ -89,7 +89,6 @@ $(document).ready(function(){initNavTree('struct_hit_object.html',''); initResiz
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-static-methods">Static Protected Member Functions</a> &#124;
-<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="#pro-static-attribs">Static Protected Attributes</a> &#124;
 <a href="#friends">Friends</a> &#124;
 <a href="struct_hit_object-members.html">List of all members</a>  </div>
@@ -131,10 +130,10 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:af5f45851ddf99dae31c2489a8852dd5e"><td class="memItemLeft" align="right" valign="top"><a id="af5f45851ddf99dae31c2489a8852dd5e" name="af5f45851ddf99dae31c2489a8852dd5e"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>HitSound</b> { <b>Normal</b> = 0
-, <b>Whistle</b> = 1
-, <b>Finish</b> = 2
-, <b>Clap</b> = 3
+<tr class="memitem:af5f45851ddf99dae31c2489a8852dd5e"><td class="memItemLeft" align="right" valign="top"><a id="af5f45851ddf99dae31c2489a8852dd5e" name="af5f45851ddf99dae31c2489a8852dd5e"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>HitSound</b> { <b>Normal</b> = 1
+, <b>Whistle</b> = 1 &lt;&lt; 1
+, <b>Finish</b> = 1 &lt;&lt; 2
+, <b>Clap</b> = 1 &lt;&lt; 3
  }</td></tr>
 <tr class="separator:af5f45851ddf99dae31c2489a8852dd5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04a7f3604bb53eab8cbfb6747dd5b350"><td class="memItemLeft" align="right" valign="top"><a id="a04a7f3604bb53eab8cbfb6747dd5b350" name="a04a7f3604bb53eab8cbfb6747dd5b350"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Type</b> { <br />
@@ -164,15 +163,28 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2a9bf0c0680a75b3430be9b4eb7b60c2"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_hit_object.html#a2a9bf0c0680a75b3430be9b4eb7b60c2">distanceTo</a> (<a class="el" href="struct_hit_object.html">HitObject</a> const &amp;anotherObject) const</td></tr>
 <tr class="memdesc:a2a9bf0c0680a75b3430be9b4eb7b60c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the distance to another hit object.  <a href="struct_hit_object.html#a2a9bf0c0680a75b3430be9b4eb7b60c2">More...</a><br /></td></tr>
 <tr class="separator:a2a9bf0c0680a75b3430be9b4eb7b60c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a456183ddbe76e73c48fb59d1996132"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_hit_object.html#a0a456183ddbe76e73c48fb59d1996132">timeTo</a> (<a class="el" href="struct_hit_object.html">HitObject</a> const &amp;anotherObject) const</td></tr>
+<tr class="memdesc:a0a456183ddbe76e73c48fb59d1996132"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the time duration to another hit object.  <a href="struct_hit_object.html#a0a456183ddbe76e73c48fb59d1996132">More...</a><br /></td></tr>
+<tr class="separator:a0a456183ddbe76e73c48fb59d1996132"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6581ba75f9558e9ea65f9b1bfc8f7bf4"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_hit_object.html#a6581ba75f9558e9ea65f9b1bfc8f7bf4">getColumnIndex</a> (int columnCount) const</td></tr>
+<tr class="memdesc:a6581ba75f9558e9ea65f9b1bfc8f7bf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the columnIndex in mania mode.  <a href="struct_hit_object.html#a6581ba75f9558e9ea65f9b1bfc8f7bf4">More...</a><br /></td></tr>
+<tr class="separator:a6581ba75f9558e9ea65f9b1bfc8f7bf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50ba1b8bec76d8174e27fb49ee7736b6"><td class="memItemLeft" align="right" valign="top"><a id="a50ba1b8bec76d8174e27fb49ee7736b6" name="a50ba1b8bec76d8174e27fb49ee7736b6"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>printObjectParam</b> (std::ostream &amp;os) const =0</td></tr>
 <tr class="separator:a50ba1b8bec76d8174e27fb49ee7736b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6071f2778027e416bf21fb567a6004d"><td class="memItemLeft" align="right" valign="top"><a id="af6071f2778027e416bf21fb567a6004d" name="af6071f2778027e416bf21fb567a6004d"></a>
+virtual std::unique_ptr&lt; <a class="el" href="struct_hit_object.html">HitObject</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> () const =0</td></tr>
+<tr class="separator:af6071f2778027e416bf21fb567a6004d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aad02dca701495850b4faf7b41ab1ba39"><td class="memItemLeft" align="right" valign="top"><a id="aad02dca701495850b4faf7b41ab1ba39" name="aad02dca701495850b4faf7b41ab1ba39"></a>
-static auto&#160;</td><td class="memItemRight" valign="bottom"><b>HandleHitObjects</b> (std::ifstream &amp;file)</td></tr>
-<tr class="separator:aad02dca701495850b4faf7b41ab1ba39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cad2d71a3e1bc166f92719f761acc1b"><td class="memItemLeft" align="right" valign="top"><a id="a1cad2d71a3e1bc166f92719f761acc1b" name="a1cad2d71a3e1bc166f92719f761acc1b"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>ColumnToX</b> (int columnIndex, int columnCount)</td></tr>
+<tr class="memdesc:a1cad2d71a3e1bc166f92719f761acc1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the X coordinate in terms of columnIndex and total columns. <br /></td></tr>
+<tr class="separator:a1cad2d71a3e1bc166f92719f761acc1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66f0b64a7ce8296dcdcce06ef4f8aeca"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_hit_object.html#a66f0b64a7ce8296dcdcce06ef4f8aeca">HandleHitObjects</a> (std::ifstream &amp;file, bool partial=true)</td></tr>
+<tr class="memdesc:a66f0b64a7ce8296dcdcce06ef4f8aeca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse hit objects.  <a href="struct_hit_object.html#a66f0b64a7ce8296dcdcce06ef4f8aeca">More...</a><br /></td></tr>
+<tr class="separator:a66f0b64a7ce8296dcdcce06ef4f8aeca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -186,7 +198,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>y</b></td></tr>
 <tr class="separator:a5cc35d81552ffe8c4102bedc9b46faff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e46464eaf2e5c0fbe5ee5f751d9f670"><td class="memItemLeft" align="right" valign="top"><a id="a2e46464eaf2e5c0fbe5ee5f751d9f670" name="a2e46464eaf2e5c0fbe5ee5f751d9f670"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>time</b></td></tr>
-<tr class="memdesc:a2e46464eaf2e5c0fbe5ee5f751d9f670"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time when the object is to be hit, in milliseconds from the beginning of the beatmap's audio. <br /></td></tr>
+<tr class="memdesc:a2e46464eaf2e5c0fbe5ee5f751d9f670"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time when the object is to be hit, in milliseconds from the beginning of the originalBeatmap's audio. <br /></td></tr>
 <tr class="separator:a2e46464eaf2e5c0fbe5ee5f751d9f670"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4541a4f95c7064a1259ae80ff541c3d6"><td class="memItemLeft" align="right" valign="top"><a id="a4541a4f95c7064a1259ae80ff541c3d6" name="a4541a4f95c7064a1259ae80ff541c3d6"></a>
 HitSound&#160;</td><td class="memItemRight" valign="bottom"><b>hitSound</b></td></tr>
@@ -198,12 +210,15 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>isNewCombo</b> = fals
 <tr class="memitem:ae5b2b891253ac09e109941ab4e3a0f72"><td class="memItemLeft" align="right" valign="top"><a id="ae5b2b891253ac09e109941ab4e3a0f72" name="ae5b2b891253ac09e109941ab4e3a0f72"></a>
 <a class="el" href="struct_hit_object_1_1_hit_sample.html">HitSample</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hitSample</b></td></tr>
 <tr class="separator:ae5b2b891253ac09e109941ab4e3a0f72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace2c4645c9f3c23e5a40ba90fcd999d4"><td class="memItemLeft" align="right" valign="top"><a id="ace2c4645c9f3c23e5a40ba90fcd999d4" name="ace2c4645c9f3c23e5a40ba90fcd999d4"></a>
+Type&#160;</td><td class="memItemRight" valign="bottom"><b>type</b></td></tr>
+<tr class="separator:ace2c4645c9f3c23e5a40ba90fcd999d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-static-methods" name="pro-static-methods"></a>
 Static Protected Member Functions</h2></td></tr>
-<tr class="memitem:aa5a5f54802397edd3929c75d1c66ba5e"><td class="memItemLeft" align="right" valign="top"><a id="aa5a5f54802397edd3929c75d1c66ba5e" name="aa5a5f54802397edd3929c75d1c66ba5e"></a>
-static Type&#160;</td><td class="memItemRight" valign="bottom"><b>GetType</b> (int num)</td></tr>
-<tr class="separator:aa5a5f54802397edd3929c75d1c66ba5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1c2d84a85d44cfcb1a853ca6d7b192a"><td class="memItemLeft" align="right" valign="top"><a id="af1c2d84a85d44cfcb1a853ca6d7b192a" name="af1c2d84a85d44cfcb1a853ca6d7b192a"></a>
+static constexpr Type&#160;</td><td class="memItemRight" valign="bottom"><b>GetType</b> (int num)</td></tr>
+<tr class="separator:af1c2d84a85d44cfcb1a853ca6d7b192a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b967e18dd0331e132c2ffa1a297a464"><td class="memItemLeft" align="right" valign="top"><a id="a8b967e18dd0331e132c2ffa1a297a464" name="a8b967e18dd0331e132c2ffa1a297a464"></a>
 static Type&#160;</td><td class="memItemRight" valign="bottom"><b>GetType</b> (std::string_view str)</td></tr>
 <tr class="separator:a8b967e18dd0331e132c2ffa1a297a464"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -213,12 +228,6 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsNewCombo</b>
 <tr class="memitem:a856866804a70e3362b53fd1134f9e40d"><td class="memItemLeft" align="right" valign="top"><a id="a856866804a70e3362b53fd1134f9e40d" name="a856866804a70e3362b53fd1134f9e40d"></a>
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsNewCombo</b> (std::string_view str)</td></tr>
 <tr class="separator:a856866804a70e3362b53fd1134f9e40d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
-Protected Attributes</h2></td></tr>
-<tr class="memitem:ace2c4645c9f3c23e5a40ba90fcd999d4"><td class="memItemLeft" align="right" valign="top"><a id="ace2c4645c9f3c23e5a40ba90fcd999d4" name="ace2c4645c9f3c23e5a40ba90fcd999d4"></a>
-Type&#160;</td><td class="memItemRight" valign="bottom"><b>type</b></td></tr>
-<tr class="separator:ace2c4645c9f3c23e5a40ba90fcd999d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-static-attribs" name="pro-static-attribs"></a>
 Static Protected Attributes</h2></td></tr>
@@ -307,6 +316,120 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">anotherObject</td><td>the other hit object </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a6581ba75f9558e9ea65f9b1bfc8f7bf4" name="a6581ba75f9558e9ea65f9b1bfc8f7bf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6581ba75f9558e9ea65f9b1bfc8f7bf4">&#9670;&nbsp;</a></span>getColumnIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto HitObject::getColumnIndex </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>columnCount</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the columnIndex in mania mode. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">columnCount</td><td>number of total columns </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a66f0b64a7ce8296dcdcce06ef4f8aeca" name="a66f0b64a7ce8296dcdcce06ef4f8aeca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66f0b64a7ce8296dcdcce06ef4f8aeca">&#9670;&nbsp;</a></span>HandleHitObjects()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static auto HitObject::HandleHitObjects </td>
+          <td>(</td>
+          <td class="paramtype">std::ifstream &amp;&#160;</td>
+          <td class="paramname"><em>file</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>partial</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse hit objects. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">file</td><td>The <code>.osu</code> file stream </td></tr>
+    <tr><td class="paramname">partial</td><td>Whether this is a partial parse, when true, it keeps reading the file until "[HitObjects]" is found </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>std::vector&lt;std::unique_ptr&lt;<a class="el" href="struct_hit_object.html" title="Base class of all hit objects in osu.">HitObject</a>&gt;&gt;</code> </dd></dl>
+
+</div>
+</div>
+<a id="a0a456183ddbe76e73c48fb59d1996132" name="a0a456183ddbe76e73c48fb59d1996132"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a456183ddbe76e73c48fb59d1996132">&#9670;&nbsp;</a></span>timeTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto HitObject::timeTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_hit_object.html">HitObject</a> const &amp;&#160;</td>
+          <td class="paramname"><em>anotherObject</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Calculate the time duration to another hit object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname"></td><td></td></tr>
   </table>
   </dd>
 </dl>

@@ -1,6 +1,6 @@
 var struct_metadata =
 [
-    [ "Metadata", "struct_metadata.html#abeb4646b7520621462334e66e49cdc6a", null ],
+    [ "Metadata", "struct_metadata.html#a37da43087a0a526e2aed14b8d843c36d", null ],
     [ "artist", "struct_metadata.html#a9c925474f678d140c0e0eef6213a160b", null ],
     [ "artistUnicode", "struct_metadata.html#a349cf67d7298143dffe8462b4461da96", null ],
     [ "beatmapId", "struct_metadata.html#a046d9b2370122ee9c52a4c7115d8a36f", null ],

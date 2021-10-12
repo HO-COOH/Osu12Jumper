@@ -91,16 +91,16 @@ $(document).ready(function(){initNavTree('struct_editor.html',''); initResizable
 </div><!--header-->
 <div class="contents">
 
-<p>Saved settings for the beatmap editor.  
+<p>Saved settings for the originalBeatmap editor.  
  <a href="struct_editor.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_osu_parser_8hpp_source.html">OsuParser.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a720355bfbbedafebcac60c14b77a8352"><td class="memItemLeft" align="right" valign="top"><a id="a720355bfbbedafebcac60c14b77a8352" name="a720355bfbbedafebcac60c14b77a8352"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Editor</b> (std::ifstream &amp;file)</td></tr>
-<tr class="separator:a720355bfbbedafebcac60c14b77a8352"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7aa5c70e4d970eae6711eba09c5003c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_editor.html#af7aa5c70e4d970eae6711eba09c5003c">Editor</a> (std::ifstream &amp;file, bool partial=true)</td></tr>
+<tr class="memdesc:af7aa5c70e4d970eae6711eba09c5003c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse <a class="el" href="struct_editor.html" title="Saved settings for the originalBeatmap editor.">Editor</a> info from osu file.  <a href="struct_editor.html#af7aa5c70e4d970eae6711eba09c5003c">More...</a><br /></td></tr>
+<tr class="separator:af7aa5c70e4d970eae6711eba09c5003c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -109,15 +109,15 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>b
 <tr class="memdesc:a12329994b4ff55ea34acf3bedaaf5d66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time in milliseconds of bookmarks. <br /></td></tr>
 <tr class="separator:a12329994b4ff55ea34acf3bedaaf5d66"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a529355bb7f15e18998e74fe8b04b259a"><td class="memItemLeft" align="right" valign="top"><a id="a529355bb7f15e18998e74fe8b04b259a" name="a529355bb7f15e18998e74fe8b04b259a"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>distanceSpacing</b></td></tr>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>distanceSpacing</b> {}</td></tr>
 <tr class="memdesc:a529355bb7f15e18998e74fe8b04b259a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance snap multiplier. <br /></td></tr>
 <tr class="separator:a529355bb7f15e18998e74fe8b04b259a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5b1cf56ba2ac4e238fdeec5c1f0cdd7"><td class="memItemLeft" align="right" valign="top"><a id="ad5b1cf56ba2ac4e238fdeec5c1f0cdd7" name="ad5b1cf56ba2ac4e238fdeec5c1f0cdd7"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>beatDivisor</b></td></tr>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>beatDivisor</b> {}</td></tr>
 <tr class="memdesc:ad5b1cf56ba2ac4e238fdeec5c1f0cdd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Beat snap divisor. <br /></td></tr>
 <tr class="separator:ad5b1cf56ba2ac4e238fdeec5c1f0cdd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d1921137c804d7a852a0ec19b7bb5d7"><td class="memItemLeft" align="right" valign="top"><a id="a2d1921137c804d7a852a0ec19b7bb5d7" name="a2d1921137c804d7a852a0ec19b7bb5d7"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>gridSize</b></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>gridSize</b> {}</td></tr>
 <tr class="memdesc:a2d1921137c804d7a852a0ec19b7bb5d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grid size. <br /></td></tr>
 <tr class="separator:a2d1921137c804d7a852a0ec19b7bb5d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b6973e82467afe735f8c53762eea682"><td class="memItemLeft" align="right" valign="top"><a id="a3b6973e82467afe735f8c53762eea682" name="a3b6973e82467afe735f8c53762eea682"></a>
@@ -132,8 +132,54 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
 <tr class="separator:a50f3dd93b01480ee758dcf39a9953256"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Saved settings for the beatmap editor. </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<div class="textblock"><p >Saved settings for the originalBeatmap editor. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="af7aa5c70e4d970eae6711eba09c5003c" name="af7aa5c70e4d970eae6711eba09c5003c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7aa5c70e4d970eae6711eba09c5003c">&#9670;&nbsp;</a></span>Editor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Editor::Editor </td>
+          <td>(</td>
+          <td class="paramtype">std::ifstream &amp;&#160;</td>
+          <td class="paramname"><em>file</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>partial</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse <a class="el" href="struct_editor.html" title="Saved settings for the originalBeatmap editor.">Editor</a> info from osu file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">file</td><td>The input file stream </td></tr>
+    <tr><td class="paramname">partial</td><td>Whether this is a partial parse </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
 <li><a class="el" href="_osu_parser_8hpp_source.html">OsuParser.hpp</a></li>
 </ul>
 </div><!-- contents -->

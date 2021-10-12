@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['hitobject_0',['HitObject',['../struct_hit_object.html#ab2aa938e3817b0a927edf57504dc3091',1,'HitObject']]],
-  ['hold_1',['Hold',['../struct_hold.html#a517cd8ed5dcb91362124ea2f5549500d',1,'Hold']]]
+  ['findavailablecolumn_0',['findAvailableColumn',['../class_mania_1_1_pattern_generator.html#a91ed7e681a748e3ed7801cb08d9f7bd4',1,'Mania::PatternGenerator']]]
 ];

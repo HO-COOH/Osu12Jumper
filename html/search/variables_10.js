@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['x_0',['x',['../struct_hit_object.html#abdd10775acb8e430111c5a9869842e72',1,'HitObject']]]
+  ['widescreenstoryboard_0',['wideScreenStoryboard',['../struct_general.html#aa209361123c228169925a5f889977657',1,'General']]]
 ];

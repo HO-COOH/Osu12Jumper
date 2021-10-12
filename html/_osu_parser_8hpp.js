@@ -4,7 +4,7 @@ var _osu_parser_8hpp =
     [ "General", "struct_general.html", "struct_general" ],
     [ "Editor", "struct_editor.html", "struct_editor" ],
     [ "Difficulty", "struct_difficulty.html", "struct_difficulty" ],
-    [ "Coord", "struct_coord.html", null ],
+    [ "Coord", "struct_coord.html", "struct_coord" ],
     [ "HitObject", "struct_hit_object.html", "struct_hit_object" ],
     [ "HitObject::HitSample", "struct_hit_object_1_1_hit_sample.html", null ],
     [ "HitObject::ToType< HitObject::Type::Circle >", "struct_hit_object_1_1_to_type_3_01_hit_object_1_1_type_1_1_circle_01_4.html", null ],
@@ -21,7 +21,12 @@ var _osu_parser_8hpp =
     [ "Colors", "struct_colors.html", "struct_colors" ],
     [ "Colors::Color", "struct_colors_1_1_color.html", null ],
     [ "Metadata", "struct_metadata.html", "struct_metadata" ],
-    [ "Event", "struct_event.html", "struct_event" ],
+    [ "EventBase", "struct_event_base.html", "struct_event_base" ],
+    [ "Background", "struct_background.html", "struct_background" ],
+    [ "Video", "struct_video.html", "struct_video" ],
+    [ "Break", "struct_break.html", "struct_break" ],
+    [ "Events", "struct_events.html", null ],
     [ "OsuFile", "struct_osu_file.html", "struct_osu_file" ],
-    [ "OsuFile::ObjectIterator< ObjectContainer, HitObject::Type::All, HitObjectType >", "class_osu_file_1_1_object_iterator_3_01_object_container_00_01_hit_object_1_1_type_1_1_all_00_01_hit_object_type_01_4.html", null ]
+    [ "OsuFile::ObjectIterator< ObjectContainer, HitObject::Type::All, HitObjectType >", "class_osu_file_1_1_object_iterator_3_01_object_container_00_01_hit_object_1_1_type_1_1_all_00_01_hit_object_type_01_4.html", null ],
+    [ "GetAllBeatmapsFrom", "_osu_parser_8hpp.html#aee9c2058fd3e9477417abeadd2c9a22a", null ]
 ];

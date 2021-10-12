@@ -176,6 +176,9 @@ namespace Mania
          * @brief The new converted originalBeatmap
          */
         OsuFile beatmap;
+        
+        ManiaBeatmapConverter& setTargetColumn(int target);
+
     private:
 
         void recordNote(HitObject const& note);
@@ -185,6 +188,8 @@ namespace Mania
         void computeDensity(int newNoteTime);
 
         int getTargetColumn() const;
+
+        
 
         /**
          * @brief Handle generated new pattern, store it into result vector, 
@@ -209,4 +214,16 @@ namespace Mania
         std::vector<int> prevNoteTimes;
         double density = std::numeric_limits<int>::max();
     };
+
+    /**
+     * @brief Convert all osu maps in the directory in parallel
+     * @details The converted maps would be named as "<originalVersion>Converted" and saved under the same directory
+     */
+    void ConvertAll(std::filesystem::directory_iterator dir);
+
+    /**
+     * @brief Convert all osu files in the path, which should indicate a directory in parallel
+     * @details The converted maps would be named as "<originalVersion>Converted" and saved under the same directory
+     */
+    void ConvertAll(std::filesystem::path path);
 }

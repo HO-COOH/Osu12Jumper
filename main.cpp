@@ -13,17 +13,20 @@ int main()
 	//	return entry.path().string();
 	//});
 
-	OsuFile f{ std::ifstream{"TestMapv11.osu"} };
-	Mania::ManiaBeatmapConverter converter{ f };
+	//OsuFile f{ std::ifstream{"TestMapv11.osu"} };
+	//Mania::ManiaBeatmapConverter converter{ f };
 
-	auto convertedMap = converter.convertBeatmap();
-	convertedMap.metaData.version = "converted";
+	//auto convertedMap = converter.convertBeatmap();
+	//convertedMap.metaData.version = "converted";
 
-	{
-		std::cout << "Generate:\n\t"
-			<< convertedMap.getCount<HitObject::Type::Circle>() << " circles\n"
-			<< '\t' << convertedMap.getCount<HitObject::Type::Hold>() << " holds \n";
-	}
+	//{
+	//	std::cout << "Generate:\n\t"
+	//		<< convertedMap.getCount<HitObject::Type::Circle>() << " circles\n"
+	//		<< '\t' << convertedMap.getCount<HitObject::Type::Hold>() << " holds \n";
+	//}
 
-	convertedMap.save();
+	//convertedMap.save();
+
+	//Mania::ConvertAll(std::filesystem::directory_iterator{ std::filesystem::path{ "." } });
+	Mania::ConvertAll(".");
 }

@@ -54,7 +54,9 @@ Mania::HitObjectPatternGenerator::HitObjectPatternGenerator(
 
 Mania::Pattern Mania::HitObjectPatternGenerator::generate()
 {
+#ifdef PrintDetail
     std::cout << "original: " << hitObject.time << ", type: " << hitObject.type << " -> convertType: " << convertType << '\n';
+#endif
 
     auto generateCore = [this]()->Pattern 
     {
@@ -412,6 +414,14 @@ int Mania::ManiaBeatmapConverter::getTargetColumn() const
         return std::max(4, std::min(static_cast<int>(roundedDifficulty) + 1, 7));
 }
 
+Mania::ManiaBeatmapConverter& Mania::ManiaBeatmapConverter::setTargetColumn(int target)
+{
+    if (target <= 0 || target > 9)
+        throw std::invalid_argument{ "Invalid target columns" };
+    targetColumns = target;
+    return *this;
+}
+
 void Mania::ManiaBeatmapConverter::handleNewPattern(Pattern pattern, Pattern::Type stairType, std::vector<std::unique_ptr<HitObject>>& result)
 {
     /*update lastStair*/
@@ -558,7 +568,9 @@ std::vector<std::unique_ptr<HitObject>> Mania::ManiaBeatmapConverter::generateCo
 Mania::Pattern Mania::DistanceObjectPatternGenerator::generate()
 {
     assert(startTime == hitObject.time);
+#ifdef PrintDetail
     std::cout << "original: " << hitObject.time <<", endTime: "<< endTime << ", type: " << hitObject.type << " -> convertType: " << convertType << '\n';
+#endif
 
     if (totalColumns == 1)
     {
@@ -645,7 +657,6 @@ Mania::DistanceObjectPatternGenerator::DistanceObjectPatternGenerator(HitObject 
     segmentDuration{ static_cast<int>(getSegmentDuration())},
     convertType{ Pattern::Type::LowProbability }
 {
-    
 }
 
 Mania::Pattern Mania::DistanceObjectPatternGenerator::generateRandomHoldNotes(int startTime, int noteCount)
@@ -924,5 +935,49 @@ double Mania::DistanceObjectPatternGenerator::getEndTime() const
 
 double Mania::DistanceObjectPatternGenerator::getSegmentDuration() const
 {
-    return (getEndTime() - startTime) / spanCount;
+    assert(endTime != 0);
+    return (endTime - startTime) / spanCount;
+}
+
+#include <future>
+void Mania::ConvertAll(std::filesystem::directory_iterator dir)
+{
+    std::vector<std::future<void>> futures;
+    for (auto&& entry : dir)
+    {
+        /*Do not convert maps that's already converted*/
+        if (entry.path().extension() == ".osu" && entry.path().filename().string().find("convert") == std::string::npos)
+        {
+            futures.emplace_back(
+                std::async(
+                    std::launch::async,
+                    [entry]()
+                    {
+                        std::cout << "Converting " << entry << '\n';
+                        OsuFile f{std::ifstream{entry.path()}};
+                        Mania::ManiaBeatmapConverter converter{ f };
+
+                        auto convertedMap = converter.convertBeatmap();
+                        convertedMap.metaData.version += "Converted";
+
+                        {
+                            std::cout << "\nGenerate:\n\t"
+                                << convertedMap.getCount<HitObject::Type::Circle>() << " circles\n"
+                                << '\t' << convertedMap.getCount<HitObject::Type::Hold>() << " holds \n";
+                        }
+
+                        convertedMap.save();
+                    }
+                )
+            );
+        }
+    }
+
+    for (auto& future : futures)
+        future.get();
+}
+
+void Mania::ConvertAll(std::filesystem::path path)
+{
+    ConvertAll(std::filesystem::directory_iterator{ std::move(path) });
 }

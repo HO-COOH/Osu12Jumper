@@ -17,6 +17,7 @@ TEST(HelperFunction, FlagChange)
 class ManiaConvertFixture : public ::testing::Test
 {
 protected:
+	OsuFile* originalMap = nullptr;
 	OsuFile* convertedMap = nullptr;
 	void SetUp() override
 	{
@@ -24,6 +25,7 @@ protected:
 		static Mania::ManiaBeatmapConverter converter{ f };
 		static auto result = converter.convertBeatmap();
 		convertedMap = &result;
+		originalMap = &f;
 	}
 };
 
@@ -35,4 +37,21 @@ TEST_F(ManiaConvertFixture, BeatmapInfo)
 TEST_F(ManiaConvertFixture, Columns)
 {
 	EXPECT_FLOAT_EQ(convertedMap->difficulty.circleSize, 7);
+}
+
+TEST_F(ManiaConvertFixture, SliderEndTime)
+{
+	//EXPECT_EQ(convertedMap->hitObjects)
+
+	/*DistanceObject*/
+	Mania::DistanceObjectPatternGenerator gen{
+		*originalMap->hitObjects[0],
+		*convertedMap,
+		Mania::Pattern{7},
+		*originalMap,
+		7
+	};
+
+
+
 }

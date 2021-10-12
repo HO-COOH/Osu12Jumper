@@ -1923,7 +1923,7 @@ struct OsuFile
 
         if (auto const it = std::find_if(timingPoints.cbegin(), timingPoints.cend(), [time](TimingPoint const& point)
         {
-            return point.time == time && point.isType<;
+            return point.time == time && point.isType<type>();
         }); it != timingPoints.cend())
             return *it;
         else

@@ -96,8 +96,59 @@ Parser</h2>
 <p >It is tested by 2 version of osu beatmap, <code>v11</code> and <code>v14</code> respectively.</p>
 <h3><a class="anchor" id="autotoc_md2"></a>
 Quick Start</h3>
-<p >The osu parser is coded following the documentation from the <a href="https://osu.ppy.sh/wiki/en/osu%21_File_Formats/Osu_%28file_format%29">official osu wiki</a>.</p>
+<p >The osu parser is coded following the documentation from the <a href="https://osu.ppy.sh/wiki/en/osu%21_File_Formats/Osu_%28file_format%29">official osu wiki</a>. For full documentation of the members, see generated docs in <code>html/index.html</code> or in the <code><a class="el" href="_osu_parser_8hpp.html" title="A simple header-only library for parsing osu file.">OsuParser.hpp</a></code>.</p>
 <h4><a class="anchor" id="autotoc_md3"></a>
+Enum Members</h4>
+<ul>
+<li>Countdown <div class="fragment"><div class="line"><span class="keyword">enum class</span> Countdown</div>
+<div class="line">{</div>
+<div class="line">    No,</div>
+<div class="line">    Normal,</div>
+<div class="line">    Half,</div>
+<div class="line">    Double</div>
+<div class="line">};</div>
+</div><!-- fragment --></li>
+<li>SampleSet <div class="fragment"><div class="line"><span class="keyword">enum class</span> SampleSet</div>
+<div class="line">{</div>
+<div class="line">    Auto,</div>
+<div class="line">    Normal,</div>
+<div class="line">    Soft,</div>
+<div class="line">    Drum</div>
+<div class="line">};</div>
+</div><!-- fragment --></li>
+<li>HitSound <div class="fragment"><div class="line"><span class="keyword">enum class</span> HitSound</div>
+<div class="line">{</div>
+<div class="line">    Normal,</div>
+<div class="line">    Whistle,</div>
+<div class="line">    Finish,</div>
+<div class="line">    Clap</div>
+<div class="line">};</div>
+</div><!-- fragment --></li>
+<li>TimingPoint::Effect <div class="fragment"><div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_timing_point.html">TimingPoint</a></div>
+<div class="line">{</div>
+<div class="line">    <span class="keyword">enum class</span> Effect</div>
+<div class="line">    {</div>
+<div class="line">        Kiai,</div>
+<div class="line">        OmitBarline</div>
+<div class="line">    };</div>
+<div class="line">};</div>
+<div class="ttc" id="astruct_timing_point_html"><div class="ttname"><a href="struct_timing_point.html">TimingPoint</a></div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:720</div></div>
+</div><!-- fragment --></li>
+<li>Slider::CurveType <div class="fragment"><div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_slider.html">Slider</a></div>
+<div class="line">{</div>
+<div class="line">    <span class="keyword">enum class</span> CurveType</div>
+<div class="line">    {</div>
+<div class="line">        Bezier,</div>
+<div class="line">        CatmullRom,</div>
+<div class="line">        Linear,</div>
+<div class="line">        <a class="code hl_struct" href="struct_circle.html">Circle</a></div>
+<div class="line">    };</div>
+<div class="line">};</div>
+<div class="ttc" id="astruct_circle_html"><div class="ttname"><a href="struct_circle.html">Circle</a></div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1183</div></div>
+<div class="ttc" id="astruct_slider_html"><div class="ttname"><a href="struct_slider.html">Slider</a></div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1244</div></div>
+</div><!-- fragment --></li>
+</ul>
+<h4><a class="anchor" id="autotoc_md4"></a>
 Data Members</h4>
 <p >These sections are represented by a <code>struct</code> respectively.</p><ul>
 <li><a class="el" href="struct_general.html" title="General information about the originalBeatmap.">General</a> <div class="fragment"><div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_general.html">General</a></div>
@@ -119,22 +170,22 @@ Data Members</h4>
 <div class="line">    <span class="keywordtype">bool</span> <a class="code hl_variable" href="struct_general.html#aa209361123c228169925a5f889977657">wideScreenStoryboard</a>;</div>
 <div class="line">    <span class="keywordtype">bool</span> <a class="code hl_variable" href="struct_general.html#a8e3afa23b028e53245d2df301f7f9529">samplesMatchPlaybackRate</a>;</div>
 <div class="line">};</div>
-<div class="ttc" id="astruct_general_html"><div class="ttname"><a href="struct_general.html">General</a></div><div class="ttdoc">General information about the originalBeatmap.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:393</div></div>
-<div class="ttc" id="astruct_general_html_a023c4e9eeb0bc7fd2bd117755c588841"><div class="ttname"><a href="struct_general.html#a023c4e9eeb0bc7fd2bd117755c588841">General::epilepsyWarning</a></div><div class="ttdeci">bool epilepsyWarning</div><div class="ttdoc">Whether or not a warning about flashing colours should be shown at the beginning of the map.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:452</div></div>
-<div class="ttc" id="astruct_general_html_a04eb7eb2b16cbd34468cf722e80a1ddc"><div class="ttname"><a href="struct_general.html#a04eb7eb2b16cbd34468cf722e80a1ddc">General::countdownOffset</a></div><div class="ttdeci">int countdownOffset</div><div class="ttdoc">Time in beats that the countdown starts before the first hig object.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:457</div></div>
-<div class="ttc" id="astruct_general_html_a095862edc6f7434b4a12975bfa79316e"><div class="ttname"><a href="struct_general.html#a095862edc6f7434b4a12975bfa79316e">General::specialStyle</a></div><div class="ttdeci">bool specialStyle</div><div class="ttdoc">Whether or not the &quot;N+1&quot; style key layout is used for osu!mania.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:462</div></div>
-<div class="ttc" id="astruct_general_html_a15db239e538d55850ce4eb569b3ac92b"><div class="ttname"><a href="struct_general.html#a15db239e538d55850ce4eb569b3ac92b">General::letterboxInBreaks</a></div><div class="ttdeci">bool letterboxInBreaks</div><div class="ttdoc">Whether or not breaks have a letterboxing effect.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:432</div></div>
-<div class="ttc" id="astruct_general_html_a41911a8ed95603e26392d965808b6cca"><div class="ttname"><a href="struct_general.html#a41911a8ed95603e26392d965808b6cca">General::useSkinSprites</a></div><div class="ttdeci">bool useSkinSprites</div><div class="ttdoc">Whether or not the storyboard can use the user's skin images.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:437</div></div>
-<div class="ttc" id="astruct_general_html_a5bb8610ff1141d064dc854e1977a6e4b"><div class="ttname"><a href="struct_general.html#a5bb8610ff1141d064dc854e1977a6e4b">General::countdown</a></div><div class="ttdeci">Countdown countdown</div><div class="ttdoc">Speed of the countdown before the first hit object.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:412</div></div>
-<div class="ttc" id="astruct_general_html_a6ebd98661e7222cc0834df1ffdbef881"><div class="ttname"><a href="struct_general.html#a6ebd98661e7222cc0834df1ffdbef881">General::stackLeniency</a></div><div class="ttdeci">float stackLeniency</div><div class="ttdoc">Multiplier for the threshold in time where hit objects placed close together stack (0–1)</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:422</div></div>
-<div class="ttc" id="astruct_general_html_a869e61b920d0c1a24c5fd0a8613f979c"><div class="ttname"><a href="struct_general.html#a869e61b920d0c1a24c5fd0a8613f979c">General::audioFile</a></div><div class="ttdeci">std::string audioFile</div><div class="ttdoc">Location of the audio file relative to the current folder.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:397</div></div>
-<div class="ttc" id="astruct_general_html_a8e3afa23b028e53245d2df301f7f9529"><div class="ttname"><a href="struct_general.html#a8e3afa23b028e53245d2df301f7f9529">General::samplesMatchPlaybackRate</a></div><div class="ttdeci">bool samplesMatchPlaybackRate</div><div class="ttdoc">Whether or not sound samples will change rate when playing with speed-changing mods.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:472</div></div>
-<div class="ttc" id="astruct_general_html_aa209361123c228169925a5f889977657"><div class="ttname"><a href="struct_general.html#aa209361123c228169925a5f889977657">General::wideScreenStoryboard</a></div><div class="ttdeci">bool wideScreenStoryboard</div><div class="ttdoc">Whether or not the storyboard allows widescreen viewing.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:467</div></div>
-<div class="ttc" id="astruct_general_html_aa394e5aff322454a4556b7fabce09cc3"><div class="ttname"><a href="struct_general.html#aa394e5aff322454a4556b7fabce09cc3">General::sampleSet</a></div><div class="ttdeci">SampleSet sampleSet</div><div class="ttdoc">Sample set that will be used if timing points do not override it (Normal, Soft, Drum)</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:417</div></div>
-<div class="ttc" id="astruct_general_html_ab7c592a26283a58f1cf0654f3f6bbdd3"><div class="ttname"><a href="struct_general.html#ab7c592a26283a58f1cf0654f3f6bbdd3">General::overlayPosition</a></div><div class="ttdeci">OverlayPosition overlayPosition</div><div class="ttdoc">Draw order of hit circle overlays compared to hit numbers.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:442</div></div>
-<div class="ttc" id="astruct_general_html_aecedc56aa7d1e94251eb270d25b98af6"><div class="ttname"><a href="struct_general.html#aecedc56aa7d1e94251eb270d25b98af6">General::mode</a></div><div class="ttdeci">Mode mode</div><div class="ttdoc">Game mode.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:427</div></div>
-<div class="ttc" id="astruct_general_html_af7387644e49f01b16b91524f01c72774"><div class="ttname"><a href="struct_general.html#af7387644e49f01b16b91524f01c72774">General::previewTime</a></div><div class="ttdeci">int previewTime</div><div class="ttdoc">Time in milliseconds when the audio preview should start.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:407</div></div>
-<div class="ttc" id="astruct_general_html_aff1c4160fd1f6d608239d1c5a5c136c2"><div class="ttname"><a href="struct_general.html#aff1c4160fd1f6d608239d1c5a5c136c2">General::skinPreference</a></div><div class="ttdeci">std::string skinPreference</div><div class="ttdoc">Preferred skin to use during gameplay.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:447</div></div>
+<div class="ttc" id="astruct_general_html"><div class="ttname"><a href="struct_general.html">General</a></div><div class="ttdoc">General information about the originalBeatmap.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:394</div></div>
+<div class="ttc" id="astruct_general_html_a023c4e9eeb0bc7fd2bd117755c588841"><div class="ttname"><a href="struct_general.html#a023c4e9eeb0bc7fd2bd117755c588841">General::epilepsyWarning</a></div><div class="ttdeci">bool epilepsyWarning</div><div class="ttdoc">Whether or not a warning about flashing colours should be shown at the beginning of the map.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:453</div></div>
+<div class="ttc" id="astruct_general_html_a04eb7eb2b16cbd34468cf722e80a1ddc"><div class="ttname"><a href="struct_general.html#a04eb7eb2b16cbd34468cf722e80a1ddc">General::countdownOffset</a></div><div class="ttdeci">int countdownOffset</div><div class="ttdoc">Time in beats that the countdown starts before the first hig object.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:458</div></div>
+<div class="ttc" id="astruct_general_html_a095862edc6f7434b4a12975bfa79316e"><div class="ttname"><a href="struct_general.html#a095862edc6f7434b4a12975bfa79316e">General::specialStyle</a></div><div class="ttdeci">bool specialStyle</div><div class="ttdoc">Whether or not the &quot;N+1&quot; style key layout is used for osu!mania.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:463</div></div>
+<div class="ttc" id="astruct_general_html_a15db239e538d55850ce4eb569b3ac92b"><div class="ttname"><a href="struct_general.html#a15db239e538d55850ce4eb569b3ac92b">General::letterboxInBreaks</a></div><div class="ttdeci">bool letterboxInBreaks</div><div class="ttdoc">Whether or not breaks have a letterboxing effect.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:433</div></div>
+<div class="ttc" id="astruct_general_html_a41911a8ed95603e26392d965808b6cca"><div class="ttname"><a href="struct_general.html#a41911a8ed95603e26392d965808b6cca">General::useSkinSprites</a></div><div class="ttdeci">bool useSkinSprites</div><div class="ttdoc">Whether or not the storyboard can use the user's skin images.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:438</div></div>
+<div class="ttc" id="astruct_general_html_a5bb8610ff1141d064dc854e1977a6e4b"><div class="ttname"><a href="struct_general.html#a5bb8610ff1141d064dc854e1977a6e4b">General::countdown</a></div><div class="ttdeci">Countdown countdown</div><div class="ttdoc">Speed of the countdown before the first hit object.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:413</div></div>
+<div class="ttc" id="astruct_general_html_a6ebd98661e7222cc0834df1ffdbef881"><div class="ttname"><a href="struct_general.html#a6ebd98661e7222cc0834df1ffdbef881">General::stackLeniency</a></div><div class="ttdeci">float stackLeniency</div><div class="ttdoc">Multiplier for the threshold in time where hit objects placed close together stack (0–1)</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:423</div></div>
+<div class="ttc" id="astruct_general_html_a869e61b920d0c1a24c5fd0a8613f979c"><div class="ttname"><a href="struct_general.html#a869e61b920d0c1a24c5fd0a8613f979c">General::audioFile</a></div><div class="ttdeci">std::string audioFile</div><div class="ttdoc">Location of the audio file relative to the current folder.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:398</div></div>
+<div class="ttc" id="astruct_general_html_a8e3afa23b028e53245d2df301f7f9529"><div class="ttname"><a href="struct_general.html#a8e3afa23b028e53245d2df301f7f9529">General::samplesMatchPlaybackRate</a></div><div class="ttdeci">bool samplesMatchPlaybackRate</div><div class="ttdoc">Whether or not sound samples will change rate when playing with speed-changing mods.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:473</div></div>
+<div class="ttc" id="astruct_general_html_aa209361123c228169925a5f889977657"><div class="ttname"><a href="struct_general.html#aa209361123c228169925a5f889977657">General::wideScreenStoryboard</a></div><div class="ttdeci">bool wideScreenStoryboard</div><div class="ttdoc">Whether or not the storyboard allows widescreen viewing.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:468</div></div>
+<div class="ttc" id="astruct_general_html_aa394e5aff322454a4556b7fabce09cc3"><div class="ttname"><a href="struct_general.html#aa394e5aff322454a4556b7fabce09cc3">General::sampleSet</a></div><div class="ttdeci">SampleSet sampleSet</div><div class="ttdoc">Sample set that will be used if timing points do not override it (Normal, Soft, Drum)</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:418</div></div>
+<div class="ttc" id="astruct_general_html_ab7c592a26283a58f1cf0654f3f6bbdd3"><div class="ttname"><a href="struct_general.html#ab7c592a26283a58f1cf0654f3f6bbdd3">General::overlayPosition</a></div><div class="ttdeci">OverlayPosition overlayPosition</div><div class="ttdoc">Draw order of hit circle overlays compared to hit numbers.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:443</div></div>
+<div class="ttc" id="astruct_general_html_aecedc56aa7d1e94251eb270d25b98af6"><div class="ttname"><a href="struct_general.html#aecedc56aa7d1e94251eb270d25b98af6">General::mode</a></div><div class="ttdeci">Mode mode</div><div class="ttdoc">Game mode.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:428</div></div>
+<div class="ttc" id="astruct_general_html_af7387644e49f01b16b91524f01c72774"><div class="ttname"><a href="struct_general.html#af7387644e49f01b16b91524f01c72774">General::previewTime</a></div><div class="ttdeci">int previewTime</div><div class="ttdoc">Time in milliseconds when the audio preview should start.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:408</div></div>
+<div class="ttc" id="astruct_general_html_aff1c4160fd1f6d608239d1c5a5c136c2"><div class="ttname"><a href="struct_general.html#aff1c4160fd1f6d608239d1c5a5c136c2">General::skinPreference</a></div><div class="ttdeci">std::string skinPreference</div><div class="ttdoc">Preferred skin to use during gameplay.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:448</div></div>
 </div><!-- fragment --></li>
 <li><a class="el" href="struct_editor.html" title="Saved settings for the originalBeatmap editor.">Editor</a> <div class="fragment"><div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_editor.html">Editor</a></div>
 <div class="line">{</div>
@@ -144,12 +195,12 @@ Data Members</h4>
 <div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_editor.html#a2d1921137c804d7a852a0ec19b7bb5d7">gridSize</a>;</div>
 <div class="line">    std::optional&lt;float&gt; <a class="code hl_variable" href="struct_editor.html#a3b6973e82467afe735f8c53762eea682">timelineZoom</a>;</div>
 <div class="line">};</div>
-<div class="ttc" id="astruct_editor_html"><div class="ttname"><a href="struct_editor.html">Editor</a></div><div class="ttdoc">Saved settings for the originalBeatmap editor.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:550</div></div>
-<div class="ttc" id="astruct_editor_html_a12329994b4ff55ea34acf3bedaaf5d66"><div class="ttname"><a href="struct_editor.html#a12329994b4ff55ea34acf3bedaaf5d66">Editor::bookmarks</a></div><div class="ttdeci">std::vector&lt; int &gt; bookmarks</div><div class="ttdoc">Time in milliseconds of bookmarks.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:554</div></div>
-<div class="ttc" id="astruct_editor_html_a2d1921137c804d7a852a0ec19b7bb5d7"><div class="ttname"><a href="struct_editor.html#a2d1921137c804d7a852a0ec19b7bb5d7">Editor::gridSize</a></div><div class="ttdeci">int gridSize</div><div class="ttdoc">Grid size.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:569</div></div>
-<div class="ttc" id="astruct_editor_html_a3b6973e82467afe735f8c53762eea682"><div class="ttname"><a href="struct_editor.html#a3b6973e82467afe735f8c53762eea682">Editor::timelineZoom</a></div><div class="ttdeci">std::optional&lt; float &gt; timelineZoom</div><div class="ttdoc">Scale factor for the object timeline.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:574</div></div>
-<div class="ttc" id="astruct_editor_html_a529355bb7f15e18998e74fe8b04b259a"><div class="ttname"><a href="struct_editor.html#a529355bb7f15e18998e74fe8b04b259a">Editor::distanceSpacing</a></div><div class="ttdeci">float distanceSpacing</div><div class="ttdoc">Distance snap multiplier.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:559</div></div>
-<div class="ttc" id="astruct_editor_html_ad5b1cf56ba2ac4e238fdeec5c1f0cdd7"><div class="ttname"><a href="struct_editor.html#ad5b1cf56ba2ac4e238fdeec5c1f0cdd7">Editor::beatDivisor</a></div><div class="ttdeci">float beatDivisor</div><div class="ttdoc">Beat snap divisor.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:564</div></div>
+<div class="ttc" id="astruct_editor_html"><div class="ttname"><a href="struct_editor.html">Editor</a></div><div class="ttdoc">Saved settings for the originalBeatmap editor.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:551</div></div>
+<div class="ttc" id="astruct_editor_html_a12329994b4ff55ea34acf3bedaaf5d66"><div class="ttname"><a href="struct_editor.html#a12329994b4ff55ea34acf3bedaaf5d66">Editor::bookmarks</a></div><div class="ttdeci">std::vector&lt; int &gt; bookmarks</div><div class="ttdoc">Time in milliseconds of bookmarks.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:555</div></div>
+<div class="ttc" id="astruct_editor_html_a2d1921137c804d7a852a0ec19b7bb5d7"><div class="ttname"><a href="struct_editor.html#a2d1921137c804d7a852a0ec19b7bb5d7">Editor::gridSize</a></div><div class="ttdeci">int gridSize</div><div class="ttdoc">Grid size.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:570</div></div>
+<div class="ttc" id="astruct_editor_html_a3b6973e82467afe735f8c53762eea682"><div class="ttname"><a href="struct_editor.html#a3b6973e82467afe735f8c53762eea682">Editor::timelineZoom</a></div><div class="ttdeci">std::optional&lt; float &gt; timelineZoom</div><div class="ttdoc">Scale factor for the object timeline.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:575</div></div>
+<div class="ttc" id="astruct_editor_html_a529355bb7f15e18998e74fe8b04b259a"><div class="ttname"><a href="struct_editor.html#a529355bb7f15e18998e74fe8b04b259a">Editor::distanceSpacing</a></div><div class="ttdeci">float distanceSpacing</div><div class="ttdoc">Distance snap multiplier.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:560</div></div>
+<div class="ttc" id="astruct_editor_html_ad5b1cf56ba2ac4e238fdeec5c1f0cdd7"><div class="ttname"><a href="struct_editor.html#ad5b1cf56ba2ac4e238fdeec5c1f0cdd7">Editor::beatDivisor</a></div><div class="ttdeci">float beatDivisor</div><div class="ttdoc">Beat snap divisor.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:565</div></div>
 </div><!-- fragment --></li>
 <li><a class="el" href="struct_metadata.html" title="Information used to identify the originalBeatmap.">Metadata</a> <div class="fragment"><div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_metadata.html">Metadata</a></div>
 <div class="line">{</div>
@@ -164,17 +215,17 @@ Data Members</h4>
 <div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_metadata.html#a046d9b2370122ee9c52a4c7115d8a36f">beatmapId</a>;</div>
 <div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_metadata.html#ac08931a71b8418fadeda881cd875c9cf">beatmapSetId</a>;</div>
 <div class="line">};</div>
-<div class="ttc" id="astruct_metadata_html"><div class="ttname"><a href="struct_metadata.html">Metadata</a></div><div class="ttdoc">Information used to identify the originalBeatmap.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1519</div></div>
-<div class="ttc" id="astruct_metadata_html_a046d9b2370122ee9c52a4c7115d8a36f"><div class="ttname"><a href="struct_metadata.html#a046d9b2370122ee9c52a4c7115d8a36f">Metadata::beatmapId</a></div><div class="ttdeci">int beatmapId</div><div class="ttdoc">Difficulty ID.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1525</div></div>
-<div class="ttc" id="astruct_metadata_html_a106c7b392dbdf79a45e9240d809cc465"><div class="ttname"><a href="struct_metadata.html#a106c7b392dbdf79a45e9240d809cc465">Metadata::version</a></div><div class="ttdeci">std::string version</div><div class="ttdoc">Difficulty name.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1561</div></div>
-<div class="ttc" id="astruct_metadata_html_a1b5bdb5847c4018c119ffb43fa38f966"><div class="ttname"><a href="struct_metadata.html#a1b5bdb5847c4018c119ffb43fa38f966">Metadata::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdoc">Search terms.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1571</div></div>
-<div class="ttc" id="astruct_metadata_html_a349cf67d7298143dffe8462b4461da96"><div class="ttname"><a href="struct_metadata.html#a349cf67d7298143dffe8462b4461da96">Metadata::artistUnicode</a></div><div class="ttdeci">std::string artistUnicode</div><div class="ttdoc">Song artist.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1551</div></div>
-<div class="ttc" id="astruct_metadata_html_a4ef2e2685f50d2a79b973f752f05fc40"><div class="ttname"><a href="struct_metadata.html#a4ef2e2685f50d2a79b973f752f05fc40">Metadata::title</a></div><div class="ttdeci">std::string title</div><div class="ttdoc">Romanised song title.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1536</div></div>
-<div class="ttc" id="astruct_metadata_html_a6475e0aae0010c12a24578851a10a790"><div class="ttname"><a href="struct_metadata.html#a6475e0aae0010c12a24578851a10a790">Metadata::source</a></div><div class="ttdeci">std::string source</div><div class="ttdoc">Original media the song was produced for.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1566</div></div>
-<div class="ttc" id="astruct_metadata_html_a9c925474f678d140c0e0eef6213a160b"><div class="ttname"><a href="struct_metadata.html#a9c925474f678d140c0e0eef6213a160b">Metadata::artist</a></div><div class="ttdeci">std::string artist</div><div class="ttdoc">Romanised song artist.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1546</div></div>
-<div class="ttc" id="astruct_metadata_html_aba012cb0c27e95a21c349a259ac96b22"><div class="ttname"><a href="struct_metadata.html#aba012cb0c27e95a21c349a259ac96b22">Metadata::creator</a></div><div class="ttdeci">std::string creator</div><div class="ttdoc">Beatmap creator.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1556</div></div>
-<div class="ttc" id="astruct_metadata_html_ac08931a71b8418fadeda881cd875c9cf"><div class="ttname"><a href="struct_metadata.html#ac08931a71b8418fadeda881cd875c9cf">Metadata::beatmapSetId</a></div><div class="ttdeci">int beatmapSetId</div><div class="ttdoc">Beatmap ID.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1531</div></div>
-<div class="ttc" id="astruct_metadata_html_ac3d97a336eadb314d0d401f292a5b3bb"><div class="ttname"><a href="struct_metadata.html#ac3d97a336eadb314d0d401f292a5b3bb">Metadata::titleUnicode</a></div><div class="ttdeci">std::string titleUnicode</div><div class="ttdoc">Song title.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1541</div></div>
+<div class="ttc" id="astruct_metadata_html"><div class="ttname"><a href="struct_metadata.html">Metadata</a></div><div class="ttdoc">Information used to identify the originalBeatmap.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1552</div></div>
+<div class="ttc" id="astruct_metadata_html_a046d9b2370122ee9c52a4c7115d8a36f"><div class="ttname"><a href="struct_metadata.html#a046d9b2370122ee9c52a4c7115d8a36f">Metadata::beatmapId</a></div><div class="ttdeci">int beatmapId</div><div class="ttdoc">Difficulty ID.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1558</div></div>
+<div class="ttc" id="astruct_metadata_html_a106c7b392dbdf79a45e9240d809cc465"><div class="ttname"><a href="struct_metadata.html#a106c7b392dbdf79a45e9240d809cc465">Metadata::version</a></div><div class="ttdeci">std::string version</div><div class="ttdoc">Difficulty name.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1594</div></div>
+<div class="ttc" id="astruct_metadata_html_a1b5bdb5847c4018c119ffb43fa38f966"><div class="ttname"><a href="struct_metadata.html#a1b5bdb5847c4018c119ffb43fa38f966">Metadata::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdoc">Search terms.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1604</div></div>
+<div class="ttc" id="astruct_metadata_html_a349cf67d7298143dffe8462b4461da96"><div class="ttname"><a href="struct_metadata.html#a349cf67d7298143dffe8462b4461da96">Metadata::artistUnicode</a></div><div class="ttdeci">std::string artistUnicode</div><div class="ttdoc">Song artist.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1584</div></div>
+<div class="ttc" id="astruct_metadata_html_a4ef2e2685f50d2a79b973f752f05fc40"><div class="ttname"><a href="struct_metadata.html#a4ef2e2685f50d2a79b973f752f05fc40">Metadata::title</a></div><div class="ttdeci">std::string title</div><div class="ttdoc">Romanised song title.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1569</div></div>
+<div class="ttc" id="astruct_metadata_html_a6475e0aae0010c12a24578851a10a790"><div class="ttname"><a href="struct_metadata.html#a6475e0aae0010c12a24578851a10a790">Metadata::source</a></div><div class="ttdeci">std::string source</div><div class="ttdoc">Original media the song was produced for.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1599</div></div>
+<div class="ttc" id="astruct_metadata_html_a9c925474f678d140c0e0eef6213a160b"><div class="ttname"><a href="struct_metadata.html#a9c925474f678d140c0e0eef6213a160b">Metadata::artist</a></div><div class="ttdeci">std::string artist</div><div class="ttdoc">Romanised song artist.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1579</div></div>
+<div class="ttc" id="astruct_metadata_html_aba012cb0c27e95a21c349a259ac96b22"><div class="ttname"><a href="struct_metadata.html#aba012cb0c27e95a21c349a259ac96b22">Metadata::creator</a></div><div class="ttdeci">std::string creator</div><div class="ttdoc">Beatmap creator.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1589</div></div>
+<div class="ttc" id="astruct_metadata_html_ac08931a71b8418fadeda881cd875c9cf"><div class="ttname"><a href="struct_metadata.html#ac08931a71b8418fadeda881cd875c9cf">Metadata::beatmapSetId</a></div><div class="ttdeci">int beatmapSetId</div><div class="ttdoc">Beatmap ID.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1564</div></div>
+<div class="ttc" id="astruct_metadata_html_ac3d97a336eadb314d0d401f292a5b3bb"><div class="ttname"><a href="struct_metadata.html#ac3d97a336eadb314d0d401f292a5b3bb">Metadata::titleUnicode</a></div><div class="ttdeci">std::string titleUnicode</div><div class="ttdoc">Song title.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1574</div></div>
 </div><!-- fragment --></li>
 <li><a class="el" href="struct_difficulty.html" title="Difficulty settings.">Difficulty</a> <div class="fragment"><div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_difficulty.html">Difficulty</a></div>
 <div class="line">{</div>
@@ -185,13 +236,13 @@ Data Members</h4>
 <div class="line">    <span class="keywordtype">float</span> <a class="code hl_variable" href="struct_difficulty.html#ad57c3548345f7fde41a94c42f7dee12c">sliderMultiplier</a>;</div>
 <div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_difficulty.html#ad448317dca109002525fbc29b488b277">sliderTickRate</a>;</div>
 <div class="line">};</div>
-<div class="ttc" id="astruct_difficulty_html"><div class="ttname"><a href="struct_difficulty.html">Difficulty</a></div><div class="ttdoc">Difficulty settings.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:622</div></div>
-<div class="ttc" id="astruct_difficulty_html_a7ab76356870c8c7467dad8410d633fba"><div class="ttname"><a href="struct_difficulty.html#a7ab76356870c8c7467dad8410d633fba">Difficulty::overallDifficulty</a></div><div class="ttdeci">float overallDifficulty</div><div class="ttdoc">OD setting (0–10)</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:637</div></div>
-<div class="ttc" id="astruct_difficulty_html_a9f2582c5abeb6be97ee8da81385704f0"><div class="ttname"><a href="struct_difficulty.html#a9f2582c5abeb6be97ee8da81385704f0">Difficulty::HPDrainRate</a></div><div class="ttdeci">float HPDrainRate</div><div class="ttdoc">HP setting (0–10)</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:626</div></div>
-<div class="ttc" id="astruct_difficulty_html_aca8eb1f0f03ffd5c2d18f02c98d880f3"><div class="ttname"><a href="struct_difficulty.html#aca8eb1f0f03ffd5c2d18f02c98d880f3">Difficulty::approachRate</a></div><div class="ttdeci">float approachRate</div><div class="ttdoc">AR setting (0–10)</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:642</div></div>
-<div class="ttc" id="astruct_difficulty_html_acf4e8b0a81ed00abe1f158b819a2ef01"><div class="ttname"><a href="struct_difficulty.html#acf4e8b0a81ed00abe1f158b819a2ef01">Difficulty::circleSize</a></div><div class="ttdeci">float circleSize</div><div class="ttdoc">CS setting (0–10)</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:632</div></div>
-<div class="ttc" id="astruct_difficulty_html_ad448317dca109002525fbc29b488b277"><div class="ttname"><a href="struct_difficulty.html#ad448317dca109002525fbc29b488b277">Difficulty::sliderTickRate</a></div><div class="ttdeci">int sliderTickRate</div><div class="ttdoc">Amount of slider ticks per beat.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:652</div></div>
-<div class="ttc" id="astruct_difficulty_html_ad57c3548345f7fde41a94c42f7dee12c"><div class="ttname"><a href="struct_difficulty.html#ad57c3548345f7fde41a94c42f7dee12c">Difficulty::sliderMultiplier</a></div><div class="ttdeci">float sliderMultiplier</div><div class="ttdoc">Base slider velocity in hecto-osu! pixels per beat.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:647</div></div>
+<div class="ttc" id="astruct_difficulty_html"><div class="ttname"><a href="struct_difficulty.html">Difficulty</a></div><div class="ttdoc">Difficulty settings.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:623</div></div>
+<div class="ttc" id="astruct_difficulty_html_a7ab76356870c8c7467dad8410d633fba"><div class="ttname"><a href="struct_difficulty.html#a7ab76356870c8c7467dad8410d633fba">Difficulty::overallDifficulty</a></div><div class="ttdeci">float overallDifficulty</div><div class="ttdoc">OD setting (0–10)</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:638</div></div>
+<div class="ttc" id="astruct_difficulty_html_a9f2582c5abeb6be97ee8da81385704f0"><div class="ttname"><a href="struct_difficulty.html#a9f2582c5abeb6be97ee8da81385704f0">Difficulty::HPDrainRate</a></div><div class="ttdeci">float HPDrainRate</div><div class="ttdoc">HP setting (0–10)</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:627</div></div>
+<div class="ttc" id="astruct_difficulty_html_aca8eb1f0f03ffd5c2d18f02c98d880f3"><div class="ttname"><a href="struct_difficulty.html#aca8eb1f0f03ffd5c2d18f02c98d880f3">Difficulty::approachRate</a></div><div class="ttdeci">float approachRate</div><div class="ttdoc">AR setting (0–10)</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:643</div></div>
+<div class="ttc" id="astruct_difficulty_html_acf4e8b0a81ed00abe1f158b819a2ef01"><div class="ttname"><a href="struct_difficulty.html#acf4e8b0a81ed00abe1f158b819a2ef01">Difficulty::circleSize</a></div><div class="ttdeci">float circleSize</div><div class="ttdoc">CS setting (0–10)</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:633</div></div>
+<div class="ttc" id="astruct_difficulty_html_ad448317dca109002525fbc29b488b277"><div class="ttname"><a href="struct_difficulty.html#ad448317dca109002525fbc29b488b277">Difficulty::sliderTickRate</a></div><div class="ttdeci">int sliderTickRate</div><div class="ttdoc">Amount of slider ticks per beat.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:653</div></div>
+<div class="ttc" id="astruct_difficulty_html_ad57c3548345f7fde41a94c42f7dee12c"><div class="ttname"><a href="struct_difficulty.html#ad57c3548345f7fde41a94c42f7dee12c">Difficulty::sliderMultiplier</a></div><div class="ttdeci">float sliderMultiplier</div><div class="ttdoc">Base slider velocity in hecto-osu! pixels per beat.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:648</div></div>
 </div><!-- fragment --></li>
 <li><a class="el" href="struct_colors.html">Colors</a> <div class="fragment"><div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_colors.html">Colors</a></div>
 <div class="line">{</div>
@@ -206,29 +257,108 @@ Data Members</h4>
 <div class="line">    std::optional&lt;Color&gt; <a class="code hl_variable" href="struct_colors.html#adf3be05ca608c2fd9068cd88941f62cc">sliderTrackOverride</a>;</div>
 <div class="line">    std::optional&lt;Color&gt; <a class="code hl_variable" href="struct_colors.html#a936c87f3fd0733e667a623c4d9f79b3f">sliderBorder</a>;</div>
 <div class="line">};</div>
-<div class="ttc" id="astruct_colors_html"><div class="ttname"><a href="struct_colors.html">Colors</a></div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1434</div></div>
-<div class="ttc" id="astruct_colors_html_a936c87f3fd0733e667a623c4d9f79b3f"><div class="ttname"><a href="struct_colors.html#a936c87f3fd0733e667a623c4d9f79b3f">Colors::sliderBorder</a></div><div class="ttdeci">std::optional&lt; Color &gt; sliderBorder</div><div class="ttdoc">Slider border color.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1477</div></div>
-<div class="ttc" id="astruct_colors_html_acd997341cad923203d18a93a10646d2a"><div class="ttname"><a href="struct_colors.html#acd997341cad923203d18a93a10646d2a">Colors::comboColor</a></div><div class="ttdeci">std::vector&lt; Color &gt; comboColor</div><div class="ttdoc">Additive combo colours.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1467</div></div>
-<div class="ttc" id="astruct_colors_html_adf3be05ca608c2fd9068cd88941f62cc"><div class="ttname"><a href="struct_colors.html#adf3be05ca608c2fd9068cd88941f62cc">Colors::sliderTrackOverride</a></div><div class="ttdeci">std::optional&lt; Color &gt; sliderTrackOverride</div><div class="ttdoc">Additive slider track colour.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1472</div></div>
+<div class="ttc" id="astruct_colors_html"><div class="ttname"><a href="struct_colors.html">Colors</a></div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1467</div></div>
+<div class="ttc" id="astruct_colors_html_a936c87f3fd0733e667a623c4d9f79b3f"><div class="ttname"><a href="struct_colors.html#a936c87f3fd0733e667a623c4d9f79b3f">Colors::sliderBorder</a></div><div class="ttdeci">std::optional&lt; Color &gt; sliderBorder</div><div class="ttdoc">Slider border color.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1510</div></div>
+<div class="ttc" id="astruct_colors_html_acd997341cad923203d18a93a10646d2a"><div class="ttname"><a href="struct_colors.html#acd997341cad923203d18a93a10646d2a">Colors::comboColor</a></div><div class="ttdeci">std::vector&lt; Color &gt; comboColor</div><div class="ttdoc">Additive combo colours.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1500</div></div>
+<div class="ttc" id="astruct_colors_html_adf3be05ca608c2fd9068cd88941f62cc"><div class="ttname"><a href="struct_colors.html#adf3be05ca608c2fd9068cd88941f62cc">Colors::sliderTrackOverride</a></div><div class="ttdeci">std::optional&lt; Color &gt; sliderTrackOverride</div><div class="ttdoc">Additive slider track colour.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1505</div></div>
+</div><!-- fragment --></li>
+<li><a class="el" href="struct_events.html">Events</a> <div class="fragment"><div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_background.html">Background</a></div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_event_base.html#a96261429dac4fe462c35749acca2fc7c">startTime</a>;</div>
+<div class="line">    std::string <a class="code hl_variable" href="struct_background.html#a45d28986aa503bec955bfff0067560f5">fileName</a>;</div>
+<div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_background.html#aa35c9a9bf9c22c028da8e9799b31b9dc">xOffset</a>;</div>
+<div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_background.html#a3434cd34d20fb8f67154eb367dde15c3">yOffset</a>;</div>
+<div class="line">};</div>
+<div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_video.html">Video</a></div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_event_base.html#a96261429dac4fe462c35749acca2fc7c">startTime</a>;</div>
+<div class="line">    std::string <a class="code hl_variable" href="struct_video.html#afd373cdac3e4142771d2775e3766d5e3">fileName</a>;</div>
+<div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_video.html#af9b2d653e46f2e3b977f9df81b9e1d76">xOffset</a>;</div>
+<div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_video.html#aabc6652ce70e0f2c80fb4f7153719d94">yOffset</a>;</div>
+<div class="line">};</div>
+<div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_break.html">Break</a></div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_event_base.html#a96261429dac4fe462c35749acca2fc7c">startTime</a>;</div>
+<div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_break.html#a599234e5136ea749b808362e0bf6adc3">endTime</a>;</div>
+<div class="line">};</div>
+<div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_events.html">Events</a></div>
+<div class="line">{</div>
+<div class="line">    std::vector&lt;Background&gt; backgrounds;</div>
+<div class="line">    std::vector&lt;Video&gt; videos;</div>
+<div class="line">    std::vector&lt;Break&gt; breaks;</div>
+<div class="line">};</div>
+<div class="ttc" id="astruct_background_html"><div class="ttname"><a href="struct_background.html">Background</a></div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1690</div></div>
+<div class="ttc" id="astruct_background_html_a3434cd34d20fb8f67154eb367dde15c3"><div class="ttname"><a href="struct_background.html#a3434cd34d20fb8f67154eb367dde15c3">Background::yOffset</a></div><div class="ttdeci">int yOffset</div><div class="ttdoc">Offset in osu! pixels from the center of the screen.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1709</div></div>
+<div class="ttc" id="astruct_background_html_a45d28986aa503bec955bfff0067560f5"><div class="ttname"><a href="struct_background.html#a45d28986aa503bec955bfff0067560f5">Background::fileName</a></div><div class="ttdeci">std::string fileName</div><div class="ttdoc">Location of the background image relative to the originalBeatmap directory.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1695</div></div>
+<div class="ttc" id="astruct_background_html_aa35c9a9bf9c22c028da8e9799b31b9dc"><div class="ttname"><a href="struct_background.html#aa35c9a9bf9c22c028da8e9799b31b9dc">Background::xOffset</a></div><div class="ttdeci">int xOffset</div><div class="ttdoc">Offset in osu! pixels from the center of the screen.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1702</div></div>
+<div class="ttc" id="astruct_break_html"><div class="ttname"><a href="struct_break.html">Break</a></div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1762</div></div>
+<div class="ttc" id="astruct_break_html_a599234e5136ea749b808362e0bf6adc3"><div class="ttname"><a href="struct_break.html#a599234e5136ea749b808362e0bf6adc3">Break::endTime</a></div><div class="ttdeci">int endTime</div><div class="ttdoc">End time of the break, in milliseconds from the beginning of the originalBeatmap's audio.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1766</div></div>
+<div class="ttc" id="astruct_event_base_html_a96261429dac4fe462c35749acca2fc7c"><div class="ttname"><a href="struct_event_base.html#a96261429dac4fe462c35749acca2fc7c">EventBase::startTime</a></div><div class="ttdeci">int startTime</div><div class="ttdoc">Start time of the event, in milliseconds from the beginning of the originalBeatmap's audio.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1668</div></div>
+<div class="ttc" id="astruct_events_html"><div class="ttname"><a href="struct_events.html">Events</a></div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1787</div></div>
+<div class="ttc" id="astruct_video_html"><div class="ttname"><a href="struct_video.html">Video</a></div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1726</div></div>
+<div class="ttc" id="astruct_video_html_aabc6652ce70e0f2c80fb4f7153719d94"><div class="ttname"><a href="struct_video.html#aabc6652ce70e0f2c80fb4f7153719d94">Video::yOffset</a></div><div class="ttdeci">int yOffset</div><div class="ttdoc">Offset in osu! pixels from the center of the screen.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1745</div></div>
+<div class="ttc" id="astruct_video_html_af9b2d653e46f2e3b977f9df81b9e1d76"><div class="ttname"><a href="struct_video.html#af9b2d653e46f2e3b977f9df81b9e1d76">Video::xOffset</a></div><div class="ttdeci">int xOffset</div><div class="ttdoc">Offset in osu! pixels from the center of the screen.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1738</div></div>
+<div class="ttc" id="astruct_video_html_afd373cdac3e4142771d2775e3766d5e3"><div class="ttname"><a href="struct_video.html#afd373cdac3e4142771d2775e3766d5e3">Video::fileName</a></div><div class="ttdeci">std::string fileName</div><div class="ttdoc">Location of the background image relative to the originalBeatmap directory.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1731</div></div>
 </div><!-- fragment --></li>
 </ul>
 <p >These following sections are represented by a <code>std::vector</code> of <code>struct</code> respectively.</p><ul>
-<li><a class="el" href="struct_events.html">Events</a> -&gt; <code>std::vector&lt;Event&gt;</code> <div class="fragment"><div class="line"><span class="keyword">struct </span>Event</div>
-<div class="line">{</div>
-<div class="line"> </div>
-<div class="line">};</div>
-</div><!-- fragment --></li>
 <li>TimingPoints -&gt; <code>std::vector&lt;<a class="el" href="struct_timing_point.html">TimingPoint</a>&gt;</code> <div class="fragment"><div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_timing_point.html">TimingPoint</a></div>
 <div class="line">{</div>
-<div class="line"> </div>
+<div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_timing_point.html#af585ec084ca5c4d0b99241d78754d5a7">time</a>;</div>
+<div class="line">    <span class="keywordtype">float</span> beatLength;</div>
+<div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_timing_point.html#a72cd2b7f5ef424faeac7999c1fd6de0e">meter</a>;</div>
+<div class="line">    SampleSet <a class="code hl_variable" href="struct_timing_point.html#a67346c6bbbfaaab1b751bfd6691a2546">sampleSet</a>;</div>
+<div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_timing_point.html#a07d681ea84190d1b28cefa316f3678f7">sampleIndex</a>;</div>
+<div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_timing_point.html#afc4a074b22dec4fa5bb4c26ee686d056">volume</a>;</div>
+<div class="line">    <span class="keywordtype">bool</span> <a class="code hl_variable" href="struct_timing_point.html#a0c34ccd295f044dceac070983bebbe40">uninherited</a>;</div>
+<div class="line">    <span class="keywordtype">unsigned</span> <a class="code hl_variable" href="struct_timing_point.html#ad89b8ae6e1de9015564e4f9c9668944d">effects</a>;</div>
 <div class="line">};</div>
-<div class="ttc" id="astruct_timing_point_html"><div class="ttname"><a href="struct_timing_point.html">TimingPoint</a></div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1307</div></div>
+<div class="ttc" id="astruct_timing_point_html_a07d681ea84190d1b28cefa316f3678f7"><div class="ttname"><a href="struct_timing_point.html#a07d681ea84190d1b28cefa316f3678f7">TimingPoint::sampleIndex</a></div><div class="ttdeci">int sampleIndex</div><div class="ttdoc">Custom sample index for hit objects. 0 indicates osu!'s default hitsounds.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:763</div></div>
+<div class="ttc" id="astruct_timing_point_html_a0c34ccd295f044dceac070983bebbe40"><div class="ttname"><a href="struct_timing_point.html#a0c34ccd295f044dceac070983bebbe40">TimingPoint::uninherited</a></div><div class="ttdeci">bool uninherited</div><div class="ttdoc">Whether or not the timing point is uninherited.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:773</div></div>
+<div class="ttc" id="astruct_timing_point_html_a67346c6bbbfaaab1b751bfd6691a2546"><div class="ttname"><a href="struct_timing_point.html#a67346c6bbbfaaab1b751bfd6691a2546">TimingPoint::sampleSet</a></div><div class="ttdeci">SampleSet sampleSet</div><div class="ttdoc">Default sample set for hit objects (0 = originalBeatmap default, 1 = normal, 2 = soft,...</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:758</div></div>
+<div class="ttc" id="astruct_timing_point_html_a72cd2b7f5ef424faeac7999c1fd6de0e"><div class="ttname"><a href="struct_timing_point.html#a72cd2b7f5ef424faeac7999c1fd6de0e">TimingPoint::meter</a></div><div class="ttdeci">int meter</div><div class="ttdoc">Amount of beats in a measure. Inherited timing points ignore this property.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:753</div></div>
+<div class="ttc" id="astruct_timing_point_html_ad89b8ae6e1de9015564e4f9c9668944d"><div class="ttname"><a href="struct_timing_point.html#ad89b8ae6e1de9015564e4f9c9668944d">TimingPoint::effects</a></div><div class="ttdeci">unsigned effects</div><div class="ttdoc">Bit flags that give the timing point extra effects.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:778</div></div>
+<div class="ttc" id="astruct_timing_point_html_af585ec084ca5c4d0b99241d78754d5a7"><div class="ttname"><a href="struct_timing_point.html#af585ec084ca5c4d0b99241d78754d5a7">TimingPoint::time</a></div><div class="ttdeci">int time</div><div class="ttdoc">Start time of the timing section, in milliseconds from the beginning of the originalBeatmap's audio....</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:740</div></div>
+<div class="ttc" id="astruct_timing_point_html_afc4a074b22dec4fa5bb4c26ee686d056"><div class="ttname"><a href="struct_timing_point.html#afc4a074b22dec4fa5bb4c26ee686d056">TimingPoint::volume</a></div><div class="ttdeci">int volume</div><div class="ttdoc">Volume percentage for hit objects.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:768</div></div>
 </div><!-- fragment --></li>
-<li>HitObjects -&gt; <code>std::vector&lt;std::unique_ptr&lt;<a class="el" href="struct_hit_object.html" title="Base class of all hit objects in osu.">HitObject</a>&gt;&gt;</code> <div class="fragment"><div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_hit_object.html">HitObject</a></div>
+<li>HitObjects -&gt; <code>std::vector&lt;std::unique_ptr&lt;<a class="el" href="struct_hit_object.html" title="Base class of all hit objects in osu.">HitObject</a>&gt;&gt;</code> <div class="fragment"><div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_hit_object.html">HitObject</a>    <span class="comment">//Base class of all kinds of hit objects</span></div>
 <div class="line">{</div>
-<div class="line"> </div>
+<div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_hit_object.html#abdd10775acb8e430111c5a9869842e72">x</a>;</div>
+<div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_hit_object.html#a5cc35d81552ffe8c4102bedc9b46faff">y</a>;</div>
+<div class="line">    <span class="keywordtype">int</span> <a class="code hl_variable" href="struct_hit_object.html#a2e46464eaf2e5c0fbe5ee5f751d9f670">time</a>;</div>
+<div class="line">    HitSound <a class="code hl_variable" href="struct_hit_object.html#a4541a4f95c7064a1259ae80ff541c3d6">hitSound</a>;</div>
+<div class="line">    HitSample hitSample;</div>
+<div class="line">    <span class="keywordtype">bool</span> isNewCombo;</div>
 <div class="line">};</div>
-<div class="ttc" id="astruct_hit_object_html"><div class="ttname"><a href="struct_hit_object.html">HitObject</a></div><div class="ttdoc">Base class of all hit objects in osu.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:730</div></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_circle.html">Circle</a> : <span class="keyword">public</span> <a class="code hl_struct" href="struct_hit_object.html">HitObject</a> {};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_slider.html">Slider</a> : <span class="keyword">public</span> <a class="code hl_struct" href="struct_hit_object.html">HitObject</a></div>
+<div class="line">{</div>
+<div class="line">    CurveType curveType;</div>
+<div class="line">    std::vector&lt;Coord&gt; curvePoints;</div>
+<div class="line">    <span class="keywordtype">int</span> slides;</div>
+<div class="line">    <span class="keywordtype">float</span> length;</div>
+<div class="line">    std::vector&lt;int&gt; edgeSounds;</div>
+<div class="line">    std::vector&lt;EdgeSet&gt; edgeSets;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_spinner.html">Spinner</a> : <span class="keyword">public</span> <a class="code hl_struct" href="struct_hit_object.html">HitObject</a></div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordtype">int</span> endTime;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_hold.html">Hold</a> : <span class="keyword">public</span> <a class="code hl_struct" href="struct_hit_object.html">HitObject</a></div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordtype">int</span> endTime;</div>
+<div class="line">};</div>
+<div class="ttc" id="astruct_hit_object_html"><div class="ttname"><a href="struct_hit_object.html">HitObject</a></div><div class="ttdoc">Base class of all hit objects in osu.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:858</div></div>
+<div class="ttc" id="astruct_hit_object_html_a2e46464eaf2e5c0fbe5ee5f751d9f670"><div class="ttname"><a href="struct_hit_object.html#a2e46464eaf2e5c0fbe5ee5f751d9f670">HitObject::time</a></div><div class="ttdeci">int time</div><div class="ttdoc">Time when the object is to be hit, in milliseconds from the beginning of the originalBeatmap's audio.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:880</div></div>
+<div class="ttc" id="astruct_hit_object_html_a4541a4f95c7064a1259ae80ff541c3d6"><div class="ttname"><a href="struct_hit_object.html#a4541a4f95c7064a1259ae80ff541c3d6">HitObject::hitSound</a></div><div class="ttdeci">HitSound hitSound</div><div class="ttdoc">Indicating the hitsound applied to the object.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:885</div></div>
+<div class="ttc" id="astruct_hit_object_html_a5cc35d81552ffe8c4102bedc9b46faff"><div class="ttname"><a href="struct_hit_object.html#a5cc35d81552ffe8c4102bedc9b46faff">HitObject::y</a></div><div class="ttdeci">int y</div><div class="ttdoc">Position in osu!pixels (https://osu.ppy.sh/wiki/zh-hk/osupixel) of the object.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:875</div></div>
+<div class="ttc" id="astruct_hit_object_html_abdd10775acb8e430111c5a9869842e72"><div class="ttname"><a href="struct_hit_object.html#abdd10775acb8e430111c5a9869842e72">HitObject::x</a></div><div class="ttdeci">int x</div><div class="ttdoc">Position in osu!pixels (https://osu.ppy.sh/wiki/zh-hk/osupixel) of the object.</div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:870</div></div>
+<div class="ttc" id="astruct_hold_html"><div class="ttname"><a href="struct_hold.html">Hold</a></div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1411</div></div>
+<div class="ttc" id="astruct_spinner_html"><div class="ttname"><a href="struct_spinner.html">Spinner</a></div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1374</div></div>
 </div><!-- fragment --></li>
 </ul>
 <p >All of above are stored as a member in an <code><a class="el" href="struct_osu_file.html">OsuFile</a></code> struct. </p><div class="fragment"><div class="line"><span class="keyword">struct </span><a class="code hl_struct" href="struct_osu_file.html">OsuFile</a></div>
@@ -242,9 +372,8 @@ Data Members</h4>
 <div class="line">    <a class="code hl_struct" href="struct_colors.html">Colors</a> colors;</div>
 <div class="line">    std::vector&lt;std::unique_ptr&lt;HitObject&gt;&gt; hitObjects;</div>
 <div class="line">};</div>
-<div class="ttc" id="astruct_events_html"><div class="ttname"><a href="struct_events.html">Events</a></div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1754</div></div>
-<div class="ttc" id="astruct_osu_file_html"><div class="ttname"><a href="struct_osu_file.html">OsuFile</a></div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1812</div></div>
-</div><!-- fragment --><h4><a class="anchor" id="autotoc_md4"></a>
+<div class="ttc" id="astruct_osu_file_html"><div class="ttname"><a href="struct_osu_file.html">OsuFile</a></div><div class="ttdef"><b>Definition:</b> OsuParser.hpp:1845</div></div>
+</div><!-- fragment --><h4><a class="anchor" id="autotoc_md5"></a>
 Parsing</h4>
 <ul>
 <li>To parse a full <code>.osu</code> file, simply pass in the file name or a <code>std::ifstream</code>. For example, <div class="fragment"><div class="line"><a class="code hl_struct" href="struct_osu_file.html">OsuFile</a> file{ <span class="stringliteral">&quot;MyMap.osu&quot;</span> };</div>
@@ -255,18 +384,29 @@ Parsing</h4>
 </div><!-- fragment --> If it's one of the <code>std::vector</code> members, there will be a <code>static</code> helper function starts with <code>Handle...</code> in each of the <code>struct</code> to parse and return it. For example, to parse the <code><a class="el" href="struct_timing_point.html">TimingPoint</a></code> you do <div class="fragment"><div class="line"><span class="keyword">auto</span> timingPoints = TimingPoint::HandleTimingPoint(<span class="stringliteral">&quot;MyMap.osu&quot;</span>);</div>
 </div><!-- fragment --></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md5"></a>
+<h2><a class="anchor" id="autotoc_md6"></a>
+Std -&gt; Mania Converter</h2>
+<p >The converter is largely copied from <a href="https://github.com/ppy/osu">osu! lazer</a> in</p><ul>
+<li><code>HitObjectPatternGenerator.cs</code></li>
+<li><code>DistanceObjectPatternGenerator.cs</code></li>
+</ul>
+<h3><a class="anchor" id="autotoc_md7"></a>
+Todo</h3>
+<ol type="1">
+<li>Add hit sound</li>
+</ol>
+<h2><a class="anchor" id="autotoc_md8"></a>
 1-2 Jump Generator</h2>
 <p >is in <code><a class="el" href="_jump_generator_8hpp_source.html">JumpGenerator.hpp</a></code></p>
-<h2><a class="anchor" id="autotoc_md6"></a>
+<h2><a class="anchor" id="autotoc_md9"></a>
 Documentation</h2>
 <p >Documentation is in <code>html/index.html</code>.</p>
-<h2><a class="anchor" id="autotoc_md7"></a>
+<h2><a class="anchor" id="autotoc_md10"></a>
 Test</h2>
 <p >Testing code is in <code>test/</code>. There are also 2 beatmaps to be parsed, that will be automatically copied to the testing executable directory. So you do not need to do anything other than running <code>cmake .</code>.</p>
-<h2><a class="anchor" id="autotoc_md8"></a>
+<h2><a class="anchor" id="autotoc_md11"></a>
 Build</h2>
-<h3><a class="anchor" id="autotoc_md9"></a>
+<h3><a class="anchor" id="autotoc_md12"></a>
 Requires</h3>
 <ol type="1">
 <li><a href="https://github.com/google/googletest">Google Test</a>, I recommend using <a href="https://vcpkg.io/en/index.html">vcpkg</a> to install the package.</li>

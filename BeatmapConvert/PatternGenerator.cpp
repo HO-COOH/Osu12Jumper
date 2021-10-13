@@ -47,7 +47,7 @@ int Mania::PatternGenerator::findAvailableColumn(
 {
     auto isValid = [&validator, &patterns](int column)
     {
-        auto const noOccupy = std::none_of(patterns.cbegin(), patterns.cend(), [column](Pattern const* p) { return p->colunmHasObject(column); });
+        auto const noOccupy = !std::any_of(patterns.cbegin(), patterns.cend(), [column](Pattern const* p) { return p->colunmHasObject(column); });
         return validator ? validator(column) && noOccupy : noOccupy;
     };
 
@@ -62,14 +62,14 @@ int Mania::PatternGenerator::findAvailableColumn(
 
     // Ensure that we have at least one free column, so that an endless loop is avoided
     bool hasValidColumns = false;
-    for (int i = lowBound; i < upBound; ++i)
+    for (int i = lowBound; i <= upBound; ++i)
     {
         hasValidColumns = isValid(i);
         if (hasValidColumns)
             break;
     }
 
-    assert(hasValidColumns);
+    assert(hasValidColumns); //This should almost never happens?
 
     // Iterate until a valid column is found. This is a random iteration in the default case.
     do

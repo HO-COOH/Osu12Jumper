@@ -34,7 +34,7 @@ var annotated_dup =
     [ "ParseV14", "class_parse_v14.html", null ],
     [ "RandomEngine", "class_random_engine.html", null ],
     [ "Range", "struct_range.html", null ],
-    [ "Slider", "struct_slider.html", null ],
+    [ "Slider", "struct_slider.html", "struct_slider" ],
     [ "Spinner", "struct_spinner.html", "struct_spinner" ],
     [ "TimingPoint", "struct_timing_point.html", "struct_timing_point" ],
     [ "Video", "struct_video.html", "struct_video" ]

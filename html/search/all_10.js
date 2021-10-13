@@ -1,7 +1,7 @@
 var searchData=
 [
   ['tags_0',['tags',['../struct_metadata.html#a1b5bdb5847c4018c119ffb43fa38f966',1,'Metadata']]],
-  ['time_1',['time',['../struct_hit_object.html#a2e46464eaf2e5c0fbe5ee5f751d9f670',1,'HitObject::time()'],['../struct_timing_point.html#af585ec084ca5c4d0b99241d78754d5a7',1,'TimingPoint::time()']]],
+  ['time_1',['time',['../struct_timing_point.html#af585ec084ca5c4d0b99241d78754d5a7',1,'TimingPoint::time()'],['../struct_hit_object.html#a2e46464eaf2e5c0fbe5ee5f751d9f670',1,'HitObject::time()']]],
   ['timelinezoom_2',['timelineZoom',['../struct_editor.html#a3b6973e82467afe735f8c53762eea682',1,'Editor']]],
   ['timeto_3',['timeTo',['../struct_hit_object.html#a0a456183ddbe76e73c48fb59d1996132',1,'HitObject']]],
   ['timingpoint_4',['TimingPoint',['../struct_timing_point.html',1,'TimingPoint'],['../struct_timing_point.html#ac8bfd73b90d32f089d0efd6b942ac301',1,'TimingPoint::TimingPoint()']]],

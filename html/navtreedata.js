@@ -29,15 +29,19 @@ var NAVTREE =
       [ "Osu 1-2 Jumper", "md__r_e_a_d_m_e.html#autotoc_md0", [
         [ "Parser", "md__r_e_a_d_m_e.html#autotoc_md1", [
           [ "Quick Start", "md__r_e_a_d_m_e.html#autotoc_md2", [
-            [ "Data Members", "md__r_e_a_d_m_e.html#autotoc_md3", null ],
-            [ "Parsing", "md__r_e_a_d_m_e.html#autotoc_md4", null ]
+            [ "Enum Members", "md__r_e_a_d_m_e.html#autotoc_md3", null ],
+            [ "Data Members", "md__r_e_a_d_m_e.html#autotoc_md4", null ],
+            [ "Parsing", "md__r_e_a_d_m_e.html#autotoc_md5", null ]
           ] ]
         ] ],
-        [ "1-2 Jump Generator", "md__r_e_a_d_m_e.html#autotoc_md5", null ],
-        [ "Documentation", "md__r_e_a_d_m_e.html#autotoc_md6", null ],
-        [ "Test", "md__r_e_a_d_m_e.html#autotoc_md7", null ],
-        [ "Build", "md__r_e_a_d_m_e.html#autotoc_md8", [
-          [ "Requires", "md__r_e_a_d_m_e.html#autotoc_md9", null ]
+        [ "Std -> Mania Converter", "md__r_e_a_d_m_e.html#autotoc_md6", [
+          [ "Todo", "md__r_e_a_d_m_e.html#autotoc_md7", null ]
+        ] ],
+        [ "1-2 Jump Generator", "md__r_e_a_d_m_e.html#autotoc_md8", null ],
+        [ "Documentation", "md__r_e_a_d_m_e.html#autotoc_md9", null ],
+        [ "Test", "md__r_e_a_d_m_e.html#autotoc_md10", null ],
+        [ "Build", "md__r_e_a_d_m_e.html#autotoc_md11", [
+          [ "Requires", "md__r_e_a_d_m_e.html#autotoc_md12", null ]
         ] ]
       ] ]
     ] ],
@@ -66,7 +70,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_beatmap_convert_8hpp.html",
-"struct_timing_point.html#a07d681ea84190d1b28cefa316f3678f7"
+"struct_slider.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

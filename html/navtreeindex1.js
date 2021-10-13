@@ -1,5 +1,12 @@
 var NAVTREEINDEX1 =
 {
+"struct_slider.html":[2,0,26],
+"struct_slider.html#a278ce780ffcefa135fbdd503d56e7443":[2,0,26,1],
+"struct_slider.html#a662bb65a1a5ce2deeb297c43bf6ae6df":[2,0,26,0],
+"struct_slider.html#aa4c668a2732ed4020e9a3e9b70a92266":[2,0,26,2],
+"struct_spinner.html":[2,0,27],
+"struct_spinner.html#a8fa27585fe876858d343d7469539b7b6":[2,0,27,0],
+"struct_timing_point.html":[2,0,28],
 "struct_timing_point.html#a07d681ea84190d1b28cefa316f3678f7":[2,0,28,3],
 "struct_timing_point.html#a0c34ccd295f044dceac070983bebbe40":[2,0,28,6],
 "struct_timing_point.html#a67346c6bbbfaaab1b751bfd6691a2546":[2,0,28,4],
@@ -14,7 +21,7 @@ var NAVTREEINDEX1 =
 "struct_video.html#afd373cdac3e4142771d2775e3766d5e3":[2,0,29,0],
 "x64-_debug_2_c_make_files_2_show_includes_2foo_8h_source.html":[3,0,2,0,0,0,0,0],
 "x64-_release_2_c_make_files_2_show_includes_2foo_8h_source.html":[3,0,2,0,1,0,0,0],
-"":[1,0,0],
 "":[1,0,1],
-"":[1,0,3]
+"":[1,0,3],
+"":[1,0,0]
 };

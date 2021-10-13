@@ -10,6 +10,7 @@ var struct_osu_file =
     [ "getDrainTime", "struct_osu_file.html#acb1916411fdf1344267d148239db90ef", null ],
     [ "getNearestTimingPointAt", "struct_osu_file.html#aba9d72029a4985b916d1a8edb010df80", null ],
     [ "getPercentOf", "struct_osu_file.html#ab9e6fae1e3e564abe8944d58239dad8b", null ],
+    [ "getPercentOfHitObjectInColumn", "struct_osu_file.html#ac05e6527bbd210172f736316eb1828b0", null ],
     [ "getTimingPointAt", "struct_osu_file.html#a756a8b5702226a517868bb7c619c8877", null ],
     [ "getTotalBreakTime", "struct_osu_file.html#a4d38da1e44f3193574bac89fefdf39f5", null ],
     [ "save", "struct_osu_file.html#a8df537c9e9d61bf67b080ad17f8ce682", null ],

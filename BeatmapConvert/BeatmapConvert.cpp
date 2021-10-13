@@ -45,12 +45,14 @@ Mania::HitObjectPatternGenerator::HitObjectPatternGenerator(
 
     if (!(convertType & Pattern::Type::KeepSingle))
     {
-        if (hitObject.hitSample.has(HitObject::HitSound::Finish) && totalColumns != 8)
+        if (hitObject.hitSound == HitObject::HitSound::Finish && totalColumns != 8)
             convertTypeFlag |= Pattern::Type::Mirror;
-        else if (hitObject.hitSample.has(HitObject::HitSound::Clap))
+        else if (hitObject.hitSound == HitObject::HitSound::Clap)
             convertTypeFlag |= Pattern::Type::Gathered;
     }
 }
+
+#define PrintDetail
 
 Mania::Pattern Mania::HitObjectPatternGenerator::generate()
 {
@@ -64,7 +66,7 @@ Mania::Pattern Mania::HitObjectPatternGenerator::generate()
         if (totalColumns == 1)
         {
             addToPattern(pattern, 0);
-            return  { pattern };
+            return pattern;
         }
 
         int const lastColumn = previousPattern.hitObjects.empty() ? 0 : previousPattern.hitObjects.front()->getColumnIndex(totalColumns);
@@ -76,7 +78,7 @@ Mania::Pattern Mania::HitObjectPatternGenerator::generate()
                 if (previousPattern.colunmHasObject(i))
                     addToPattern(pattern, randomStart + totalColumns - i - 1);
             }
-            return { pattern };
+            return pattern;
         }
 
         if (convertType & Pattern::Type::Cycle
@@ -87,7 +89,7 @@ Mania::Pattern Mania::HitObjectPatternGenerator::generate()
         {
             int const column = randomStart + totalColumns - 1;
             addToPattern(pattern, column);
-            return { pattern };
+            return pattern;
         }
 
         if (convertType & Pattern::Type::ForceStack && !previousPattern.hitObjects.empty())
@@ -97,7 +99,7 @@ Mania::Pattern Mania::HitObjectPatternGenerator::generate()
                 if (previousPattern.colunmHasObject(i))
                     addToPattern(pattern, i);
             }
-            return { pattern };
+            return pattern;
         }
 
         if (previousPattern.hitObjects.size() == 1)
@@ -110,7 +112,7 @@ Mania::Pattern Mania::HitObjectPatternGenerator::generate()
                     targetColumn = randomStart;
 
                 addToPattern(pattern, targetColumn);
-                return { pattern };
+                return pattern;
             }
 
             if (convertType & Pattern::Type::ReverseStair)
@@ -121,7 +123,7 @@ Mania::Pattern Mania::HitObjectPatternGenerator::generate()
                     targetColumn = totalColumns - 1;
 
                 addToPattern(pattern, targetColumn);
-                return { pattern };
+                return pattern;
             }
 
         }
@@ -177,6 +179,10 @@ Mania::Pattern Mania::HitObjectPatternGenerator::generate()
             stairType = Pattern::Type::Stair;
 
     }
+#ifdef PrintDetail
+    for (auto const& obj : p.hitObjects)
+        std::cout <<obj->getColumnIndex(totalColumns) << " : " << *obj << '\n';
+#endif
     return p;
 }
 
@@ -190,8 +196,8 @@ void Mania::HitObjectPatternGenerator::addToPattern(Pattern& pattern, int column
 bool Mania::HitObjectPatternGenerator::hasSpecialColumn() const
 {
     return 
-        hitObject.hitSample.has(HitObject::HitSound::Clap) &&
-        hitObject.hitSample.has(HitObject::HitSound::Finish);
+        hitObject.hitSound == HitObject::HitSound::Clap &&
+        hitObject.hitSound == HitObject::HitSound::Finish;
 }
 
 int Mania::HitObjectPatternGenerator::getNextColumn(int last) const
@@ -278,7 +284,7 @@ int Mania::HitObjectPatternGenerator::getRandomNoteCount(double p2, double p3, d
             break;
     }
 
-    if (hitObject.hitSample.has(HitObject::HitSound::Clap))
+    if (hitObject.hitSound == HitObject::HitSound::Clap)
         p2 = 1;
 
     return GetRandomNoteCount(p2, p3, p4, p5);
@@ -358,8 +364,12 @@ Mania::Pattern Mania::HitObjectPatternGenerator::generateRandomPatternWithMirror
 
         // Add normal note
         addToPattern(pattern, nextColumn);
+
         // Add mirrored note
-        addToPattern(pattern, randomStart + totalColumns - nextColumn - 1);
+        auto const mirrorColumn = randomStart + totalColumns - nextColumn - 1;
+        addToPattern(pattern, mirrorColumn);
+
+        assert(nextColumn != mirrorColumn);
     }
 
     if (addToCentre)
@@ -413,6 +423,12 @@ int Mania::ManiaBeatmapConverter::getTargetColumn() const
     else
         return std::max(4, std::min(static_cast<int>(roundedDifficulty) + 1, 7));
 }
+
+//void Mania::ManiaBeatmapConverter::cleanUpStackedNotes(std::vector<std::unique_ptr<HitObject>>& result) const
+//{
+//    std::vector<bool> currentColumnOccupied(targetColumns);
+//    for()
+//}
 
 Mania::ManiaBeatmapConverter& Mania::ManiaBeatmapConverter::setTargetColumn(int target)
 {
@@ -562,6 +578,7 @@ std::vector<std::unique_ptr<HitObject>> Mania::ManiaBeatmapConverter::generateCo
         default:
             break;
     }
+
     return result;
 }
 
@@ -575,7 +592,8 @@ Mania::Pattern Mania::DistanceObjectPatternGenerator::generate()
     if (totalColumns == 1)
     {
         Pattern pattern{ totalColumns };
-        pattern += std::make_unique<Hold>(HitObject::ColumnToX(0, totalColumns), 192, startTime, HitObject::HitSound{}, endTime, HitObject::HitSample{});
+        //pattern += std::make_unique<Hold>(HitObject::ColumnToX(0, totalColumns), 192, startTime, HitObject::HitSound{}, endTime, HitObject::HitSample{});
+        addToPattern(pattern, 0, startTime, endTime);
         return pattern;
     }
 
@@ -657,6 +675,7 @@ Mania::DistanceObjectPatternGenerator::DistanceObjectPatternGenerator(HitObject 
     segmentDuration{ static_cast<int>(getSegmentDuration())},
     convertType{ Pattern::Type::LowProbability }
 {
+    assert(segmentDuration >= originalBeatmap.timingPoints.front().beatLength / 32);
 }
 
 Mania::Pattern Mania::DistanceObjectPatternGenerator::generateRandomHoldNotes(int startTime, int noteCount)
@@ -670,14 +689,16 @@ Mania::Pattern Mania::DistanceObjectPatternGenerator::generateRandomHoldNotes(in
     {
         // Find available column
         nextColumn = findAvailableColumn(nextColumn, { &pattern, &previousPattern });
-        pattern += std::make_unique<Hold>(HitObject::ColumnToX(nextColumn, totalColumns), 192, startTime, HitObject::HitSound{}, endTime, HitObject::HitSample{});
+        //pattern += std::make_unique<Hold>(HitObject::ColumnToX(nextColumn, totalColumns), 192, startTime, HitObject::HitSound{}, endTime, HitObject::HitSample{});
+        addToPattern(pattern, nextColumn, startTime, endTime);
     }
 
     // This is can't be combined with the above loop due to RNG
     for (int i = 0; i < noteCount - usableColumns; i++)
     {
         nextColumn = findAvailableColumn(nextColumn, { &pattern });
-        pattern += std::make_unique<Hold>(HitObject::ColumnToX(nextColumn, totalColumns), 192, startTime, HitObject::HitSound{}, endTime, HitObject::HitSample{});
+        //pattern += std::make_unique<Hold>(HitObject::ColumnToX(nextColumn, totalColumns), 192, startTime, HitObject::HitSound{}, endTime, HitObject::HitSample{});
+        addToPattern(pattern, nextColumn, startTime, endTime);
     }
 
     return pattern;
@@ -696,7 +717,8 @@ Mania::Pattern Mania::DistanceObjectPatternGenerator::generateRandomNotes(int st
 
     for (int i = 0; i < noteCount; i++)
     {
-        pattern += std::make_unique<Hold>(HitObject::ColumnToX(nextColumn, totalColumns), 192, startTime, HitObject::HitSound{}, endTime, HitObject::HitSample{});
+        //pattern += std::make_unique<Hold>(HitObject::ColumnToX(nextColumn, totalColumns), 192, startTime, HitObject::HitSound{}, endTime, HitObject::HitSample{});
+        addToPattern(pattern, nextColumn, startTime, endTime);
         nextColumn = findAvailableColumn(nextColumn, {}, {}, {}, [lastColumn](int c) { return c != lastColumn; }, {});
         lastColumn = nextColumn;
         startTime += segmentDuration;
@@ -723,7 +745,8 @@ Mania::Pattern Mania::DistanceObjectPatternGenerator::generateStair(int startTim
 
     for (int i = 0; i <= spanCount; i++)
     {
-        pattern += std::make_unique<Circle>(HitObject::ColumnToX(column, totalColumns), 192, startTime, HitObject::HitSound{}, HitObject::HitSample{});
+        //pattern += std::make_unique<Circle>(HitObject::ColumnToX(column, totalColumns), 192, startTime, HitObject::HitSound{}, HitObject::HitSample{});
+        addToPattern(pattern, column, startTime);
         startTime += segmentDuration;
 
         // Check if we're at the borders of the stage, and invert the pattern if so
@@ -769,7 +792,8 @@ Mania::Pattern Mania::DistanceObjectPatternGenerator::generateRandomMultipleNote
 
     for (int i = 0; i <= spanCount; i++)
     {
-        pattern += std::make_unique<Circle>(HitObject::ColumnToX(nextColumn, totalColumns), 192, startTime, HitObject::HitSound{}, HitObject::HitSample{});
+        //pattern += std::make_unique<Circle>(HitObject::ColumnToX(nextColumn, totalColumns), 192, startTime, HitObject::HitSound{}, HitObject::HitSample{});
+        addToPattern(pattern, nextColumn, startTime);
 
         nextColumn += interval;
         if (nextColumn >= totalColumns - randomStart)
@@ -778,7 +802,8 @@ Mania::Pattern Mania::DistanceObjectPatternGenerator::generateRandomMultipleNote
 
         // If we're in 2K, let's not add many consecutive doubles
         if (totalColumns > 2)
-            pattern += std::make_unique<Circle>(HitObject::ColumnToX(nextColumn, totalColumns), 192, startTime, HitObject::HitSound{}, HitObject::HitSample{});
+            //pattern += std::make_unique<Circle>(HitObject::ColumnToX(nextColumn, totalColumns), 192, startTime, HitObject::HitSound{}, HitObject::HitSample{});
+            addToPattern(pattern, nextColumn, startTime);
 
         nextColumn = getRandomColumn();
         startTime += segmentDuration;
@@ -821,10 +846,10 @@ Mania::Pattern Mania::DistanceObjectPatternGenerator::generateNRandomNotes(int s
             break;
     }
 
-    constexpr auto isDoubleSample = [](HitObject::HitSample const& sample) { return sample.has(HitObject::HitSound::Clap) || sample.has(HitObject::HitSound::Finish); };
+    constexpr auto isDoubleSample = [](HitObject::HitSound sample) { return sample == HitObject::HitSound::Clap || sample == HitObject::HitSound::Finish; };
 
     bool canGenerateTwoNotes = !(convertType & (Pattern::Type::LowProbability));
-    canGenerateTwoNotes &= isDoubleSample(hitObject.hitSample) /*|| sampleInfoListAt(StartTime).Any(isDoubleSample)*/;
+    canGenerateTwoNotes &= isDoubleSample(hitObject.hitSound) /*|| sampleInfoListAt(StartTime).Any(isDoubleSample)*/;
 
     if (canGenerateTwoNotes)
         p2 = 1;
@@ -857,7 +882,8 @@ Mania::Pattern Mania::DistanceObjectPatternGenerator::generateTiledHoldNotes(int
     for (int i = 0; i < columnRepeat; i++)
     {
         nextColumn = findAvailableColumn(nextColumn, { &pattern });
-        pattern += std::make_unique<Hold>(HitObject::ColumnToX(nextColumn, totalColumns), 192, startTime, HitObject::HitSound{}, endTime, HitObject::HitSample{});
+        //pattern += std::make_unique<Hold>(HitObject::ColumnToX(nextColumn, totalColumns), 192, startTime, HitObject::HitSound{}, endTime, HitObject::HitSample{});
+        addToPattern(pattern, nextColumn, startTime, endTime);
         startTime += segmentDuration;
     }
 
@@ -879,7 +905,8 @@ Mania::Pattern Mania::DistanceObjectPatternGenerator::generateHoldAndNormalNotes
         holdColumn = findAvailableColumn(holdColumn, { &previousPattern });
 
     // Create the hold note
-    pattern += std::make_unique<Hold>(HitObject::ColumnToX(holdColumn, totalColumns), 192, startTime, HitObject::HitSound{}, endTime, HitObject::HitSample{});
+    //pattern += std::make_unique<Hold>(HitObject::ColumnToX(holdColumn, totalColumns), 192, startTime, HitObject::HitSound{}, endTime, HitObject::HitSample{});
+    addToPattern(pattern, holdColumn, startTime, endTime);
 
     int nextColumn = getRandomColumn();
     int noteCount;
@@ -898,9 +925,9 @@ Mania::Pattern Mania::DistanceObjectPatternGenerator::generateHoldAndNormalNotes
 
     //bool ignoreHead = !sampleInfoListAt(startTime).Any(s = > s.Name == HitSampleInfo.HIT_WHISTLE || s.Name == HitSampleInfo.HIT_FINISH || s.Name == HitSampleInfo.HIT_CLAP);
     bool ignoreHead = !(
-        hitObject.hitSample.has(HitObject::HitSound::Whistle) ||
-        hitObject.hitSample.has(HitObject::HitSound::Finish) ||
-        hitObject.hitSample.has(HitObject::HitSound::Clap)
+        hitObject.hitSound == HitObject::HitSound::Whistle ||
+        hitObject.hitSound == HitObject::HitSound::Finish ||
+        hitObject.hitSound == HitObject::HitSound::Clap
     );
 
     Pattern rowPattern{ totalColumns };
@@ -912,7 +939,8 @@ Mania::Pattern Mania::DistanceObjectPatternGenerator::generateHoldAndNormalNotes
             for (int j = 0; j < noteCount; j++)
             {
                 nextColumn = findAvailableColumn(nextColumn, {}, {}, {}, [holdColumn](int c) { return c != holdColumn; }, { &rowPattern });
-                rowPattern += std::make_unique<Circle>(HitObject::ColumnToX(nextColumn, totalColumns), 192, startTime, HitObject::HitSound{}, HitObject::HitSample{});
+                //rowPattern += std::make_unique<Circle>(HitObject::ColumnToX(nextColumn, totalColumns), 192, startTime, HitObject::HitSound{}, HitObject::HitSample{});
+                addToPattern(rowPattern, nextColumn, startTime);
             }
         }
 
@@ -930,7 +958,8 @@ double Mania::DistanceObjectPatternGenerator::getEndTime() const
 
     auto const beatLength = originalBeatmap.timingPoints.front().beatLength;
     auto const bpmMultiplier = beatLength < 0 ? std::clamp(-beatLength, 10.f, 10000.f) / 100.0 : 1;
-    return std::floor(startTime + slider.length * beatLength * (double)spanCount * 0.01 / originalBeatmap.difficulty.sliderMultiplier);
+    return std::floor(startTime + static_cast<double>(slider.length) * beatLength * spanCount * 0.01 / originalBeatmap.difficulty.sliderMultiplier);
+                                                        //160 / 
 }
 
 double Mania::DistanceObjectPatternGenerator::getSegmentDuration() const
@@ -939,14 +968,50 @@ double Mania::DistanceObjectPatternGenerator::getSegmentDuration() const
     return (endTime - startTime) / spanCount;
 }
 
+void Mania::DistanceObjectPatternGenerator::addToPattern(
+    Pattern& pattern,
+    int columnIndex,
+    int startTime,
+    HitObject::HitSound hitSound,
+    HitObject::HitSample hitSample)
+{
+    pattern += std::make_unique<Circle>(HitObject::ColumnToX(columnIndex, totalColumns), 192, startTime, hitSound, std::move(hitSample));
+}
+
+void Mania::DistanceObjectPatternGenerator::addToPattern(
+    Pattern& pattern,
+    int columnIndex,
+    int startTime,
+    int endTime,
+    HitObject::HitSound hitSound,
+    HitObject::HitSample hitSample)
+{
+    /*
+        prevent hold note being too short
+        This is usually caused by the conversion error between float/double <-> int
+    */
+    assert(endTime > startTime);
+    if (endTime - startTime <= originalBeatmap.timingPoints.front().beatLength / 32)
+        addToPattern(pattern, columnIndex, startTime, hitSound, std::move(hitSample));
+    else
+        pattern += std::make_unique<Hold>(HitObject::ColumnToX(columnIndex, totalColumns), 192, startTime, hitSound, endTime, std::move(hitSample));
+}
+
 #include <future>
+
+inline std::string& toLowerInplace(std::string& str)
+{
+    std::transform(str.begin(), str.end(), str.begin(), tolower);
+    return str;
+}
+
 void Mania::ConvertAll(std::filesystem::directory_iterator dir)
 {
     std::vector<std::future<void>> futures;
     for (auto&& entry : dir)
     {
         /*Do not convert maps that's already converted*/
-        if (entry.path().extension() == ".osu" && entry.path().filename().string().find("convert") == std::string::npos)
+        if (entry.path().extension() == ".osu" && toLowerInplace(entry.path().filename().string()).find("convert") == std::string::npos)
         {
             futures.emplace_back(
                 std::async(
@@ -963,7 +1028,10 @@ void Mania::ConvertAll(std::filesystem::directory_iterator dir)
                         {
                             std::cout << "\nGenerate:\n\t"
                                 << convertedMap.getCount<HitObject::Type::Circle>() << " circles\n"
-                                << '\t' << convertedMap.getCount<HitObject::Type::Hold>() << " holds \n";
+                                << '\t' << convertedMap.getCount<HitObject::Type::Hold>() << " holds \n"
+                                << '\t';
+                            for (int i = 0; i < convertedMap.difficulty.circleSize; ++i)
+                                std::cout << convertedMap.getPercentOfHitObjectInColumn(i) * 100.f << "%   ";
                         }
 
                         convertedMap.save();

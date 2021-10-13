@@ -13,7 +13,63 @@ Parser is implemented as a single header library in `OsuParser.hpp`.
 It is tested by 2 version of osu beatmap, `v11` and `v14` respectively.
 
 ### Quick Start
-The osu parser is coded following the documentation from the [official osu wiki](https://osu.ppy.sh/wiki/en/osu%21_File_Formats/Osu_%28file_format%29).
+The osu parser is coded following the documentation from the [official osu wiki](https://osu.ppy.sh/wiki/en/osu%21_File_Formats/Osu_%28file_format%29). For full documentation of the members, see generated docs in `html/index.html` or in the `OsuParser.hpp`.
+
+#### Enum Members
+- Countdown
+    ```cpp
+    enum class Countdown
+    {
+        No,
+        Normal,
+        Half,
+        Double
+    };
+    ```
+- SampleSet
+    ```cpp
+    enum class SampleSet
+    {
+        Auto,
+        Normal,
+        Soft,
+        Drum
+    };
+    ```
+- HitSound
+    ```cpp
+    enum class HitSound
+    {
+        Normal,
+        Whistle,
+        Finish,
+        Clap
+    };
+    ```
+- TimingPoint::Effect
+    ```cpp
+    struct TimingPoint
+    {
+        enum class Effect
+        {
+            Kiai,
+            OmitBarline
+        };
+    };
+    ```
+- Slider::CurveType
+    ```cpp
+    struct Slider
+    {
+        enum class CurveType
+        {
+            Bezier,
+            CatmullRom,
+            Linear,
+            Circle
+        };
+    };
+    ```
 
 #### Data Members
 These sections are represented by a `struct` respectively.
@@ -94,29 +150,83 @@ These sections are represented by a `struct` respectively.
         std::optional<Color> sliderBorder;
     };
     ```
-
-These following sections are represented by a `std::vector` of `struct` respectively.
-- Events -> `std::vector<Event>`
+- Events
     ```cpp
-    struct Event
+    struct Background
     {
-
+        int startTime;
+        std::string fileName;
+        int xOffset;
+        int yOffset;
+    };
+    struct Video
+    {
+        int startTime;
+        std::string fileName;
+        int xOffset;
+        int yOffset;
+    };
+    struct Break
+    {
+        int startTime;
+        int endTime;
+    };
+    struct Events
+    {
+        std::vector<Background> backgrounds;
+        std::vector<Video> videos;
+        std::vector<Break> breaks;
     };
     ```
+
+These following sections are represented by a `std::vector` of `struct` respectively.
 - TimingPoints -> `std::vector<TimingPoint>`
     ```cpp
     struct TimingPoint
     {
-
+        int time;
+        float beatLength;
+        int meter;
+        SampleSet sampleSet;
+        int sampleIndex;
+        int volume;
+        bool uninherited;
+        unsigned effects;
     };
     ```
 - HitObjects -> `std::vector<std::unique_ptr<HitObject>>`
     ```cpp
-    struct HitObject
+    struct HitObject    //Base class of all kinds of hit objects
     {
-
+        int x;
+        int y;
+        int time;
+        HitSound hitSound;
+        HitSample hitSample;
+        bool isNewCombo;
     };
     
+    struct Circle : public HitObject {};
+
+    struct Slider : public HitObject
+    {
+        CurveType curveType;
+        std::vector<Coord> curvePoints;
+        int slides;
+        float length;
+        std::vector<int> edgeSounds;
+        std::vector<EdgeSet> edgeSets;
+    };
+
+    struct Spinner : public HitObject
+    {
+        int endTime;
+    };
+
+    struct Hold : public HitObject
+    {
+        int endTime;
+    };
     ```
 
 All of above are stored as a member in an `OsuFile` struct.
@@ -150,6 +260,14 @@ If it's one of the `std::vector` members, there will be a `static` helper functi
 ```cpp
 auto timingPoints = TimingPoint::HandleTimingPoint("MyMap.osu");
 ```
+
+## Std -> Mania Converter
+The converter is largely copied from [osu! lazer](https://github.com/ppy/osu) in 
+- `HitObjectPatternGenerator.cs`
+- `DistanceObjectPatternGenerator.cs`
+
+### Todo
+1. Add hit sound
 
 ## 1-2 Jump Generator
 is in `JumpGenerator.hpp`

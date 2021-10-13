@@ -316,7 +316,7 @@ enum class Countdown : int
 
 enum class SampleSet
 {
-    Default,
+    Auto,
     Normal,
     Soft,
     Drum
@@ -324,23 +324,24 @@ enum class SampleSet
 
 inline std::ostream& operator<<(std::ostream& os, SampleSet sampleSet)
 {
-    switch (sampleSet)
-    {
-        case SampleSet::Default:
-            os << "Default";
-            break;
-        case SampleSet::Normal:
-            os << "Normal";
-            break;
-        case SampleSet::Soft:
-            os << "Soft";
-            break;
-        case SampleSet::Drum:
-            os << "Drum";
-            break;
-        default:
-            break;
-    }
+    //switch (sampleSet)
+    //{
+    //    case SampleSet::Auto:
+    //        os << "Auto";
+    //        break;
+    //    case SampleSet::Normal:
+    //        os << "Normal";
+    //        break;
+    //    case SampleSet::Soft:
+    //        os << "Soft";
+    //        break;
+    //    case SampleSet::Drum:
+    //        os << "Drum";
+    //        break;
+    //    default:
+    //        break;
+    //}
+    os << static_cast<int>(sampleSet);
     return os;
 }
 
@@ -715,6 +716,133 @@ struct Coord
     }
 };
 
+struct TimingPoint
+{
+    enum class Effect
+    {
+        Kiai = 1,
+        OmitBarline = 1 << 3
+    };
+
+    enum class Type
+    {
+        TimingControlPoint,
+        DifficultyControlPoint,
+        SampleControlPoint,
+        EffectControlPoint,
+        All
+    };
+
+    /**
+     * @brief Start time of the timing section, in milliseconds from the beginning of the originalBeatmap's audio.
+     * The end of the timing section is the next timing point's time (or never, if this is the last timing point).
+     */
+    int time{};
+
+    /**
+     * @brief For uninherited timing points, the duration of a beat, in milliseconds.
+     * For inherited timing points, a negative inverse slider velocity multiplier, as a percentage.
+     *
+     * @example For example, -50 would make all sliders in this timing section twice as fast as SliderMultiplier.
+     */
+    float beatLength{};
+
+    /**
+     * @brief Amount of beats in a measure. Inherited timing points ignore this property.
+     */
+    int meter{};
+
+    /**
+     * @brief Default sample set for hit objects (0 = originalBeatmap default, 1 = normal, 2 = soft, 3 = drum).
+     */
+    SampleSet sampleSet{};
+
+    /**
+     * @brief Custom sample index for hit objects. 0 indicates osu!'s default hitsounds.
+     */
+    int sampleIndex{};
+
+    /**
+     * @brief Volume percentage for hit objects.
+     */
+    int volume{};
+
+    /**
+     * @brief Whether or not the timing point is uninherited.
+     */
+    bool uninherited{};
+
+    /**
+     * @brief Bit flags that give the timing point extra effects.
+     */
+    unsigned effects{};
+
+    TimingPoint() = default;
+
+    TimingPoint(std::string_view line) : TimingPoint(details::SplitString<8>(line))
+    {
+    }
+
+    /**
+     * @details Timing point syntax:
+     *      time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
+     */
+    TimingPoint(std::array<std::string_view, 8> const& result)
+        : time{ std::stoi(result[0].data()) },
+        beatLength{ std::stof(result[1].data()) },
+        meter{ std::stoi(result[2].data()) },
+        sampleSet{ static_cast<SampleSet>(std::stoi(result[3].data())) },
+        sampleIndex{ std::stoi(result[4].data()) },
+        volume{ std::stoi(result[5].data()) },
+        uninherited{ static_cast<bool>(std::stoi(result[6].data())) },
+        effects{ static_cast<unsigned>(std::stoul(result[7].data())) }
+    {
+    }
+
+    /**
+     * @brief Parse timing points
+     * @param file The `.osu` file stream
+     * @param partial
+     */
+    static auto HandleTimingPoints(std::ifstream& file, bool partial = true)
+    {
+        std::vector<TimingPoint> timingPoints;
+        std::string line;
+
+        if (partial)
+            details::SkipUntil("[TimingPoints]", line, file);
+
+        while (details::GetLine(file, line))
+        {
+            timingPoints.emplace_back(line);
+        }
+        return timingPoints;
+    }
+
+    template<Type type>
+    [[nodiscard]] constexpr bool isType() const
+    {
+        if constexpr (type == Type::All)
+            return true;
+        else if constexpr (type == Type::TimingControlPoint)
+            return uninherited;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, TimingPoint const& timingPoint)
+    {
+        os << timingPoint.time << ','
+            << timingPoint.beatLength << ','
+            << timingPoint.meter << ','
+            << static_cast<int>(timingPoint.sampleSet) << ','
+            << timingPoint.sampleIndex << ','
+            << timingPoint.volume << ','
+            << timingPoint.uninherited << ','
+            << timingPoint.effects;
+        return os;
+    }
+};
+
+
 struct Circle;
 struct Slider;
 struct Spinner;
@@ -760,8 +888,8 @@ struct HitObject
 
     struct HitSample
     {
-        int normalSet;
-        int additionSet;
+        SampleSet normalSet;
+        SampleSet additionSet;
         int index;
         int volume;
         std::string filename;
@@ -784,23 +912,22 @@ struct HitObject
             {
                 auto const result = details::SplitString<5>(colonSeparatedList, ':');
 
-                normalSet = std::stoi(result[0].data());
-                additionSet = std::stoi(result[1].data());
+                normalSet = static_cast<SampleSet>(std::stoi(result[0].data()));
+                additionSet = static_cast<SampleSet>(std::stoi(result[1].data()));
                 index = result[2].empty() ? 0 : std::stoi(result[2].data());
                 volume = result[3].empty() ? 0 : std::stoi(result[3].data());
                 filename = result[4].empty() ? "" : result[4];
             }
         }
 
-        [[nodiscard]] constexpr bool has(HitSound hitSound) const
+        [[nodiscard]] constexpr bool has(SampleSet sampleSet) const
         {
-            auto const val = static_cast<int>(hitSound);
-            return normalSet == val || additionSet == val;
+            return normalSet == sampleSet || additionSet == sampleSet;
         }
 
         friend std::ostream& operator<<(std::ostream& os, HitSample const& hitSample)
         {
-            os << hitSample.normalSet << ':'
+            os <<  hitSample.normalSet << ':'
                 << hitSample.additionSet << ':'
                 << hitSample.index << ':'
                 << hitSample.volume << ':'
@@ -1192,16 +1319,49 @@ struct Slider final: HitObject
             .print(',');
     }
 
-    //[[nodiscard]] auto getDistance() const
-    //{
-    //    //double distance = 0;
-    //    //for (int i = 0; i<curvePoints.size() - 1; ++i)
-    //    //    distance += curvePoints[i].distanceTo(curvePoints[i + 1]);
-    //    //distance += Coord{ x, y }.distanceTo(curvePoints[0]);
-    //    //return distance;
-    //    return length;
-    //}
+private:
+    static void ThrowIfInherited(TimingPoint const& timingPoint)
+    {
+        if (timingPoint.uninherited == false || timingPoint.beatLength < 0)
+            throw std::logic_error{ "The timing point is inherited" };
+    }
+public:
+    /**
+     * @brief Get the duration of this slider
+     * @param sliderMultiplier Should be parsed from `Difficulty::sliderMultipler`
+     * @param beatLength Should be a beat length accounting for the slider velocity percent in inherited timing point
+     * @return Duration in milliseconds
+     */
+    [[nodiscard]] auto getDuration(float sliderMultiplier, float beatLength) const
+    {
+        return static_cast<double>(length) * beatLength * slides * 0.01 / sliderMultiplier;
+    }
 
+    /**
+     * @brief Get the duration of this slider
+     * @param difficulty Parsed difficulty section
+     * @param uninheritedTimingPoint Must be an uninheirted timingPoint
+     * @return Duration in milliseconds
+     */
+    [[nodicard]] auto getDuration(Difficulty const& difficulty, TimingPoint const& uninheritedTimingPoint)
+    {
+        ThrowIfInherited(uninheritedTimingPoint);
+        return getDuration(difficulty.sliderMultiplier, uninheritedTimingPoint.beatLength);
+    }
+
+    /**
+     * @brief Get the duration of this slider
+     * @param difficulty Parsed difficulty section
+     * @param uninheritedTimingPoint Must be an uninheirted timingPoint
+     * @param inheritedTimingPointBeatLength The beatLength value from an inheritedTimingPoint, which is the original negative value
+     * @return Duration in milliseconds
+     */
+    [[nodiscard]] auto getDuration(Difficulty const& difficulty, TimingPoint const& uninheritedTimingPoint, float inheritedTimingPointBeatLength) const
+    {
+        if (uninheritedTimingPoint.uninherited == false || uninheritedTimingPoint.beatLength < 0 || inheritedTimingPointBeatLength >= 0)
+            throw std::logic_error{ "The timing point is inherited" };
+        return getDuration(difficulty.sliderMultiplier, uninheritedTimingPoint.beatLength * (-inheritedTimingPointBeatLength) / 100.f);
+    }
 
     std::unique_ptr<HitObject> clone() const override
     {
@@ -1302,133 +1462,6 @@ struct Hold final : HitObject
         return std::unique_ptr<HitObject>(new Hold(*this));
     }
 };
-
-struct TimingPoint
-{
-    enum class Effect
-    {
-        Kiai = 1,
-        OmitBarline = 1 << 3
-    };
-
-    enum class Type
-    {
-        TimingControlPoint,
-        DifficultyControlPoint,
-        SampleControlPoint,
-        EffectControlPoint,
-        All
-    };
-
-    /**
-     * @brief Start time of the timing section, in milliseconds from the beginning of the originalBeatmap's audio.
-     * The end of the timing section is the next timing point's time (or never, if this is the last timing point).
-     */
-    int time{};
-
-    /**
-     * @brief For uninherited timing points, the duration of a beat, in milliseconds.
-     * For inherited timing points, a negative inverse slider velocity multiplier, as a percentage.
-     *
-     * @example For example, -50 would make all sliders in this timing section twice as fast as SliderMultiplier.
-     */
-    float beatLength{};
-
-    /**
-     * @brief Amount of beats in a measure. Inherited timing points ignore this property.
-     */
-    int meter{};
-
-    /**
-     * @brief Default sample set for hit objects (0 = originalBeatmap default, 1 = normal, 2 = soft, 3 = drum).
-     */
-    SampleSet sampleSet{};
-
-    /**
-     * @brief Custom sample index for hit objects. 0 indicates osu!'s default hitsounds.
-     */
-    int sampleIndex{};
-
-    /**
-     * @brief Volume percentage for hit objects.
-     */
-    int volume{};
-
-    /**
-     * @brief Whether or not the timing point is uninherited.
-     */
-    bool uninherited{};
-
-    /**
-     * @brief Bit flags that give the timing point extra effects.
-     */
-    unsigned effects{};
-
-    TimingPoint() = default;
-
-    TimingPoint(std::string_view line) : TimingPoint(details::SplitString<8>(line))
-    {
-    }
-
-    /**
-     * @details Timing point syntax: 
-     *      time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
-     */
-    TimingPoint(std::array<std::string_view, 8> const& result)
-        : time{ std::stoi(result[0].data()) },
-        beatLength{ std::stof(result[1].data()) },
-        meter{ std::stoi(result[2].data()) },
-        sampleSet{ static_cast<SampleSet>(std::stoi(result[3].data())) },
-        sampleIndex{ std::stoi(result[4].data()) },
-        volume{ std::stoi(result[5].data()) },
-        uninherited{ static_cast<bool>(std::stoi(result[6].data())) },
-        effects{ static_cast<unsigned>(std::stoul(result[7].data())) }
-    {
-    }
-
-    /**
-     * @brief Parse timing points
-     * @param file The `.osu` file stream
-     * @param partial 
-     */
-    static auto HandleTimingPoints(std::ifstream& file, bool partial = true)
-    {
-        std::vector<TimingPoint> timingPoints;
-        std::string line;
-
-        if (partial)
-            details::SkipUntil("[TimingPoints]", line, file);
-
-        while (details::GetLine(file, line))
-        {
-            timingPoints.emplace_back(line);
-        }
-        return timingPoints;
-    }
-
-    template<Type type>
-    [[nodiscard]] constexpr bool isType() const
-    {
-        if constexpr (type == Type::All)
-            return true;
-        else if constexpr (type == Type::TimingControlPoint)
-            return uninherited;
-    }
-
-    friend std::ostream& operator<<(std::ostream& os, TimingPoint const& timingPoint)
-    {
-        os << timingPoint.time << ','
-            << timingPoint.beatLength << ','
-            << timingPoint.meter << ','
-            << static_cast<int>(timingPoint.sampleSet) << ','
-            << timingPoint.sampleIndex << ','
-            << timingPoint.volume << ','
-            << timingPoint.uninherited << ','
-            << timingPoint.effects;
-        return os;
-    }
-};
-
 
 struct Colors
 {
@@ -1954,6 +1987,24 @@ struct OsuFile
             return 0;
         else
             return (getCount<types>() + ...) / static_cast<float>(hitObjects.size());
+    }
+
+    /**
+     * @brief Get percent of hit object of a certain column in Mania Mode
+     */
+    [[nodiscard]] float getPercentOfHitObjectInColumn(int columnIndex) const
+    {
+        if (general.mode != Mode::Mania || columnIndex < 0 || columnIndex >= difficulty.circleSize)
+            throw std::logic_error{ "Invalid call to getPercentOfHitObjectInColumn()" };
+
+        return std::count_if(
+            hitObjects.cbegin(),
+            hitObjects.cend(),
+            [columnIndex, totalColumn = difficulty.circleSize](auto const& obj)
+            {
+                return obj->getColumnIndex(totalColumn) == columnIndex;
+            }
+        ) / static_cast<float>(hitObjects.size());
     }
 
     /**

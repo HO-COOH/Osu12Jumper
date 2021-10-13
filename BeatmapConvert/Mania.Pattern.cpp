@@ -1,11 +1,10 @@
 #include "include/Mania.Pattern.hpp"
 #include <unordered_set>
+#include <algorithm>
 
 bool Mania::Pattern::colunmHasObject(int column) const
 {
-	return std::count_if(hitObjects.cbegin(), hitObjects.cend(),
-		[column](auto const& ptr) { return ptr->getColumnIndex(7) == column;
-	});
+	return std::any_of(hitObjects.cbegin(), hitObjects.cend(), [column, this](auto const& objPtr) { return objPtr->getColumnIndex(totalColumn) == column; });
 }
 
 int Mania::Pattern::numColumnWithObject() const

@@ -149,6 +149,29 @@ namespace Mania
 
         [[nodiscard]] double getEndTime() const;
         [[nodiscard]] double getSegmentDuration() const;
+
+        /**
+         * @brief Add a circle
+         */
+        void addToPattern(
+            Pattern& pattern,
+            int columnIndex, 
+            int startTime, 
+            HitObject::HitSound hitSound = HitObject::HitSound{}, 
+            HitObject::HitSample hitSample = HitObject::HitSample{}
+        );
+
+        /**
+         * @brief Add a Hold
+         */
+        void addToPattern(
+            Pattern& pattern,
+            int columnIndex,
+            int startTime,
+            int endTime,
+            HitObject::HitSound hitSound = HitObject::HitSound{},
+            HitObject::HitSample hitSample = HitObject::HitSample{}
+        );
     };
 
     class ManiaBeatmapConverter : public BeatmapConverter
@@ -188,6 +211,8 @@ namespace Mania
         void computeDensity(int newNoteTime);
 
         int getTargetColumn() const;
+
+        //void cleanUpStackedNotes(std::vector<std::unique_ptr<HitObject>>& result) const;
 
         
 

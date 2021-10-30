@@ -52,7 +52,7 @@ Mania::HitObjectPatternGenerator::HitObjectPatternGenerator(
     }
 }
 
-#define PrintDetail
+//#define PrintDetail
 
 Mania::Pattern Mania::HitObjectPatternGenerator::generate()
 {
@@ -355,7 +355,9 @@ Mania::Pattern Mania::HitObjectPatternGenerator::generateRandomPatternWithMirror
 
     bool addToCentre{};
     auto const noteCount = getRandomNoteCountMirrored(centreProbability, p2, p3, addToCentre);
-    auto const columnLimit = (totalColumns % 2 == 0 ? totalColumns : totalColumns - 1) / 2;
+    auto const columnLimit = (totalColumns % 2 == 0 ? totalColumns : totalColumns - 1) / 2 - 1; 
+                                                            //osu lazer differs here        ^
+                                                            //Our limit is inclusive
     auto nextColumn = getRandomColumn({}, columnLimit);
 
     for (int i = 0; i < noteCount; ++i)
@@ -586,7 +588,7 @@ Mania::Pattern Mania::DistanceObjectPatternGenerator::generate()
 {
     assert(startTime == hitObject.time);
 #ifdef PrintDetail
-    std::cout << "original: " << hitObject.time <<", endTime: "<< endTime << ", type: " << hitObject.type << " -> convertType: " << convertType << '\n';
+    //std::cout << "original: " << hitObject.time <<", endTime: "<< endTime << ", type: " << hitObject.type << " -> convertType: " << convertType << '\n';
 #endif
 
     if (totalColumns == 1)
@@ -815,9 +817,9 @@ Mania::Pattern Mania::DistanceObjectPatternGenerator::generateRandomMultipleNote
 Mania::Pattern Mania::DistanceObjectPatternGenerator::generateNRandomNotes(int startTime, double p2, double p3, double p4) 
 {
     // - - - -
-    // ¡ö - ¡ö ¡ö
-    // ¡õ - ¡õ ¡õ
-    // ¡ö - ¡ö ¡ö
+    // ï¿½ï¿½ - ï¿½ï¿½ ï¿½ï¿½
+    // ï¿½ï¿½ - ï¿½ï¿½ ï¿½ï¿½
+    // ï¿½ï¿½ - ï¿½ï¿½ ï¿½ï¿½
 
     switch (totalColumns)
     {
@@ -860,13 +862,13 @@ Mania::Pattern Mania::DistanceObjectPatternGenerator::generateNRandomNotes(int s
 Mania::Pattern Mania::DistanceObjectPatternGenerator::generateTiledHoldNotes(int startTime) 
 {
     // - - - -
-    // ¡ö ¡ö ¡ö ¡ö
-    // ¡õ ¡õ ¡õ ¡õ
-    // ¡õ ¡õ ¡õ ¡õ
-    // ¡õ ¡õ ¡õ ¡ö
-    // ¡õ ¡õ ¡ö -
-    // ¡õ ¡ö - -
-    // ¡ö - - -
+    // ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½
+    // ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½
+    // ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½
+    // ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½
+    // ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ -
+    // ï¿½ï¿½ ï¿½ï¿½ - -
+    // ï¿½ï¿½ - - -
 
     Pattern pattern{totalColumns};
 
@@ -893,10 +895,10 @@ Mania::Pattern Mania::DistanceObjectPatternGenerator::generateTiledHoldNotes(int
 Mania::Pattern Mania::DistanceObjectPatternGenerator::generateHoldAndNormalNotes(int startTime) 
 {
     // - - - -
-    // ¡ö x x -
-    // ¡ö - x x
-    // ¡ö x - x
-    // ¡ö - x x
+    // ï¿½ï¿½ x x -
+    // ï¿½ï¿½ - x x
+    // ï¿½ï¿½ x - x
+    // ï¿½ï¿½ - x x
 
     Pattern pattern{ totalColumns };
 
@@ -990,7 +992,7 @@ void Mania::DistanceObjectPatternGenerator::addToPattern(
         prevent hold note being too short
         This is usually caused by the conversion error between float/double <-> int
     */
-    assert(endTime > startTime);
+    //assert(endTime > startTime);
     if (endTime - startTime <= originalBeatmap.timingPoints.front().beatLength / 32)
         addToPattern(pattern, columnIndex, startTime, hitSound, std::move(hitSample));
     else
@@ -1005,47 +1007,216 @@ inline std::string& toLowerInplace(std::string& str)
     return str;
 }
 
-void Mania::ConvertAll(std::filesystem::directory_iterator dir)
+static inline bool ShouldConvert(std::filesystem::directory_entry const& entry)
+{
+    return entry.path().extension() == ".osu" && toLowerInplace(entry.path().filename().string()).find("convert") == std::string::npos;
+}
+
+static auto ConvertImpl(std::filesystem::directory_entry const& entry)
+{
+    return
+        std::async(
+            std::launch::async,
+            [entry]()
+            {
+                std::cout << "Converting " << entry << '\n';
+                OsuFile f{ std::ifstream{entry.path()} };
+                Mania::ManiaBeatmapConverter converter{ f };
+                converter.setTargetColumn(4);
+
+                auto convertedMap = converter.convertBeatmap();
+                convertedMap.metaData.version += "Converted";
+
+                {
+                    std::cout << "\nGenerate:\n\t"
+                        << convertedMap.getCount<HitObject::Type::Circle>() << " circles\n"
+                        << '\t' << convertedMap.getCount<HitObject::Type::Hold>() << " holds \n"
+                        << '\t';
+                    for (int i = 0; i < convertedMap.difficulty.circleSize; ++i)
+                        std::cout << convertedMap.getPercentOfHitObjectInColumn(i) * 100.f << "%   ";
+                }
+
+                Mania::AddBreaks(convertedMap);
+                Mania::RemoveShortHolds(convertedMap);
+                convertedMap.metaData.version += "Break";
+
+                auto fileName = convertedMap.getSaveFileName();
+                auto rootDir = entry.path().parent_path().string();
+                auto path = rootDir + "\\" + fileName;
+                try 
+                {
+                    convertedMap.save(path.c_str());
+                }
+                catch (std::exception const& e)
+                {
+                    std::cerr << e.what() <<" Retrying!"<< '\n';
+                    
+                    /*Maybe because of file too long, make shorter then retry*/
+                    convertedMap.metaData.version = "test";
+                    fileName = convertedMap.getSaveFileName();
+                    path = rootDir + "\\" + fileName;
+                    try 
+                    {
+                        convertedMap.save(path.c_str());
+                    }
+                    catch(std::exception const& e)
+                    {
+                        std::cerr << e.what() << '\n';
+                    }
+                }
+
+            }
+        );
+    
+}
+
+#include <type_traits>
+template<typename DirectoryIterator>
+void ConvertAllImpl(DirectoryIterator&& dir)
 {
     std::vector<std::future<void>> futures;
     for (auto&& entry : dir)
     {
         /*Do not convert maps that's already converted*/
-        if (entry.path().extension() == ".osu" && toLowerInplace(entry.path().filename().string()).find("convert") == std::string::npos)
-        {
-            futures.emplace_back(
-                std::async(
-                    std::launch::async,
-                    [entry]()
-                    {
-                        std::cout << "Converting " << entry << '\n';
-                        OsuFile f{std::ifstream{entry.path()}};
-                        Mania::ManiaBeatmapConverter converter{ f };
-
-                        auto convertedMap = converter.convertBeatmap();
-                        convertedMap.metaData.version += "Converted";
-
-                        {
-                            std::cout << "\nGenerate:\n\t"
-                                << convertedMap.getCount<HitObject::Type::Circle>() << " circles\n"
-                                << '\t' << convertedMap.getCount<HitObject::Type::Hold>() << " holds \n"
-                                << '\t';
-                            for (int i = 0; i < convertedMap.difficulty.circleSize; ++i)
-                                std::cout << convertedMap.getPercentOfHitObjectInColumn(i) * 100.f << "%   ";
-                        }
-
-                        convertedMap.save();
-                    }
-                )
-            );
-        }
+        if (ShouldConvert(entry))
+            futures.emplace_back(ConvertImpl(entry));
     }
 
     for (auto& future : futures)
         future.get();
 }
 
+void Mania::ConvertAll(std::filesystem::recursive_directory_iterator dir)
+{
+    ConvertAllImpl(dir);
+}
+
+void Mania::ConvertAll(std::filesystem::directory_iterator dir)
+{
+    ConvertAllImpl(dir);
+}
+
 void Mania::ConvertAll(std::filesystem::path path)
 {
-    ConvertAll(std::filesystem::directory_iterator{ std::move(path) });
+    ConvertAll(std::filesystem::recursive_directory_iterator{ std::move(path) });
+}
+
+/**
+ * @return true if the advancing can be done, false if it reached pass end
+ */
+template<typename Iter>
+static bool AdvanceEndIter(int startTime, Iter& iter, Iter const& endIter, int windowSizeInMilliseconds)
+{
+    while(iter < endIter && (*iter)->time < startTime + windowSizeInMilliseconds)
+        iter++;
+    return iter < endIter;
+}
+
+/**
+ * @return true if the window needs to be removed
+ */
+template<typename Iter>
+static bool CheckWindow(OsuFile const& beatmap, Iter const& start, Iter& end, int windowSizeMilliseconds, int hitObjectCountsThreshold)
+{
+    auto const startTime = (*start)->time;
+    auto endTime = (*end)->time;
+    while(end < beatmap.hitObjects.cend() && (beatmap.getNumHitObjectDuring(startTime, endTime) < hitObjectCountsThreshold && endTime - startTime < windowSizeMilliseconds))
+    {
+        ++end;
+        if (end >= beatmap.hitObjects.cend())
+            return false;
+        endTime = (*end)->time;
+    }
+    /* either there is enough hit objects or window has reached*/
+    auto const numHitObject = beatmap.getNumHitObjectDuring(startTime, endTime);
+    if (numHitObject <= hitObjectCountsThreshold && endTime - startTime >= windowSizeMilliseconds)
+    {
+        while (end < beatmap.hitObjects.cend() && (beatmap.getNumHitObjectDuring(startTime, endTime) <= hitObjectCountsThreshold))
+        {
+            ++end;
+            if (end >= beatmap.hitObjects.cend())
+                return false;
+            endTime = (*end)->time;
+        }
+        return true;
+    }
+    else
+        return false;
+}
+
+template<typename Iter>
+static auto MakeBreak(OsuFile& beatmap, Iter start, Iter end)
+{
+    assert(start != end);
+    auto const startTime = (*start)->time;
+    auto const endTime = (*end)->time;
+    /*Remove the hit objects*/
+    std::cerr << "Removed [" << startTime << " , " << endTime << "] hitobjects = " << beatmap.getNumHitObjectDuring(startTime, endTime) <<'\n';
+    beatmap.hitObjects.erase(start, end);
+    
+
+    /*Insert break section*/
+    auto iter = beatmap.events.getEventAt<Events::Type::Break>(startTime);
+    beatmap.events.breaks.insert(iter, Break{ startTime, endTime });
+
+    return std::distance(start, end);
+}
+
+void Mania::AddBreaks(OsuFile& beatmap, int windowSizeInBeats, int hitObjectCountsThreshold)
+{
+    /*Don't convert if there are few hitobjects or map length too short*/
+    if (beatmap.hitObjects.size() <= hitObjectCountsThreshold || beatmap.timingPoints.empty())
+        return;
+
+    auto const beatLength = beatmap.timingPoints.front().beatLength;
+    if ((beatmap.getDrainTime() / beatLength) < windowSizeInBeats)
+        return;
+
+    /*Do convert*/
+    auto const windowSizeInMilliseconds = windowSizeInBeats * beatLength;
+    auto windowStartIter = beatmap.hitObjects.begin();
+    auto windowEndIter = windowStartIter;
+    
+    AdvanceEndIter((*windowStartIter)->time, windowEndIter, beatmap.hitObjects.end(), windowSizeInMilliseconds);
+    while(windowEndIter != beatmap.hitObjects.end())
+    {
+        auto index = std::distance(beatmap.hitObjects.begin(), windowStartIter);
+        
+        if (CheckWindow(beatmap, windowStartIter, windowEndIter, windowSizeInMilliseconds, hitObjectCountsThreshold))
+        {
+            MakeBreak(beatmap, windowStartIter, windowEndIter);
+        }
+        else
+            ++index;
+        
+
+        /*reset the iterators*/
+        windowStartIter = beatmap.hitObjects.begin() + index;
+        windowEndIter = windowStartIter;
+        if(++windowEndIter >= beatmap.hitObjects.end())
+            break;
+    }
+}
+
+
+static inline bool isOneFourthHold(Hold* hold, int beatLength)
+{
+    return abs(hold->getDuration() - beatLength / 4) <= beatLength / 16;
+}
+
+void Mania::RemoveShortHolds(OsuFile& beatmap)
+{
+    auto columns = beatmap.difficulty.circleSize;
+    //convert all one-fourth holds in hitObjects to circles
+    for (auto& hitObject : beatmap.hitObjects)
+    {
+        if (hitObject->type == HitObject::Type::Hold)
+        {
+            auto holdPtr = dynamic_cast<Hold*>(hitObject.get());
+            if (isOneFourthHold(holdPtr, beatmap.timingPoints.front().beatLength))
+            {
+                hitObject.reset(new Circle{ Circle::ColumnToX(holdPtr->getColumnIndex(columns), columns), 192, holdPtr->time, HitObject::HitSound{}, HitObject::HitSample{}});
+            }
+        }
+    }
 }

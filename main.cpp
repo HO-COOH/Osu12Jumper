@@ -27,6 +27,10 @@ int main()
 
 	//convertedMap.save();
 
-	//Mania::ConvertAll(std::filesystem::directory_iterator{ std::filesystem::path{ "." } });
 	Mania::ConvertAll(".");
+	//OsuFile f{ std::ifstream{"tian fu zhen_d_1_n_0.28_s_-0.4 - xiao xing yun (AI) [hardConverted].osu"} };
+	//Mania::AddBreaks(f, 6, 2);
+	//Mania::RemoveShortHolds(f);
+	//f.metaData.version += "Break";
+	//f.save();
 }

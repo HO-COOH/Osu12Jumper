@@ -11,6 +11,12 @@ AddTest(ManiaParse)
 AddTest(Utils)
 AddTest(HelperFunction)
 
-add_executable("Test.StdConvertToMania" "StdConvertToMania.cpp" ../BeatmapConvert/BeatmapConvert.cpp)
+add_executable("Test.StdConvertToMania" "StdConvertToMania.cpp" 
+    ../BeatmapConvert/BeatmapConvert.cpp 
+    "../BeatmapConvert/Mania.Pattern.cpp"
+    "../BeatmapConvert/PatternGenerator.cpp"
+    )
 target_link_libraries("Test.StdConvertToMania" PRIVATE GTest::gtest GTest::gtest_main)
 gtest_discover_tests("Test.StdConvertToMania")
+
+# add_custom_target()

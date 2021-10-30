@@ -181,6 +181,7 @@ namespace Mania
         ManiaBeatmapConverter(OsuFile const& originalBeatmap);
 
 
+        ManiaBeatmapConverter& setTargetColumn(int target);
 
         OsuFile convertBeatmap() override;
 
@@ -200,7 +201,6 @@ namespace Mania
          */
         OsuFile beatmap;
         
-        ManiaBeatmapConverter& setTargetColumn(int target);
 
     private:
 
@@ -241,6 +241,12 @@ namespace Mania
     };
 
     /**
+     * @brief Convert all osu maps in the directory (include sub-directories) in parallel
+     * @details The converted maps would be named as "<originalVersion>Converted" and saved under the same directory
+     */
+    void ConvertAll(std::filesystem::recursive_directory_iterator dir);
+
+     /**
      * @brief Convert all osu maps in the directory in parallel
      * @details The converted maps would be named as "<originalVersion>Converted" and saved under the same directory
      */
@@ -251,4 +257,18 @@ namespace Mania
      * @details The converted maps would be named as "<originalVersion>Converted" and saved under the same directory
      */
     void ConvertAll(std::filesystem::path path);
+
+    /**
+     * @brief Convert long section of very low density part of maps to break, using a sliding window algorithm
+     * @param beatmap A reference to the beatmap to be processed
+     * @param windowSizeInBeats The sliding window sizes in terms of beats (4/4)
+     * @param hitObjectCountsThreshold Specifies the minimum number of hitObjects in the window in order to not be convert into breaks
+     */
+    void AddBreaks(OsuFile& beatmap, int windowSizeInBeats = 6, int hitObjectCountsThreshold = 2);
+
+    /**
+     * @brief Remove all 1/4 holds in the beapmap
+     * @param beatmap The beatmap to be processed
+     */
+    void RemoveShortHolds(OsuFile& beatmap);
 }

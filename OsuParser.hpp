@@ -22,6 +22,9 @@
 #include <numeric>
 #include <variant>
 #include <cassert>
+#include <iterator>
+
+//#include <queue>
 
 /**
  * @brief Osu editor play field size
@@ -38,6 +41,13 @@ namespace PlayField
 
 namespace details 
 {
+    //template<typename T>
+    //class SortedArrayMerge
+    //{
+    //    std::priority_queue<T*> queue;
+
+    //};
+
     /**
      * @brief Remove spacing or specified characters of both side of the string
      * @param s The source string to be trimmed
@@ -802,7 +812,9 @@ struct TimingPoint
     /**
      * @brief Parse timing points
      * @param file The `.osu` file stream
-     * @param partial
+     * @param partial Whether this is a partial parse. If true, it skips until the line "[TimingPoints]" is encountered. 
+     * Otherwise, it tries to parse from the current line.
+     * @return A `std::vector<TimingPoint>`
      */
     static auto HandleTimingPoints(std::ifstream& file, bool partial = true)
     {
@@ -884,6 +896,9 @@ struct HitObject
      */
     HitSound hitSound;
 
+    /**
+     * @brief Whether this hit object is the start of a combo.
+     */
     bool isNewCombo = false;
 
     struct HitSample
@@ -1014,7 +1029,7 @@ public:
     }
 
     /**
-     * @brief Returns the columnIndex in mania mode
+     * @brief Returns the columnIndex (starts from 0) in mania mode
      * @param columnCount number of total columns
      */
     [[nodiscard]] auto getColumnIndex(int columnCount) const
@@ -1028,8 +1043,8 @@ public:
     [[nodiscard]] static int ColumnToX(int columnIndex, int columnCount)
     {
         /*
-        *   columnIndex = x * columnCount / 512
-        *   x = columnIndex * 512 / columnCount;
+         *   columnIndex = x * columnCount / 512
+         *   x = columnIndex * 512 / columnCount;
         */
         assert(!(columnIndex < 0 || columnIndex >= columnCount));
         return std::clamp(columnIndex * 512 / (columnCount % 2 == 0? columnCount : columnCount - 1), 0, 512);
@@ -1097,6 +1112,9 @@ public:
         return objects;
     }
 
+    /**
+     * @brief 
+     */
     virtual void printObjectParam(std::ostream& os) const = 0;
 
     virtual std::unique_ptr<HitObject> clone() const = 0;
@@ -1320,6 +1338,9 @@ struct Slider final: HitObject
     }
 
 private:
+    /**
+     * @brief Throw `std::logic_error` if a timing point is inherited.
+     */
     static void ThrowIfInherited(TimingPoint const& timingPoint)
     {
         if (timingPoint.uninherited == false || timingPoint.beatLength < 0)
@@ -1343,7 +1364,7 @@ public:
      * @param uninheritedTimingPoint Must be an uninheirted timingPoint
      * @return Duration in milliseconds
      */
-    [[nodicard]] auto getDuration(Difficulty const& difficulty, TimingPoint const& uninheritedTimingPoint)
+    [[nodiscard]] auto getDuration(Difficulty const& difficulty, TimingPoint const& uninheritedTimingPoint)
     {
         ThrowIfInherited(uninheritedTimingPoint);
         return getDuration(difficulty.sliderMultiplier, uninheritedTimingPoint.beatLength);
@@ -1444,6 +1465,11 @@ struct Hold final : HitObject
         auto [endTimeStr, hitSampleStr] = details::SplitKeyVal(result.back());
         endTime = std::stoi(endTimeStr.data());
         hitSample = HitSample{ hitSampleStr };
+    }
+
+    [[nodiscard]] auto getDuration() const
+    {
+        return endTime - time;
     }
 
     static auto MakeManiaHitObject(int columnIndex, int totalColumns, int time, int endTime, HitSound hitSound = HitSound::Normal, HitSample hitSample = HitSample{})
@@ -1605,6 +1631,7 @@ struct Metadata
 
     /**
      * @brief Parse Metadata from osu file
+     * @param partial If this is a partial parse, it skips until "[Metadata]" line is encountered, default = `true`
      */
     Metadata(std::ifstream& osuFile, bool partial = true)
     {
@@ -1630,22 +1657,28 @@ struct Metadata
         }
     }
 
+    /**
+     * @brief Default constructor, all members set to empty.
+     */
     Metadata() = default;
 
     friend std::ostream& operator<<(std::ostream& os, Metadata const& data)
     {
-        details::PrintHelper{ os }
-            .printLn("[Metadata]")
+        details::PrintHelper h{ os };
+            h.printLn("[Metadata]")
             .printLn("Title: ", data.title)
             .printLn("TitleUnicode: ", data.titleUnicode)
             .printLn("Artist: ", data.artist)
             .printLn("ArtistUnicode: ", data.artistUnicode)
             .printLn("Creator: ", data.creator)
             .printLn("Version: ", data.version)
-            .printLn("Source: ", data.source)
-            .printLn("BeatmapID: ", data.beatmapId)
-            .printLn("BeatmapSetID: ", data.beatmapSetId)
-            .printLn("Tags: ", data.tags, " ");
+            .printLn("Source: ", data.source);
+        if (data.beatmapId != -1)
+            h.printLn("BeatmapID", data.beatmapId);
+        if (data.beatmapSetId != -1)
+            h.printLn("BeatmapSetID", -1);
+
+        h.printLn("Tags: ", data.tags, " ");
         return os;
     }
 };
@@ -1684,6 +1717,11 @@ struct EventBase
     EventBase(int eventType, int startTime) : eventType{ eventType }, startTime{ startTime }{}
 
     virtual ~EventBase() = default;
+
+    bool operator<(EventBase const& other) const
+    {
+        return startTime < other.startTime;
+    }
 };
 
 struct Background final : EventBase
@@ -1719,6 +1757,12 @@ public:
     Background(std::string_view line)
         :Background(details::SplitString<5>(line, ','))
     {
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, Background const& data)
+    {
+        os << "0,0,"<< data.fileName << "," << data.xOffset << "," << data.yOffset;
+        return os;
     }
 };
 
@@ -1756,6 +1800,12 @@ public:
         :Video(details::SplitString<5>(line, ','))
     {
     }
+
+    friend std::ostream& operator<<(std::ostream& os, Video const& data)
+    {
+        os << "1,"<< data.startTime << "," << data.fileName << "," << data.xOffset << "," << data.yOffset;
+        return os;
+    }
 };
 
 struct Break final : EventBase
@@ -1781,10 +1831,24 @@ public:
     {
         return endTime - startTime;
     }
+
+    friend std::ostream& operator<<(std::ostream& os, Break const& data)
+    {
+        os << "2," << data.startTime << "," << data.endTime;
+        return os;
+    }
 };
 
 struct Events
 {
+
+    enum class Type
+    {
+        Background = 0,
+        Video = 1,
+        Break = 2,
+    };
+
     std::vector<Background> backgrounds;
     std::vector<Video> videos;
     std::vector<Break> breaks;
@@ -1828,16 +1892,34 @@ struct Events
     Events& operator+=(Background backgroundEvent) { backgrounds.emplace_back(std::move(backgroundEvent)); return *this; }
     Events& operator+=(Video videoEvent) { videos.emplace_back(std::move(videoEvent)); return *this; }
     Events& operator+=(Break breakEvent) { breaks.emplace_back(std::move(breakEvent)); return *this; }
-
-private:
-
-    enum class Type
+    
+    /**
+     * @brief Get an event at a specified time
+     * @param time Time in milliseconds
+     * @tparam eventType Must be an enum from `Events::Type`
+     * @return An iterator pointing to the specified type of event that happens before the specified time
+     */
+    template<Type eventType>// typename = std::enable_if_t<std::is_base_of_v<Evc>
+    auto getEventAt(int time)
     {
-        Background = 0,
-        Video = 1,
-        Break = 2,
-    };
+        if constexpr(eventType == Type::Background)
+            return std::find_if(begin(backgrounds), end(backgrounds), [time](auto const& event) { return event.startTime <= time; });
+        else if constexpr(eventType == Type::Video)
+            return std::find_if(begin(videos), end(videos), [time](auto const& event) { return event.startTime <= time; });
+        else if constexpr(eventType == Type::Break)
+            return std::find_if(begin(breaks), end(breaks), [time](auto const& event) { return event.startTime <= time; });
+    }
 
+    friend std::ostream& operator<<(std::ostream& os, Events const& events)
+    {
+        os << "[Events]\n";
+        auto PrintEventVec = [&os](auto const& vec) { std::copy(vec.cbegin(), vec.cend(), std::ostream_iterator<decltype(vec.front())> {os, "\n"}); };
+        
+        PrintEventVec(events.backgrounds);
+        PrintEventVec(events.breaks);
+        PrintEventVec(events.videos);
+        return os;
+    }
 };
 
 
@@ -1931,6 +2013,32 @@ struct OsuFile
         return timingPoints.empty() ? 0.0 : 60'000 / timingPoints.front().beatLength;
     }
 
+    [[nodiscard]] auto getAverageBeatLength() const
+    {
+        int uninheritedTimingPointCount{};
+        return std::accumulate(
+                    timingPoints.cbegin(),
+                    timingPoints.cend(),
+                    0.0,
+                    [&uninheritedTimingPointCount](auto sum, auto const& timingPoint) 
+                    {
+                        if(timingPoint.uninherited)
+                            return sum;
+                        else
+                        {
+                            uninheritedTimingPointCount++;
+                            return sum + timingPoint.beatLength;
+                        }
+                    }
+                ) 
+        / uninheritedTimingPointCount;;
+    }
+
+    [[nodiscard]] auto getAverageBPM() const
+    {
+        return 60'000 / getAverageBeatLength();
+    }
+
     /**
      * @brief Get the nearest timing point to `time`, that is the one nearest timing point before time
      */
@@ -1968,11 +2076,15 @@ struct OsuFile
      */
     [[nodiscard]] int getTotalBreakTime() const
     {
-        return std::accumulate(events.breaks.cbegin(), events.breaks.cend(), 0, 
+        return std::accumulate(
+            events.breaks.cbegin(), 
+            events.breaks.cend(), 
+            0, 
             [](auto value, auto const& breakEvent)
             {
                 return value + (breakEvent.endTime - breakEvent.startTime);
-            });
+            }
+        );
     }
 
 
@@ -1987,6 +2099,21 @@ struct OsuFile
             return 0;
         else
             return (getCount<types>() + ...) / static_cast<float>(hitObjects.size());
+    }
+
+    [[nodiscard]] int getNumHitObjectDuring(int startTime, int endTime) const
+    {
+        auto const iter = std::find_if(hitObjects.cbegin(), hitObjects.cend(), [startTime](auto const& obj)
+        {
+            return obj->time >= startTime;
+        });
+        if(iter != hitObjects.cend())
+        {
+            auto const iter2 = std::find_if(iter, hitObjects.cend(), [endTime](auto const& obj) { return obj->time >= endTime; });
+            return std::distance(iter, iter2);
+        }
+
+        return 0;
     }
 
     /**
@@ -2026,6 +2153,9 @@ struct OsuFile
             .printLn(timingPoints)
             .printLn("")
             .printLn(colors)
+            .printLn("")
+            .printLn(events)
+            .printLn("")
             .printLn("[HitObjects]")
             .printLn(hitObjects);
     }
@@ -2037,19 +2167,20 @@ struct OsuFile
     void save(char const* fileName) const
     {
         constexpr auto suffix = ".osu";
-        save(std::ofstream{ std::string{fileName} + suffix });
+        auto const saveFileName = std::string{ fileName } + suffix;
+        std::cout << "Map saved -> " << saveFileName << '\n';
+        save(std::ofstream{ saveFileName });
     }
 
-private:
     /**
      * @brief Return the default file name according to song title, artist and difficulty
      * @param withExtension Controls whether `.osu` should be added
      */
     auto getSaveFileName(bool withExtension = false) const
     {
-        return metaData.artistUnicode
+        return metaData.artist
             + " - "
-            + metaData.titleUnicode
+            + metaData.title
             + " ("
             + metaData.creator
             + ") ["
@@ -2156,9 +2287,6 @@ public:
      */
     void save() const
     {
-#ifdef _DEBUG
-        std::cout << "Map saved -> " << getSaveFileName() << '\n';
-#endif
         save(getSaveFileName(false).data());
     }
 
@@ -2312,14 +2440,16 @@ namespace Utils
             return {};
         
         std::vector<std::filesystem::directory_entry> result;
-        std::copy_if(std::filesystem::directory_iterator{ folder.path() }, std::filesystem::directory_iterator{}, std::back_inserter(result), []
-        (auto const& entry)
-        {
-            return entry.path().extension() == ".osu";
-        });
+        std::copy_if(
+            std::filesystem::directory_iterator{ folder.path() },
+            std::filesystem::directory_iterator{},
+            std::back_inserter(result), 
+            [] (auto const& entry)
+            {
+                return entry.path().extension() == ".osu";
+            }
+        );
 
         return result;
     }
-
-
 }

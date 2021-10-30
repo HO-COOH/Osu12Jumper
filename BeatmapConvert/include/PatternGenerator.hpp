@@ -2,12 +2,16 @@
 #include "../../OsuParser.hpp"
 #include "Mania.Pattern.hpp"
 #include <functional>
+#include <optional>
 
 namespace Mania
 {
 	class PatternGenerator
 	{
 	public:
+		/**
+		 * @brief Generate a pattern
+		 */
 		virtual Pattern generate() = 0;
 	protected:
 
@@ -40,7 +44,7 @@ namespace Mania
 			hitObject(hitObject),
 			originalBeatmap(beatmap),
 			totalColumns(totalColumns),
-			randomStart(totalColumns == 8? 1:0)
+			randomStart(totalColumns == 8 ? 1 : 0)
 		{}
 
 		/**
@@ -53,7 +57,7 @@ namespace Mania
 		 */
 		static int GetRandomNoteCount(double p2, double p3, double p4 = 0, double p5 = 0, double p6 = 0);
 
-		double getConversionDifficulty() const;
+		double getConversionDifficulty();
 
 		/**
 		 * @brief Finds a new column in which a HitObject can be placed.
@@ -78,6 +82,9 @@ namespace Mania
 			std::vector<Pattern const*> patterns
 		) const;
 
+		/**
+		 * .
+		 */
 		int findAvailableColumn(int initialColumn, std::vector<Pattern const*> patterns) const;
 
 		/**
@@ -89,6 +96,8 @@ namespace Mania
 		 * @brief Returns a random column index in the range [randomStart, totalColumns].
 		 */
 		int getRandomColumn() const;
+	private:
+		std::optional<double> conversionDifficulty;
 	};
 
 }

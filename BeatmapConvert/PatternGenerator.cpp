@@ -70,6 +70,8 @@ int Mania::PatternGenerator::findAvailableColumn(
     }
 
     assert(hasValidColumns); //This should almost never happens?
+    if (!hasValidColumns)
+        return -1;
 
     // Iterate until a valid column is found. This is a random iteration in the default case.
     do
@@ -86,8 +88,11 @@ int Mania::PatternGenerator::findAvailableColumn(int initialColumn, std::vector<
     return findAvailableColumn(initialColumn, {}, {}, {}, {}, patterns);
 }
 
-double Mania::PatternGenerator::getConversionDifficulty() const
+double Mania::PatternGenerator::getConversionDifficulty()
 {
+    if (conversionDifficulty.has_value())
+        return *conversionDifficulty;
+
     auto drainTimeInSec = originalBeatmap.getDrainTime() / 1'000;
     if (drainTimeInSec == 0)
         drainTimeInSec = 10'000;
@@ -95,5 +100,6 @@ double Mania::PatternGenerator::getConversionDifficulty() const
     Difficulty const& baseDifficulty = originalBeatmap.difficulty;
     double value = ((baseDifficulty.HPDrainRate + std::clamp(baseDifficulty.approachRate, 4.f, 7.f)) / 1.5 + originalBeatmap.getCount() / drainTimeInSec * 9.f) / 38.f * 5.f / 1.15;
     value = std::min(value, 12.0);
+    conversionDifficulty = value;
     return value;
 }

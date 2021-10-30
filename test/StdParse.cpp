@@ -264,11 +264,6 @@ TEST_F(ParseV11, BreakEvents)
 }
 
 
-TEST_F(ParseV14, Events)
-{
-
-}
-
 static inline void Compare(TimingPoint const& lhs, TimingPoint const& rhs)
 {
 	EXPECT_EQ(lhs.time, rhs.time);

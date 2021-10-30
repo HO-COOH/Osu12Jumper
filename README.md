@@ -195,6 +195,7 @@ These following sections are represented by a `std::vector` of `struct` respecti
     };
     ```
 - HitObjects -> `std::vector<std::unique_ptr<HitObject>>`
+    `HitObject` is polymorphic so you should instantiate its sub-classes.
     ```cpp
     struct HitObject    //Base class of all kinds of hit objects
     {
@@ -207,6 +208,11 @@ These following sections are represented by a `std::vector` of `struct` respecti
     };
     
     struct Circle : public HitObject {};
+    /*
+        Besides osu! standard, osu! mania / osu! taiko/ osu! catch the beat also
+        uses the same data structure. You should treat its values specific to
+        the game mode (defined in General::Mode) you are dealing with.
+    */
 
     struct Slider : public HitObject
     {
@@ -216,17 +222,17 @@ These following sections are represented by a `std::vector` of `struct` respecti
         float length;
         std::vector<int> edgeSounds;
         std::vector<EdgeSet> edgeSets;
-    };
+    }; //Shared in osu! standard / osu! taiko / osu! catch the beat
 
     struct Spinner : public HitObject
     {
         int endTime;
-    };
+    }; //Shared in osu! standard / osu! taiko / osu! catch the beat
 
     struct Hold : public HitObject
     {
         int endTime;
-    };
+    }; //Osu 
     ```
 
 All of above are stored as a member in an `OsuFile` struct.
@@ -243,6 +249,11 @@ struct OsuFile
     std::vector<std::unique_ptr<HitObject>> hitObjects;
 };
 ```
+
+Static member functions are written in the class that can be maximize code-reuse. 
+For example, `HitObject::ColumnToX(columnIndex, columnCount)` that converts a mania column number to an x-coordinate that osu file needs. 
+
+
 
 #### Parsing
 - To parse a full `.osu` file, simply pass in the file name or a `std::ifstream`. For example,
@@ -281,7 +292,20 @@ There are also 2 beatmaps to be parsed, that will be automatically copied to the
 
 
 ## Build
+### Targets
+- Main
+    ```
+    mkdir build
+    cd build
+    cmake ..
+    cmake --build .
+    ```
 ### Requires
 1. [Google Test](https://github.com/google/googletest), I recommend using [vcpkg](https://vcpkg.io/en/index.html) to install the package.
 2. C++17 compatible compiler
 3. CMake
+
+## Disclaimer
+All conversion algorithms are attribute to [the osu lazer open-source project](https://github.com/ppy/osu).
+This project might fail to follow ppy's update to osu.
+Use at your own risk!

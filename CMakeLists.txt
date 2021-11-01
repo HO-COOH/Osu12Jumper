@@ -15,6 +15,9 @@ add_executable(Main main.cpp
     "BeatmapConvert/PatternGenerator.cpp"
     "BeatmapConvert/Mania.Pattern.cpp"
 )
+if(UNIX)
+    target_link_libraries(Main pthread)
+endif()
 
 #Add testing if found gtest
 find_package(GTest CONFIG REQUIRED)

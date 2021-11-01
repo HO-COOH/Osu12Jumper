@@ -272,6 +272,12 @@ If it's one of the `std::vector` members, there will be a `static` helper functi
 auto timingPoints = TimingPoint::HandleTimingPoint("MyMap.osu");
 ```
 
+#### Note
+On Windows, specific characters, eg. `\/:*?"<>|`  are **NOT** allowed in file names. 
+That's why you should usually use the member function `OsuFile::getSaveFileName()`
+instead of directly getting members in `OsuFile::metadata` as filename.
+
+
 ## Std -> Mania Converter
 The converter is largely copied from [osu! lazer](https://github.com/ppy/osu) in 
 - `HitObjectPatternGenerator.cs`

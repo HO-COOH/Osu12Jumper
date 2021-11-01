@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['y_0',['y',['../struct_hit_object.html#a5cc35d81552ffe8c4102bedc9b46faff',1,'HitObject']]],
-  ['yoffset_1',['yOffset',['../struct_background.html#a3434cd34d20fb8f67154eb367dde15c3',1,'Background::yOffset()'],['../struct_video.html#aabc6652ce70e0f2c80fb4f7153719d94',1,'Video::yOffset()']]]
+  ['x_324',['x',['../struct_hit_object.html#abdd10775acb8e430111c5a9869842e72',1,'HitObject']]],
+  ['xoffset_325',['xOffset',['../struct_background.html#aa35c9a9bf9c22c028da8e9799b31b9dc',1,'Background::xOffset()'],['../struct_video.html#af9b2d653e46f2e3b977f9df81b9e1d76',1,'Video::xOffset()']]]
 ];

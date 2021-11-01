@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['begin_0',['begin',['../struct_osu_file.html#a5b7fceee8d680501e82439e0eaedd37d',1,'OsuFile']]]
+  ['addbreaks_215',['AddBreaks',['../_beatmap_convert_8hpp.html#aea68b77ab2fbb44d0849c1709c648519',1,'Mania']]]
 ];

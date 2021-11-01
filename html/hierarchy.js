@@ -40,7 +40,7 @@ var hierarchy =
     [ "details::PrintHelper", "classdetails_1_1_print_helper.html", null ],
     [ "RandomEngine", "class_random_engine.html", null ],
     [ "Range< T >", "struct_range.html", null ],
-    [ "testing::Test", null, [
+    [ "Test", null, [
       [ "ManiaConvertFixture", "class_mania_convert_fixture.html", null ],
       [ "ParseMania", "class_parse_mania.html", null ],
       [ "ParseV11", "class_parse_v11.html", null ],

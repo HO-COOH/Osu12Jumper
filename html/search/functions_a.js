@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['save_0',['save',['../struct_osu_file.html#a0ec7cd3fe777f7c5d67bf51fd1b48d09',1,'OsuFile::save(std::ofstream &amp;&amp;file) const'],['../struct_osu_file.html#a0293895ca10c16a98198c9829ca71f29',1,'OsuFile::save(char const *fileName) const'],['../struct_osu_file.html#a8df537c9e9d61bf67b080ad17f8ce682',1,'OsuFile::save() const']]],
-  ['spinner_1',['Spinner',['../struct_spinner.html#a8fa27585fe876858d343d7469539b7b6',1,'Spinner']]]
+  ['parseartistfrom_257',['ParseArtistFrom',['../struct_osu_file.html#a3560cb7ed553ddfb4ad02ea1f1580133',1,'OsuFile::ParseArtistFrom(std::string_view fileName)'],['../struct_osu_file.html#a08054a8f917c9444c9ec7d3bf52994f2',1,'OsuFile::ParseArtistFrom(std::filesystem::path const &amp;path)']]],
+  ['parsecreatorfrom_258',['ParseCreatorFrom',['../struct_osu_file.html#a7976df34733376adcfed3627926a9724',1,'OsuFile::ParseCreatorFrom(std::string_view fileName)'],['../struct_osu_file.html#a6a583969de5533d23cdfd1009c827971',1,'OsuFile::ParseCreatorFrom(std::filesystem::path const &amp;path)']]],
+  ['parsetitlefrom_259',['ParseTitleFrom',['../struct_osu_file.html#ab8f6646319071c9615b75028cc66711d',1,'OsuFile::ParseTitleFrom(std::string_view fileName)'],['../struct_osu_file.html#aa0b2ec8bb923e7401374a361921fa93a',1,'OsuFile::ParseTitleFrom(std::filesystem::path const &amp;path)']]],
+  ['parseversionfrom_260',['ParseVersionFrom',['../struct_osu_file.html#a6d071545348b6ada68dd097b0f920553',1,'OsuFile::ParseVersionFrom(std::string_view fileName)'],['../struct_osu_file.html#a1d1272b5718f8575a77936bbde79e292',1,'OsuFile::ParseVersionFrom(std::filesystem::path const &amp;path)']]]
 ];

@@ -31,18 +31,21 @@ var NAVTREE =
           [ "Quick Start", "md__r_e_a_d_m_e.html#autotoc_md2", [
             [ "Enum Members", "md__r_e_a_d_m_e.html#autotoc_md3", null ],
             [ "Data Members", "md__r_e_a_d_m_e.html#autotoc_md4", null ],
-            [ "Parsing", "md__r_e_a_d_m_e.html#autotoc_md5", null ]
+            [ "Parsing", "md__r_e_a_d_m_e.html#autotoc_md5", null ],
+            [ "Note", "md__r_e_a_d_m_e.html#autotoc_md6", null ]
           ] ]
         ] ],
-        [ "Std -> Mania Converter", "md__r_e_a_d_m_e.html#autotoc_md6", [
-          [ "Todo", "md__r_e_a_d_m_e.html#autotoc_md7", null ]
+        [ "Std -> Mania Converter", "md__r_e_a_d_m_e.html#autotoc_md7", [
+          [ "Todo", "md__r_e_a_d_m_e.html#autotoc_md8", null ]
         ] ],
-        [ "1-2 Jump Generator", "md__r_e_a_d_m_e.html#autotoc_md8", null ],
-        [ "Documentation", "md__r_e_a_d_m_e.html#autotoc_md9", null ],
-        [ "Test", "md__r_e_a_d_m_e.html#autotoc_md10", null ],
-        [ "Build", "md__r_e_a_d_m_e.html#autotoc_md11", [
-          [ "Requires", "md__r_e_a_d_m_e.html#autotoc_md12", null ]
-        ] ]
+        [ "1-2 Jump Generator", "md__r_e_a_d_m_e.html#autotoc_md9", null ],
+        [ "Documentation", "md__r_e_a_d_m_e.html#autotoc_md10", null ],
+        [ "Test", "md__r_e_a_d_m_e.html#autotoc_md11", null ],
+        [ "Build", "md__r_e_a_d_m_e.html#autotoc_md12", [
+          [ "Targets", "md__r_e_a_d_m_e.html#autotoc_md13", null ],
+          [ "Requires", "md__r_e_a_d_m_e.html#autotoc_md14", null ]
+        ] ],
+        [ "Disclaimer", "md__r_e_a_d_m_e.html#autotoc_md15", null ]
       ] ]
     ] ],
     [ "Namespaces", "namespaces.html", [
@@ -70,7 +73,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_beatmap_convert_8hpp.html",
-"struct_slider.html"
+"struct_background.html#a65b5241f52f106648e760a7fa640ff13",
+"struct_slider.html#a87ba262e7a86f1f4eac52d9a93ddeeac"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

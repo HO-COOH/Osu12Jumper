@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['originalbeatmap_0',['originalBeatmap',['../class_mania_1_1_pattern_generator.html#ad5d57a7b4229410fa3ddf4755a830a60',1,'Mania::PatternGenerator']]],
-  ['overalldifficulty_1',['overallDifficulty',['../struct_difficulty.html#a7ab76356870c8c7467dad8410d633fba',1,'Difficulty']]],
-  ['overlayposition_2',['overlayPosition',['../struct_general.html#ab7c592a26283a58f1cf0654f3f6bbdd3',1,'General']]]
+  ['meter_293',['meter',['../struct_timing_point.html#a72cd2b7f5ef424faeac7999c1fd6de0e',1,'TimingPoint']]],
+  ['mode_294',['mode',['../struct_general.html#aecedc56aa7d1e94251eb270d25b98af6',1,'General']]]
 ];

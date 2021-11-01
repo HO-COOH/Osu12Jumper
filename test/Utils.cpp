@@ -30,3 +30,10 @@ TEST(ParseFileName, Version)
 	EXPECT_EQ(OsuFile::ParseVersionFrom(fileName), "ryuu's Easy");
 }
 
+TEST(SaveFileName, RemoveColon)
+{
+	EXPECT_EQ(
+		details::RemoveInStr("Kirisaki Chitoge (CV: Touyama Nao), Onodera Kosaki (CV: Hanazawa Kana)"),
+		std::string{ "Kirisaki Chitoge (CV Touyama Nao), Onodera Kosaki (CV Hanazawa Kana)" }
+	);
+}

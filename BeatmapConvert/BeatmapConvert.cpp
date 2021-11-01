@@ -677,7 +677,7 @@ Mania::DistanceObjectPatternGenerator::DistanceObjectPatternGenerator(HitObject 
     segmentDuration{ static_cast<int>(getSegmentDuration())},
     convertType{ Pattern::Type::LowProbability }
 {
-    assert(segmentDuration >= originalBeatmap.timingPoints.front().beatLength / 32);
+    //assert(segmentDuration >= originalBeatmap.timingPoints.front().beatLength / 32);
 }
 
 Mania::Pattern Mania::DistanceObjectPatternGenerator::generateRandomHoldNotes(int startTime, int noteCount)
@@ -1002,6 +1002,12 @@ void Mania::DistanceObjectPatternGenerator::addToPattern(
 #include <future>
 
 inline std::string& toLowerInplace(std::string& str)
+{
+    std::transform(str.begin(), str.end(), str.begin(), tolower);
+    return str;
+}
+
+inline std::string toLowerInplace(std::string&& str)
 {
     std::transform(str.begin(), str.end(), str.begin(), tolower);
     return str;

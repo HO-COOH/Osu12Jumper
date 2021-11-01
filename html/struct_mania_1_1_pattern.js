@@ -16,7 +16,13 @@ var struct_mania_1_1_pattern =
       [ "Stair", "struct_mania_1_1_pattern.html#a8fc92222e9d5c51c1c2a14c77715cc89ad3ef955fdc31ae7279b9c7741db1af88", null ],
       [ "ReverseStair", "struct_mania_1_1_pattern.html#a8fc92222e9d5c51c1c2a14c77715cc89adc49b68dce603d8c0c761577fcdb216d", null ]
     ] ],
+    [ "Pattern", "struct_mania_1_1_pattern.html#abb4ee3d66b34feb91ebd6effcc70b290", null ],
+    [ "Pattern", "struct_mania_1_1_pattern.html#a174f343b14fa8224d3fb7c7e44b38224", null ],
+    [ "Pattern", "struct_mania_1_1_pattern.html#aaf4a00247b5dd7a55b49276ef8318313", null ],
     [ "colunmHasObject", "struct_mania_1_1_pattern.html#ad6dc25aeec0fb7920e6f4d4e53b9f09f", null ],
+    [ "numColumnWithObject", "struct_mania_1_1_pattern.html#a87af49dd412a51ddbc808d517e89c070", null ],
     [ "operator+=", "struct_mania_1_1_pattern.html#a53483c543dad2a27bd569592a6ce173a", null ],
-    [ "operator+=", "struct_mania_1_1_pattern.html#a5c6e548f1907e5fb7b7b191e003f6e9a", null ]
+    [ "operator+=", "struct_mania_1_1_pattern.html#a5c6e548f1907e5fb7b7b191e003f6e9a", null ],
+    [ "hitObjects", "struct_mania_1_1_pattern.html#af922af0af13268069d41d51e8c981348", null ],
+    [ "totalColumn", "struct_mania_1_1_pattern.html#a926d149c1632481f74015e609a891c34", null ]
 ];

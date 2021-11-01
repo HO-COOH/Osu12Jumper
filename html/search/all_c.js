@@ -1,10 +1,8 @@
 var searchData=
 [
-  ['objectiterator_3c_20objectcontainer_2c_20hitobject_3a_3atype_3a_3aall_2c_20hitobjecttype_20_3e_0',['ObjectIterator&lt; ObjectContainer, HitObject::Type::All, HitObjectType &gt;',['../class_osu_file_1_1_object_iterator_3_01_object_container_00_01_hit_object_1_1_type_1_1_all_00_01_hit_object_type_01_4.html',1,'OsuFile']]],
-  ['operator_2b_3d_1',['operator+=',['../struct_mania_1_1_pattern.html#a5c6e548f1907e5fb7b7b191e003f6e9a',1,'Mania::Pattern::operator+=(std::unique_ptr&lt; HitObject &gt; &amp;&amp;hitObject)'],['../struct_mania_1_1_pattern.html#a53483c543dad2a27bd569592a6ce173a',1,'Mania::Pattern::operator+=(Pattern &amp;&amp;pattern)']]],
-  ['originalbeatmap_2',['originalBeatmap',['../class_mania_1_1_pattern_generator.html#ad5d57a7b4229410fa3ddf4755a830a60',1,'Mania::PatternGenerator']]],
-  ['osufile_3',['OsuFile',['../struct_osu_file.html',1,'OsuFile'],['../struct_osu_file.html#af913da10093f0f34a99f46b272b5dd2c',1,'OsuFile::OsuFile()']]],
-  ['osuparser_2ehpp_4',['OsuParser.hpp',['../_osu_parser_8hpp.html',1,'']]],
-  ['overalldifficulty_5',['overallDifficulty',['../struct_difficulty.html#a7ab76356870c8c7467dad8410d633fba',1,'Difficulty']]],
-  ['overlayposition_6',['overlayPosition',['../struct_general.html#ab7c592a26283a58f1cf0654f3f6bbdd3',1,'General']]]
+  ['maniabeatmapconverter_92',['ManiaBeatmapConverter',['../class_mania_1_1_mania_beatmap_converter.html',1,'Mania']]],
+  ['maniaconvertfixture_93',['ManiaConvertFixture',['../class_mania_convert_fixture.html',1,'']]],
+  ['metadata_94',['Metadata',['../struct_metadata.html',1,'Metadata'],['../struct_metadata.html#a37da43087a0a526e2aed14b8d843c36d',1,'Metadata::Metadata(std::ifstream &amp;osuFile, bool partial=true)'],['../struct_metadata.html#ae849560667461008cb72e83919c20be0',1,'Metadata::Metadata()=default']]],
+  ['meter_95',['meter',['../struct_timing_point.html#a72cd2b7f5ef424faeac7999c1fd6de0e',1,'TimingPoint']]],
+  ['mode_96',['mode',['../struct_general.html#aecedc56aa7d1e94251eb270d25b98af6',1,'General']]]
 ];

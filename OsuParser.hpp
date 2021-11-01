@@ -23,6 +23,7 @@
 #include <variant>
 #include <cassert>
 #include <iterator>
+#include <cstring>
 
 //#include <queue>
 
@@ -229,6 +230,19 @@ namespace details
             if(!GetLine(file, line, false))
                 break;
         } while (line != target);
+    }
+
+    /**
+     * @brief Remove specific characters in a string and returns a new string
+     * @param src The source string
+     * @param contents All the characters that needs to be removed from the string, default values are "\\/:*?\"<>|"
+     * @details This function is used in case there are invalid characters on Windows as file name
+     */
+    static auto RemoveInStr(std::string_view src, char const* content="\\/:*?\"<>|")
+    {
+        std::string s{ src };
+        s.erase(std::remove_if(s.begin(), s.end(), [content, count = strlen(content)](char c){ return std::find(content, content + count, c) != content + count; }), s.end());
+        return s;
     }
 
     /**
@@ -2175,16 +2189,18 @@ struct OsuFile
     /**
      * @brief Return the default file name according to song title, artist and difficulty
      * @param withExtension Controls whether `.osu` should be added
+     * @details On Windows, some special characters are not allowed in filename, therefore
+     * the fields needs to be handled.
      */
     auto getSaveFileName(bool withExtension = false) const
     {
-        return metaData.artist
+        return details::RemoveInStr(metaData.artist)
             + " - "
-            + metaData.title
+            + details::RemoveInStr(metaData.title)
             + " ("
-            + metaData.creator
+            + details::RemoveInStr(metaData.creator)
             + ") ["
-            + metaData.version
+            + details::RemoveInStr(metaData.version)
             + (withExtension ? "].osu" : "]");
     }
 public:

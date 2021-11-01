@@ -1,6 +1,8 @@
 var struct_metadata =
 [
     [ "Metadata", "struct_metadata.html#a37da43087a0a526e2aed14b8d843c36d", null ],
+    [ "Metadata", "struct_metadata.html#ae849560667461008cb72e83919c20be0", null ],
+    [ "operator<<", "struct_metadata.html#ab9103bc6bd8bf7e1cf6a5b59f1d01eb6", null ],
     [ "artist", "struct_metadata.html#a9c925474f678d140c0e0eef6213a160b", null ],
     [ "artistUnicode", "struct_metadata.html#a349cf67d7298143dffe8462b4461da96", null ],
     [ "beatmapId", "struct_metadata.html#a046d9b2370122ee9c52a4c7115d8a36f", null ],

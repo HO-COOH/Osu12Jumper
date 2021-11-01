@@ -42,8 +42,8 @@ auto GetTimePoint()
 
 #include <queue>
 #include <tuple>
-template<int N>
-auto CombineTrack(std::array<std::vector<std::unique_ptr<HitObject>>, N>& hitObjectPerTrack)
+template<size_t N>
+auto CombineTrack(std::array<std::vector<std::unique_ptr<HitObject>>, N> && hitObjectPerTrack)
 {
 	std::vector<std::unique_ptr<HitObject>> hitObject;
 	hitObject.reserve(hitObjectPerTrack.front().size() * hitObjectPerTrack.size());

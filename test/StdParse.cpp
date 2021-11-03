@@ -61,7 +61,7 @@ class ParseV11 : public ::testing::Test, public Fixture
 protected:
 	void SetUp() override
 	{
-		static OsuFile f{ std::ifstream{ "TestMapV11.osu"} };
+		static OsuFile f{ std::ifstream{ "TestMapv11.osu"} };
 		SetMember(f);
 	}
 };
@@ -71,7 +71,7 @@ class ParseV14 : public ::testing::Test, public Fixture
 protected:
 	void SetUp() override
 	{
-		static OsuFile f{ std::ifstream{ "TestMapV14.osu"} };
+		static OsuFile f{ std::ifstream{ "TestMapv14.osu"} };
 		SetMember(f);
 	}
 };

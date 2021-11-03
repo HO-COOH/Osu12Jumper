@@ -21,7 +21,7 @@ protected:
 	OsuFile* convertedMap = nullptr;
 	void SetUp() override
 	{
-		static OsuFile f{ std::ifstream{"TestMapV11.osu"} };
+		static OsuFile f{ std::ifstream{"TestMapv11.osu"} };
 		static Mania::ManiaBeatmapConverter converter{ f };
 		static auto result = converter.convertBeatmap();
 		convertedMap = &result;

@@ -28,7 +28,7 @@ jobs:
           mkdir build
           cd build
           cmake -DCMAKE_TOOLCHAIN_FILE="$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" ..
-          cmake --build . --target Test
+          cmake --build .
       - name: Test
         run: |
           pwd

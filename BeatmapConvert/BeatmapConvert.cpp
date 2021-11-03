@@ -1048,7 +1048,12 @@ static auto ConvertImpl(std::filesystem::directory_entry const& entry)
 
                 auto fileName = convertedMap.getSaveFileName();
                 auto rootDir = entry.path().parent_path().string();
-                auto path = rootDir + "\\" + fileName;
+
+                constexpr auto IsRootCurrent = [](std::string const& dir)
+                {
+                    return dir.empty() || dir == ".";
+                };
+                auto path = IsRootCurrent(rootDir)? fileName : rootDir + "\\" + fileName;
                 try 
                 {
                     convertedMap.save(path.c_str());
@@ -1060,7 +1065,7 @@ static auto ConvertImpl(std::filesystem::directory_entry const& entry)
                     /*Maybe because of file too long, make shorter then retry*/
                     convertedMap.metaData.version = "test";
                     fileName = convertedMap.getSaveFileName();
-                    path = rootDir + "\\" + fileName;
+                    path = IsRootCurrent(rootDir) ? fileName : rootDir + "\\" + fileName;
                     try 
                     {
                         convertedMap.save(path.c_str());

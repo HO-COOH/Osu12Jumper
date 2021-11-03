@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['distanceto_0',['distanceTo',['../struct_hit_object.html#a2a9bf0c0680a75b3430be9b4eb7b60c2',1,'HitObject']]]
+  ['begin_216',['begin',['../struct_osu_file.html#a5b7fceee8d680501e82439e0eaedd37d',1,'OsuFile']]]
 ];

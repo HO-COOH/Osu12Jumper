@@ -17,7 +17,7 @@ void JumpGenerator::generate(int count)
 		auto const one_x = RandomEngine::getRand<int>(PlayField::xMax / 2, PlayField::xMax);
 		auto const one_y = RandomEngine::getRand<int>(PlayField::yMax / 2, PlayField::yMax);
 
-		auto const angle = RandomEngine::getAngleDegree(0, 180);
+		auto const angle = static_cast<float>(RandomEngine::getAngleDegree(0.0, 180.0));
 		auto const distance = std::holds_alternative<int>(length) ? std::get<int>(length) : RandomEngine::getRand(std::get<Range<int>>(length));
 
 		auto const two = getNextNotePos(Coord{ one_x, one_y }, angle, distance);

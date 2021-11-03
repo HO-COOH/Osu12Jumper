@@ -1,5 +1,26 @@
 var searchData=
 [
-  ['save_0',['save',['../struct_osu_file.html#a0ec7cd3fe777f7c5d67bf51fd1b48d09',1,'OsuFile::save(std::ofstream &amp;&amp;file) const'],['../struct_osu_file.html#a0293895ca10c16a98198c9829ca71f29',1,'OsuFile::save(char const *fileName) const'],['../struct_osu_file.html#a8df537c9e9d61bf67b080ad17f8ce682',1,'OsuFile::save() const']]],
-  ['spinner_1',['Spinner',['../struct_spinner.html#a8fa27585fe876858d343d7469539b7b6',1,'Spinner']]]
+  ['general_227',['General',['../struct_general.html#a64b000c467ca7cdd850db71914905fdd',1,'General']]],
+  ['generate_228',['generate',['../class_mania_1_1_hit_object_pattern_generator.html#a7f44405021535fe6ee4b0ba7db9de578',1,'Mania::HitObjectPatternGenerator::generate()'],['../class_mania_1_1_distance_object_pattern_generator.html#a1f3aeffeac2b137d079aca8c3529a006',1,'Mania::DistanceObjectPatternGenerator::generate()'],['../class_mania_1_1_pattern_generator.html#af7f0055a33cf0fb13ae1eaf048479a54',1,'Mania::PatternGenerator::generate()']]],
+  ['generaterandompattern_229',['generateRandomPattern',['../class_mania_1_1_hit_object_pattern_generator.html#a2a648fe70c92e9eb34db7c13306544ff',1,'Mania::HitObjectPatternGenerator']]],
+  ['generaterandompatternwithmirrored_230',['generateRandomPatternWithMirrored',['../class_mania_1_1_hit_object_pattern_generator.html#a5d34c01fcc321b6b7f7b0a3426363f64',1,'Mania::HitObjectPatternGenerator']]],
+  ['getallbeatmapsfrom_231',['GetAllBeatmapsFrom',['../_osu_parser_8hpp.html#ae22620923dcf4ff20a4e2dbd4d53da53',1,'Utils']]],
+  ['getangledegree_232',['getAngleDegree',['../class_random_engine.html#a3b71200b6c871aa89383d2a63fbc5c9d',1,'RandomEngine']]],
+  ['getanglerad_233',['getAngleRad',['../class_random_engine.html#a417468efead4069fcb6b93edd7ff7da8',1,'RandomEngine']]],
+  ['getbpm_234',['getBPM',['../struct_osu_file.html#a94136af51238d43d75cbedbad2db3ec9',1,'OsuFile']]],
+  ['getcolumnindex_235',['getColumnIndex',['../struct_hit_object.html#a6581ba75f9558e9ea65f9b1bfc8f7bf4',1,'HitObject']]],
+  ['getcount_236',['getCount',['../struct_osu_file.html#a27d5e8f5e6b76ceacc22ba694bad997e',1,'OsuFile::getCount() const'],['../struct_osu_file.html#ac8d9b1d863c69e5ba1373e913c86bfc0',1,'OsuFile::getCount() const']]],
+  ['getdraintime_237',['getDrainTime',['../struct_osu_file.html#acb1916411fdf1344267d148239db90ef',1,'OsuFile']]],
+  ['getduration_238',['getDuration',['../struct_slider.html#aa4c668a2732ed4020e9a3e9b70a92266',1,'Slider::getDuration(float sliderMultiplier, float beatLength) const'],['../struct_slider.html#a662bb65a1a5ce2deeb297c43bf6ae6df',1,'Slider::getDuration(Difficulty const &amp;difficulty, TimingPoint const &amp;uninheritedTimingPoint)'],['../struct_slider.html#a278ce780ffcefa135fbdd503d56e7443',1,'Slider::getDuration(Difficulty const &amp;difficulty, TimingPoint const &amp;uninheritedTimingPoint, float inheritedTimingPointBeatLength) const']]],
+  ['geteventat_239',['getEventAt',['../struct_events.html#ae3299d2d2027a9a4e39f1c8357b39a8d',1,'Events']]],
+  ['getnearesttimingpointat_240',['getNearestTimingPointAt',['../struct_osu_file.html#a7d0b19a0a83c59052ab3d0a572d847e1',1,'OsuFile']]],
+  ['getpercentof_241',['getPercentOf',['../struct_osu_file.html#ab9e6fae1e3e564abe8944d58239dad8b',1,'OsuFile']]],
+  ['getpercentofhitobjectincolumn_242',['getPercentOfHitObjectInColumn',['../struct_osu_file.html#ac05e6527bbd210172f736316eb1828b0',1,'OsuFile']]],
+  ['getrand_243',['getRand',['../class_random_engine.html#a050a2d56c912fe577fbb744cfb9c237d',1,'RandomEngine']]],
+  ['getrandomcolumn_244',['getRandomColumn',['../class_mania_1_1_pattern_generator.html#a66debc304f26643f8db05f02301afbc5',1,'Mania::PatternGenerator::getRandomColumn(std::optional&lt; int &gt; lowerBound, std::optional&lt; int &gt; upperBound) const'],['../class_mania_1_1_pattern_generator.html#aa68a6b02e19877394b52faf7ff33d418',1,'Mania::PatternGenerator::getRandomColumn() const']]],
+  ['getrandomnotecount_245',['getRandomNoteCount',['../class_mania_1_1_hit_object_pattern_generator.html#aeb884c34353304b5a6b3e1827302bbf4',1,'Mania::HitObjectPatternGenerator::getRandomNoteCount()'],['../class_mania_1_1_pattern_generator.html#a1e1e08b243c5b2276c2a1d53efa7458c',1,'Mania::PatternGenerator::GetRandomNoteCount()']]],
+  ['getrandomnotecountmirrored_246',['getRandomNoteCountMirrored',['../class_mania_1_1_hit_object_pattern_generator.html#a51162d3a36fd0afe5794f7aa1a2b4c42',1,'Mania::HitObjectPatternGenerator']]],
+  ['getsavefilename_247',['getSaveFileName',['../struct_osu_file.html#aa83d5f225925d535810a28585ab60761',1,'OsuFile']]],
+  ['gettimingpointat_248',['getTimingPointAt',['../struct_osu_file.html#a39975990946257d56f903d4762d4abd6',1,'OsuFile']]],
+  ['gettotalbreaktime_249',['getTotalBreakTime',['../struct_osu_file.html#a4d38da1e44f3193574bac89fefdf39f5',1,'OsuFile']]]
 ];

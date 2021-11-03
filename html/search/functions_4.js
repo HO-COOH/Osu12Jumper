@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['hitobject_0',['HitObject',['../struct_hit_object.html#ab2aa938e3817b0a927edf57504dc3091',1,'HitObject']]],
-  ['hold_1',['Hold',['../struct_hold.html#a517cd8ed5dcb91362124ea2f5549500d',1,'Hold']]]
+  ['editor_224',['Editor',['../struct_editor.html#af7aa5c70e4d970eae6711eba09c5003c',1,'Editor']]],
+  ['end_225',['end',['../struct_osu_file.html#a610a4ec316ba84e09cc48e887c569b71',1,'OsuFile']]]
 ];

@@ -19,6 +19,13 @@
 #include <cmath> //pow() on GCC need this header
 #include <iterator> //std::istream_iterator on GCC need this header
 #include <algorithm>//std::clamp
+#include <numeric>
+#include <variant>
+#include <cassert>
+#include <iterator>
+#include <cstring>
+
+//#include <queue>
 
 /**
  * @brief Osu editor play field size
@@ -33,11 +40,37 @@ namespace PlayField
 }
 
 
-namespace details {
-    static inline auto TrimStr(std::string& s)
+namespace details 
+{
+    //template<typename T>
+    //class SortedArrayMerge
+    //{
+    //    std::priority_queue<T*> queue;
+
+    //};
+
+    /**
+     * @brief Remove spacing or specified characters of both side of the string
+     * @param s The source string to be trimmed
+     * @param contentToTrim String of characters that needs to be removed from the source string
+     */
+    static inline auto TrimStr(std::string& s, const char* contentToTrim = "\t\n\v\f\r ")
     {
-        s.erase(0, s.find_first_not_of("\t\n\v\f\r ")); // left trim
-        s.erase(s.find_last_not_of("\t\n\v\f\r ") + 1); // right trim
+        s.erase(0, s.find_first_not_of(contentToTrim)); // left trim
+        s.erase(s.find_last_not_of(contentToTrim) + 1); // right trim
+    }
+
+    /**
+     * @brief Remove specing of specified characters of both side of the string and return the new string
+     * @param s The source string
+     * @param contentToTrim String of characters that needs to be removed from the source string
+     * @return The new trimmed string
+     */
+    static inline auto TrimStr(std::string_view s, const char* contentToTrim = "\t\n\v\f\r ")
+    {
+        auto const start = s.find_first_not_of(contentToTrim);
+        auto const end = s.find_last_not_of(contentToTrim);
+        return s.substr(start, end - start + 1);
     }
 
     /**
@@ -126,7 +159,9 @@ namespace details {
         return result;
     }
 
-
+    /**
+     * @brief 
+     */
     static inline auto SplitString(std::string_view str, char delim = ',')
     {
         std::vector<std::string_view> result;
@@ -141,14 +176,21 @@ namespace details {
         return result;
     }
 
-
+    /**
+     * @brief Determines whether the string is empty or containing nothing
+     */
     static inline auto IsEmptyLine(std::string const& line)
     {
         return line.empty() || line == "";
     }
 
     /**
-     * @brief 
+     * @brief Get a line that is not empty nor starting with "//"
+     * @param indicateEmptyLine Return false when the line is empty
+     * @param file The input file stream
+     * @param line The string to store the line
+     * @return Return false when the file has reached the end, 
+     * additionally return false when `indicateEmptyLine` is true and the file has reached an empty line.
      */
     static inline auto GetLine(std::ifstream& file, std::string& line, bool indicateEmptyLine = true)
     {
@@ -176,6 +218,36 @@ namespace details {
         return indicateEmptyLine ? false : static_cast<bool>(file);
     }
 
+    /**
+     * @brief Keep reading the file line by line until a target string is found
+     * @param target A line to be found
+     * @param line The input string, and when the `target` is found, the line should contain the `target` string
+     * @param file The input file stream
+     */
+    static void SkipUntil(std::string_view target, std::string& line, std::ifstream& file)
+    {
+        do {
+            if(!GetLine(file, line, false))
+                break;
+        } while (line != target);
+    }
+
+    /**
+     * @brief Remove specific characters in a string and returns a new string
+     * @param src The source string
+     * @param contents All the characters that needs to be removed from the string, default values are "\\/:*?\"<>|"
+     * @details This function is used in case there are invalid characters on Windows as file name
+     */
+    static auto RemoveInStr(std::string_view src, char const* content="\\/:*?\"<>|")
+    {
+        std::string s{ src };
+        s.erase(std::remove_if(s.begin(), s.end(), [content, count = strlen(content)](char c){ return std::find(content, content + count, c) != content + count; }), s.end());
+        return s;
+    }
+
+    /**
+     * @brief A helper class to wrap calls to `std::ostream::operator<<`
+     */
     class PrintHelper
     {
         std::ostream& os;
@@ -268,7 +340,7 @@ enum class Countdown : int
 
 enum class SampleSet
 {
-    Default,
+    Auto,
     Normal,
     Soft,
     Drum
@@ -276,23 +348,24 @@ enum class SampleSet
 
 inline std::ostream& operator<<(std::ostream& os, SampleSet sampleSet)
 {
-    switch (sampleSet)
-    {
-        case SampleSet::Default:
-            os << "Default";
-            break;
-        case SampleSet::Normal:
-            os << "Normal";
-            break;
-        case SampleSet::Soft:
-            os << "Soft";
-            break;
-        case SampleSet::Drum:
-            os << "Drum";
-            break;
-        default:
-            break;
-    }
+    //switch (sampleSet)
+    //{
+    //    case SampleSet::Auto:
+    //        os << "Auto";
+    //        break;
+    //    case SampleSet::Normal:
+    //        os << "Normal";
+    //        break;
+    //    case SampleSet::Soft:
+    //        os << "Soft";
+    //        break;
+    //    case SampleSet::Drum:
+    //        os << "Drum";
+    //        break;
+    //    default:
+    //        break;
+    //}
+    os << static_cast<int>(sampleSet);
     return os;
 }
 
@@ -338,7 +411,7 @@ inline std::ostream& operator<<(std::ostream& os, OverlayPosition overlayPositio
 }
 
 /**
- * @brief General information about the beatmap
+ * @brief General information about the originalBeatmap
  * @see https://github.com/ppy/osu-wiki/blob/master/wiki/osu!_File_Formats/Osu_(file_format)/en.md#general
  */
 struct General
@@ -425,10 +498,17 @@ struct General
 
     /**
      * @brief Parse General info from osu file
+     * @param file The input file stream
+     * @param partial Whether this is a partial parse
      */
-    General(std::ifstream& file)
+    General(std::ifstream& file, bool partial = true)
     {
         std::string line;
+        
+        /*If this is a partial parse, get line until [General] appears */
+        if (partial)
+            details::SkipUntil("[General]", line, file);
+
         while (details::GetLine(file, line))
         {
             auto [key, value] = details::SplitKeyVal(line);
@@ -489,7 +569,7 @@ struct General
 };
 
 /**
- * @brief Saved settings for the beatmap editor
+ * @brief Saved settings for the originalBeatmap editor
  */
 struct Editor
 {
@@ -501,26 +581,36 @@ struct Editor
     /**
      * @brief Distance snap multiplier
      */
-    float distanceSpacing;
+    float distanceSpacing{};
 
     /**
      * @brief Beat snap divisor
      */
-    float beatDivisor;
+    float beatDivisor{};
 
     /**
      * @brief Grid size
      */
-    int gridSize;
+    int gridSize{};
 
     /**
      * @brief Scale factor for the object timeline
      */
     std::optional<float> timelineZoom;
 
-    Editor(std::ifstream& file)
+    /**
+     * @brief Parse Editor info from osu file
+     * @param file The input file stream
+     * @param partial Whether this is a partial parse
+     */
+    Editor(std::ifstream& file, bool partial = true)
     {
         std::string line;
+
+        /*If this is a partial parse, get line until [Editor] appears*/
+        if (partial)
+            details::SkipUntil("[Editor]", line, file);
+
 
         while(details::GetLine(file, line))
         {
@@ -558,36 +648,47 @@ struct Difficulty
     /**
      * @brief HP setting (0–10)
      */
-    float HPDrainRate;
+    float HPDrainRate{};
 
     /**
      * @brief CS setting (0–10)
+     * @note CS determines the number of columns in osu!mania mode.
      */
-    float circleSize;
+    float circleSize{};
 
     /**
      * @brief OD setting (0–10)
      */
-    float overallDifficulty;
+    float overallDifficulty{};
 
     /**
      * @brief AR setting (0–10)
      */
-    float approachRate;
+    float approachRate{};
 
     /**
      * @brief Base slider velocity in hecto-osu! pixels per beat
      */
-    float sliderMultiplier;
+    float sliderMultiplier{};
 
     /**
      * @brief Amount of slider ticks per beat
      */
-    int sliderTickRate;
+    int sliderTickRate{};
 
-    Difficulty(std::ifstream& file)
+    /**
+     * @brief Parse Difficulty info from osu file
+     * @param file The input file stream
+     * @param partial Whether this is a partial parse
+     */
+    Difficulty(std::ifstream& file, bool partial = true)
     {
         std::string line;
+
+        /*If this is a partial parse, skip until [Difficulty] appears*/
+        if (partial)
+            details::SkipUntil("[Difficulty]", line, file);
+
         while (details::GetLine(file, line))
         {
             auto [key, value] = details::SplitKeyVal(line);
@@ -621,12 +722,152 @@ struct Coord
 {
     int x{}, y{};
 
+    /**
+     * @brief Calculate the distance to another hit object
+     * @param anotherObject the other hit object
+     */
+    [[nodiscard]] auto distanceTo(Coord another) const
+    {
+        return sqrt(pow(x - another.x, 2) + pow(y - another.y, 2));
+    }
+
+    constexpr bool operator==(Coord rhs) const { return x == rhs.x && y == rhs.y; }
+
     friend std::ostream& operator<<(std::ostream& os, Coord coord)
     {
         os << coord.x << ':' << coord.y;
         return os;
     }
 };
+
+struct TimingPoint
+{
+    enum class Effect
+    {
+        Kiai = 1,
+        OmitBarline = 1 << 3
+    };
+
+    enum class Type
+    {
+        TimingControlPoint,
+        DifficultyControlPoint,
+        SampleControlPoint,
+        EffectControlPoint,
+        All
+    };
+
+    /**
+     * @brief Start time of the timing section, in milliseconds from the beginning of the originalBeatmap's audio.
+     * The end of the timing section is the next timing point's time (or never, if this is the last timing point).
+     */
+    int time{};
+
+    /**
+     * @brief For uninherited timing points, the duration of a beat, in milliseconds.
+     * For inherited timing points, a negative inverse slider velocity multiplier, as a percentage.
+     *
+     * @example For example, -50 would make all sliders in this timing section twice as fast as SliderMultiplier.
+     */
+    float beatLength{};
+
+    /**
+     * @brief Amount of beats in a measure. Inherited timing points ignore this property.
+     */
+    int meter{};
+
+    /**
+     * @brief Default sample set for hit objects (0 = originalBeatmap default, 1 = normal, 2 = soft, 3 = drum).
+     */
+    SampleSet sampleSet{};
+
+    /**
+     * @brief Custom sample index for hit objects. 0 indicates osu!'s default hitsounds.
+     */
+    int sampleIndex{};
+
+    /**
+     * @brief Volume percentage for hit objects.
+     */
+    int volume{};
+
+    /**
+     * @brief Whether or not the timing point is uninherited.
+     */
+    bool uninherited{};
+
+    /**
+     * @brief Bit flags that give the timing point extra effects.
+     */
+    unsigned effects{};
+
+    TimingPoint() = default;
+
+    TimingPoint(std::string_view line) : TimingPoint(details::SplitString<8>(line))
+    {
+    }
+
+    /**
+     * @details Timing point syntax:
+     *      time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
+     */
+    TimingPoint(std::array<std::string_view, 8> const& result)
+        : time{ std::stoi(result[0].data()) },
+        beatLength{ std::stof(result[1].data()) },
+        meter{ std::stoi(result[2].data()) },
+        sampleSet{ static_cast<SampleSet>(std::stoi(result[3].data())) },
+        sampleIndex{ std::stoi(result[4].data()) },
+        volume{ std::stoi(result[5].data()) },
+        uninherited{ static_cast<bool>(std::stoi(result[6].data())) },
+        effects{ static_cast<unsigned>(std::stoul(result[7].data())) }
+    {
+    }
+
+    /**
+     * @brief Parse timing points
+     * @param file The `.osu` file stream
+     * @param partial Whether this is a partial parse. If true, it skips until the line "[TimingPoints]" is encountered. 
+     * Otherwise, it tries to parse from the current line.
+     * @return A `std::vector<TimingPoint>`
+     */
+    static auto HandleTimingPoints(std::ifstream& file, bool partial = true)
+    {
+        std::vector<TimingPoint> timingPoints;
+        std::string line;
+
+        if (partial)
+            details::SkipUntil("[TimingPoints]", line, file);
+
+        while (details::GetLine(file, line))
+        {
+            timingPoints.emplace_back(line);
+        }
+        return timingPoints;
+    }
+
+    template<Type type>
+    [[nodiscard]] constexpr bool isType() const
+    {
+        if constexpr (type == Type::All)
+            return true;
+        else if constexpr (type == Type::TimingControlPoint)
+            return uninherited;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, TimingPoint const& timingPoint)
+    {
+        os << timingPoint.time << ','
+            << timingPoint.beatLength << ','
+            << timingPoint.meter << ','
+            << static_cast<int>(timingPoint.sampleSet) << ','
+            << timingPoint.sampleIndex << ','
+            << timingPoint.volume << ','
+            << timingPoint.uninherited << ','
+            << timingPoint.effects;
+        return os;
+    }
+};
+
 
 struct Circle;
 struct Slider;
@@ -643,10 +884,10 @@ struct HitObject
 {
     enum class HitSound
     {
-        Normal = 0,
-        Whistle = 1,
-        Finish = 2,
-        Clap = 3
+        Normal = 1,
+        Whistle = 1 << 1,
+        Finish = 1 << 2,
+        Clap = 1 << 3
     };
 
     /**
@@ -660,7 +901,7 @@ struct HitObject
     int y;
 
     /**
-     * @brief Time when the object is to be hit, in milliseconds from the beginning of the beatmap's audio.
+     * @brief Time when the object is to be hit, in milliseconds from the beginning of the originalBeatmap's audio.
      */
     int time;
 
@@ -669,12 +910,15 @@ struct HitObject
      */
     HitSound hitSound;
 
+    /**
+     * @brief Whether this hit object is the start of a combo.
+     */
     bool isNewCombo = false;
 
     struct HitSample
     {
-        int normalSet;
-        int additionSet;
+        SampleSet normalSet;
+        SampleSet additionSet;
         int index;
         int volume;
         std::string filename;
@@ -697,17 +941,22 @@ struct HitObject
             {
                 auto const result = details::SplitString<5>(colonSeparatedList, ':');
 
-                normalSet = std::stoi(result[0].data());
-                additionSet = std::stoi(result[1].data());
+                normalSet = static_cast<SampleSet>(std::stoi(result[0].data()));
+                additionSet = static_cast<SampleSet>(std::stoi(result[1].data()));
                 index = result[2].empty() ? 0 : std::stoi(result[2].data());
                 volume = result[3].empty() ? 0 : std::stoi(result[3].data());
                 filename = result[4].empty() ? "" : result[4];
             }
         }
 
+        [[nodiscard]] constexpr bool has(SampleSet sampleSet) const
+        {
+            return normalSet == sampleSet || additionSet == sampleSet;
+        }
+
         friend std::ostream& operator<<(std::ostream& os, HitSample const& hitSample)
         {
-            os << hitSample.normalSet << ':'
+            os <<  hitSample.normalSet << ':'
                 << hitSample.additionSet << ':'
                 << hitSample.index << ':'
                 << hitSample.volume << ':'
@@ -785,7 +1034,16 @@ public:
     }
 
     /**
-     * @brief Returns the columnIndex in mania mode
+     * @brief Calculate the time duration to another hit object
+     * @param 
+     */
+    [[nodiscard]] auto timeTo(HitObject const& anotherObject) const
+    {
+        return std::abs(time - anotherObject.time);
+    }
+
+    /**
+     * @brief Returns the columnIndex (starts from 0) in mania mode
      * @param columnCount number of total columns
      */
     [[nodiscard]] auto getColumnIndex(int columnCount) const
@@ -793,10 +1051,34 @@ public:
         return std::clamp(x * columnCount / 512, 0, columnCount - 1);
     }
 
-    static auto HandleHitObjects(std::ifstream& file)
+    /**
+     * @brief Calculate the X coordinate in terms of columnIndex and total columns
+     */
+    [[nodiscard]] static int ColumnToX(int columnIndex, int columnCount)
+    {
+        /*
+         *   columnIndex = x * columnCount / 512
+         *   x = columnIndex * 512 / columnCount;
+        */
+        assert(!(columnIndex < 0 || columnIndex >= columnCount));
+        return std::clamp(columnIndex * 512 / (columnCount % 2 == 0? columnCount : columnCount - 1), 0, 512);
+    }
+
+    /**
+     * @brief Parse hit objects
+     * @param file The `.osu` file stream
+     * @param partial Whether this is a partial parse, when true, it keeps reading the file until "[HitObjects]" is found
+     * @return `std::vector<std::unique_ptr<HitObject>>`
+     */
+    static auto HandleHitObjects(std::ifstream& file, bool partial = true)
     {
         std::string line;
         std::vector<std::unique_ptr<HitObject>> objects;
+
+        /*If this is a partial parse, skip until [HitObjects] appears*/
+        if (partial)
+            details::SkipUntil("[HitObjects]", line, file);
+
         while (details::GetLine(file, line))
         {
             auto [_, __, ___, typeStr] = details::SplitString<4>(line);
@@ -825,10 +1107,31 @@ public:
                 std::cerr << "Parsing Line: " << line << "failed!\n";
             }
         }
+
+        /*
+            I found an old map (osu file format v11) that doesn't set the first object's comboBit while it should be a new combo
+            eg. Title:Three Magic
+                TitleUnicode:Three Magic
+                Artist:3L
+                ArtistUnicode:3L
+                Creator:cRyo[iceeicee]
+                Version:Collab
+            That has the first object like this:
+                168,256,33011,2,0,B|120:272|80:240,1,90,4|0,0:0|0:0,0:0:0
+                              ^
+        */
+        if (!objects.empty())
+            objects.front()->isNewCombo = true;
+        
         return objects;
     }
 
+    /**
+     * @brief 
+     */
     virtual void printObjectParam(std::ostream& os) const = 0;
+
+    virtual std::unique_ptr<HitObject> clone() const = 0;
     
     /* 
         @details Hit object syntax :
@@ -852,18 +1155,16 @@ public:
     }
 
     virtual ~HitObject() = default;
-protected:
-
 
     Type type;
-
+protected:
     static inline constexpr Type GetType(int num)
     {
         if (num & CircleBit)        return Type::Circle;
         else if (num & SliderBit)   return Type::Slider;
         else if (num & SpinnerBit)  return Type::Spinner;
         else if (num & HoldBit)     return Type::Hold;
-        else throw std::invalid_argument{ std::string{"Invalid hit object type: "} + std::to_string(num) };
+        else throw std::logic_error{ std::string{"Invalid hit object type: "} + std::to_string(num) };
     }
 
     static inline Type GetType(std::string_view str)
@@ -888,6 +1189,27 @@ template<> struct HitObject::ToType<HitObject::Type::Spinner> { using type = Spi
 template<> struct HitObject::ToType<HitObject::Type::Hold> { using type = Hold; };
 template<> struct HitObject::ToType<HitObject::Type::All> { using type = HitObject; };
 
+inline std::ostream& operator<<(std::ostream& os, HitObject::Type type)
+{
+    switch (type)
+    {
+        case HitObject::Type::Circle:
+            os << "Circle";
+            break;
+        case HitObject::Type::Slider:
+            os << "Slider";
+            break;
+        case HitObject::Type::Spinner:
+            os << "Spinner";
+            break;
+        case HitObject::Type::Hold:
+            os << "Hold";
+            break;
+        default:
+            break;
+    }
+    return os;
+}
 
 struct Circle final: HitObject
 {
@@ -913,11 +1235,18 @@ struct Circle final: HitObject
         }
     {}
 
-
-
-
     void printObjectParam(std::ostream& os) const override
     {
+    }
+
+    std::unique_ptr<HitObject> clone() const override
+    {
+        return std::unique_ptr<HitObject>(new Circle(*this));
+    }
+
+    static auto MakeManiaHitObject(int columnIndex, int totalColumns, int time, HitSound hitSound = HitSound::Normal, HitSample hitSample = HitSample{})
+    {
+        return std::make_unique<Circle>(HitObject::ColumnToX(columnIndex, totalColumns), 0, time, hitSound, std::move(hitSample));
     }
 };
 
@@ -967,15 +1296,17 @@ struct Slider final: HitObject
     }
 
     Slider(std::array<std::string_view, 11> const& result)
-        : HitObject(std::array<std::string_view, 7>{
-            result[0],  //x
-            result[1],  //y
-            result[2],  //time
-            result[3],  //type
-            result[4],  //hitSound
-            "",         //objectParams(unused)
-            result[10]
-        })
+        : HitObject(std::array<std::string_view, 7>
+            {
+                result[0],  //x
+                result[1],  //y
+                result[2],  //time
+                result[3],  //type
+                result[4],  //hitSound
+                "",         //objectParams(unused)
+                result[10]
+            }
+        )
     {
         auto const& sliderParam = result[5];
         
@@ -1019,6 +1350,58 @@ struct Slider final: HitObject
             .print(edgeSets, "|")
             .print(',');
     }
+
+private:
+    /**
+     * @brief Throw `std::logic_error` if a timing point is inherited.
+     */
+    static void ThrowIfInherited(TimingPoint const& timingPoint)
+    {
+        if (timingPoint.uninherited == false || timingPoint.beatLength < 0)
+            throw std::logic_error{ "The timing point is inherited" };
+    }
+public:
+    /**
+     * @brief Get the duration of this slider
+     * @param sliderMultiplier Should be parsed from `Difficulty::sliderMultipler`
+     * @param beatLength Should be a beat length accounting for the slider velocity percent in inherited timing point
+     * @return Duration in milliseconds
+     */
+    [[nodiscard]] auto getDuration(float sliderMultiplier, float beatLength) const
+    {
+        return static_cast<double>(length) * beatLength * slides * 0.01 / sliderMultiplier;
+    }
+
+    /**
+     * @brief Get the duration of this slider
+     * @param difficulty Parsed difficulty section
+     * @param uninheritedTimingPoint Must be an uninheirted timingPoint
+     * @return Duration in milliseconds
+     */
+    [[nodiscard]] auto getDuration(Difficulty const& difficulty, TimingPoint const& uninheritedTimingPoint)
+    {
+        ThrowIfInherited(uninheritedTimingPoint);
+        return getDuration(difficulty.sliderMultiplier, uninheritedTimingPoint.beatLength);
+    }
+
+    /**
+     * @brief Get the duration of this slider
+     * @param difficulty Parsed difficulty section
+     * @param uninheritedTimingPoint Must be an uninheirted timingPoint
+     * @param inheritedTimingPointBeatLength The beatLength value from an inheritedTimingPoint, which is the original negative value
+     * @return Duration in milliseconds
+     */
+    [[nodiscard]] auto getDuration(Difficulty const& difficulty, TimingPoint const& uninheritedTimingPoint, float inheritedTimingPointBeatLength) const
+    {
+        if (uninheritedTimingPoint.uninherited == false || uninheritedTimingPoint.beatLength < 0 || inheritedTimingPointBeatLength >= 0)
+            throw std::logic_error{ "The timing point is inherited" };
+        return getDuration(difficulty.sliderMultiplier, uninheritedTimingPoint.beatLength * (-inheritedTimingPointBeatLength) / 100.f);
+    }
+
+    std::unique_ptr<HitObject> clone() const override
+    {
+        return std::unique_ptr<Slider>(new Slider(*this));
+    }
 };
 
 
@@ -1052,6 +1435,11 @@ struct Spinner final : HitObject
     {
         os << endTime << ',';
     }
+
+    std::unique_ptr<HitObject> clone() const override
+    {
+        return std::unique_ptr<HitObject>(new Spinner(*this));
+    }
 };
 
 struct Hold final : HitObject
@@ -1073,6 +1461,11 @@ struct Hold final : HitObject
         : HitObject{x, y, time, hitSound, hitSample, Type::Hold }, endTime{endTime}
     {}
 
+    Hold(int x, int y, int time, HitSound hitSound, int endTime, HitSample hitSample)
+        : HitObject{x, y, time, hitSound, std::move(hitSample), Type::Hold}, endTime{endTime}
+    {}
+
+
     Hold(std::array<std::string_view, 6> const& result)
         : Hold{
             std::stoi(result[0].data()),
@@ -1088,105 +1481,27 @@ struct Hold final : HitObject
         hitSample = HitSample{ hitSampleStr };
     }
 
+    [[nodiscard]] auto getDuration() const
+    {
+        return endTime - time;
+    }
+
+    static auto MakeManiaHitObject(int columnIndex, int totalColumns, int time, int endTime, HitSound hitSound = HitSound::Normal, HitSample hitSample = HitSample{})
+    {
+        return std::make_unique<Hold>(HitObject::ColumnToX(columnIndex, totalColumns), 0, time, hitSound, endTime, std::move(hitSample));
+    }
+
+
     void printObjectParam(std::ostream& os) const override
     {
         os << endTime << ':';
     }
-};
 
-struct TimingPoint
-{
-    /**
-     * @brief Start time of the timing section, in milliseconds from the beginning of the beatmap's audio.
-     * The end of the timing section is the next timing point's time (or never, if this is the last timing point).
-     */
-    int time{};
-
-    /**
-     * @brief For uninherited timing points, the duration of a beat, in milliseconds.
-     * For inherited timing points, a negative inverse slider velocity multiplier, as a percentage.
-     *
-     * @example For example, -50 would make all sliders in this timing section twice as fast as SliderMultiplier.
-     */
-    float beatLength{};
-
-    /**
-     * @brief Amount of beats in a measure. Inherited timing points ignore this property.
-     */
-    int meter{};
-
-    /**
-     * @brief Default sample set for hit objects (0 = beatmap default, 1 = normal, 2 = soft, 3 = drum).
-     */
-    SampleSet sampleSet{};
-
-    /**
-     * @brief Custom sample index for hit objects. 0 indicates osu!'s default hitsounds.
-     */
-    int sampleIndex{};
-
-    /**
-     * @brief Volume percentage for hit objects.
-     */
-    int volume{};
-
-    /**
-     * @brief Whether or not the timing point is uninherited.
-     */
-    bool uninherited{};
-
-    /**
-     * @brief Bit flags that give the timing point extra effects.
-     */
-    unsigned effects{};
-
-    TimingPoint() = default;
-
-    TimingPoint(std::string_view line) : TimingPoint(details::SplitString<8>(line))
+    std::unique_ptr<HitObject> clone() const override
     {
-    }
-
-    /**
-     * @details Timing point syntax: 
-     *      time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
-     */
-    TimingPoint(std::array<std::string_view, 8> const& result)
-        : time{ std::stoi(result[0].data()) },
-        beatLength{ std::stof(result[1].data()) },
-        meter{ std::stoi(result[2].data()) },
-        sampleSet{ static_cast<SampleSet>(std::stoi(result[3].data())) },
-        sampleIndex{ std::stoi(result[4].data()) },
-        volume{ std::stoi(result[5].data()) },
-        uninherited{ static_cast<bool>(std::stoi(result[6].data())) },
-        effects{ static_cast<unsigned>(std::stoul(result[7].data())) }
-    {
-    }
-
-    static auto HandleTimingPoints(std::ifstream& file)
-    {
-        std::vector<TimingPoint> timingPoints;
-        std::string line;
-        while (details::GetLine(file, line))
-        {
-            timingPoints.emplace_back(line);
-        }
-        return timingPoints;
-    }
-
-    friend std::ostream& operator<<(std::ostream& os, TimingPoint const& timingPoint)
-    {
-        os << timingPoint.time << ','
-            << timingPoint.beatLength << ','
-            << timingPoint.meter << ','
-            << static_cast<int>(timingPoint.sampleSet) << ','
-            << timingPoint.sampleIndex << ','
-            << timingPoint.volume << ','
-            << timingPoint.uninherited << ','
-            << timingPoint.effects;
-        return os;
+        return std::unique_ptr<HitObject>(new Hold(*this));
     }
 };
-
 
 struct Colors
 {
@@ -1234,9 +1549,12 @@ struct Colors
      */
     std::optional<Color> sliderBorder;
 
-    Colors(std::ifstream& file)
+    Colors(std::ifstream& file, bool partial = true)
     {
         std::string line;
+
+        if (partial)
+            details::SkipUntil("[Colours]", line, file);
 
         while (details::GetLine(file, line))
         {
@@ -1246,8 +1564,6 @@ struct Colors
             else if (key == "SliderTrackOverride") sliderTrackOverride = Color{ value };
             else if (key == "SliderBorder") sliderBorder = Color{ value };
         }
-
-
     }
 
     Colors() = default;
@@ -1269,14 +1585,14 @@ struct Colors
 
 
 /**
- * @brief Information used to identify the beatmap
+ * @brief Information used to identify the originalBeatmap
  * @see https://github.com/ppy/osu-wiki/blob/master/wiki/osu!_File_Formats/Osu_(file_format)/en.md#metadata
  */
 struct Metadata
 {
     /**
      * @brief Difficulty ID
-     * @note An osu beatmap relates to 1 difficulty, therefore it's actually 1 difficulty of a certain beatmap set.
+     * @note An osu originalBeatmap relates to 1 difficulty, therefore it's actually 1 difficulty of a certain originalBeatmap set.
      * If not present, the value is -1
      */
     int beatmapId = -1;
@@ -1329,10 +1645,14 @@ struct Metadata
 
     /**
      * @brief Parse Metadata from osu file
+     * @param partial If this is a partial parse, it skips until "[Metadata]" line is encountered, default = `true`
      */
-    Metadata(std::ifstream& osuFile)
+    Metadata(std::ifstream& osuFile, bool partial = true)
     {
         std::string line;
+
+        if (partial)
+            details::SkipUntil("[Metadata]", line, osuFile);
 
         while (details::GetLine(osuFile, line))
         {
@@ -1351,69 +1671,271 @@ struct Metadata
         }
     }
 
+    /**
+     * @brief Default constructor, all members set to empty.
+     */
     Metadata() = default;
 
     friend std::ostream& operator<<(std::ostream& os, Metadata const& data)
     {
-        details::PrintHelper{ os }
-            .printLn("[Metadata]")
+        details::PrintHelper h{ os };
+            h.printLn("[Metadata]")
             .printLn("Title: ", data.title)
             .printLn("TitleUnicode: ", data.titleUnicode)
             .printLn("Artist: ", data.artist)
             .printLn("ArtistUnicode: ", data.artistUnicode)
             .printLn("Creator: ", data.creator)
             .printLn("Version: ", data.version)
-            .printLn("Source: ", data.source)
-            .printLn("BeatmapID: ", data.beatmapId)
-            .printLn("BeatmapSetID: ", data.beatmapSetId)
-            .printLn("Tags: ", data.tags, " ");
+            .printLn("Source: ", data.source);
+        if (data.beatmapId != -1)
+            h.printLn("BeatmapID", data.beatmapId);
+        if (data.beatmapSetId != -1)
+            h.printLn("BeatmapSetID", -1);
+
+        h.printLn("Tags: ", data.tags, " ");
         return os;
     }
 };
 
-/**
- * @warning Not implemented!
- */
-struct Event
+struct Background;
+struct Video;
+struct Break;
+
+struct EventBase
 {
     /**
-     * @brief Type of the event. Some events may be referred to by either a name or a number.
+     * @brief Type of the event.
+     * @details Some events may be referred to by either a name or a number.
      */
-    std::string eventType;
+    std::variant<int, std::string> eventType;
 
     /**
-     * @brief Start time of the event, in milliseconds from the beginning of the beatmap's audio.
-     * For events that do not use a start time, the default is 0.
+     * @brief Start time of the event, in milliseconds from the beginning of the originalBeatmap's audio.
      */
     int startTime;
 
-    /**
-     * @brief Extra parameters specific to the event's type
-     */
-    std::string eventParams;
-
-    Event(std::string_view line) : Event(details::SplitString<3>(line))
+    EventBase(std::string_view eventTypeStr, int startTime) : startTime{ startTime }
     {
-    }
-
-    Event(std::array<std::string_view, 3> const& result)
-        : eventType{ result[0] },
-        startTime{ std::stoi(result[1].data()) },
-        eventParams{ result[2] }
-    {
-    }
-
-    static auto HandleEvents(std::ifstream& file)
-    {
-        std::vector<Event> events;
-        std::string line;
-        while (details::GetLine(file, line))
+        try
         {
-            //events.emplace_back(std::move(line));
+            eventType = std::stoi(eventTypeStr.data());
         }
-        return events;
+        catch (const std::invalid_argument&)
+        {
+            eventType = std::string{ eventTypeStr };
+        }
+    }
+
+    EventBase(std::string_view eventTypeStr) : EventBase(eventTypeStr, 0) {}
+
+    EventBase(int eventType, int startTime) : eventType{ eventType }, startTime{ startTime }{}
+
+    virtual ~EventBase() = default;
+
+    bool operator<(EventBase const& other) const
+    {
+        return startTime < other.startTime;
     }
 };
+
+struct Background final : EventBase
+{
+    /**
+     * @brief Location of the background image relative to the originalBeatmap directory.
+     * @details Double quotes are usually included surrounding the filename, but they are not required.
+     */
+    std::string fileName;
+
+    /**
+     * @brief Offset in osu! pixels from the center of the screen.
+     * @details For example, an offset of 50,100 would have the background shown 50 osu! pixels to the right and 100 osu! pixels down from the center of the screen.
+     * @note If the offset is 0,0, writing it is optional.
+     */
+    int xOffset;
+
+    /**
+     * @brief Offset in osu! pixels from the center of the screen.
+     * @details For example, an offset of 50,100 would have the background shown 50 osu! pixels to the right and 100 osu! pixels down from the center of the screen.
+     * @note If the offset is 0,0, writing it is optional.
+     */
+    int yOffset;
+
+    Background(std::string_view fileName, int xOffset, int yOffset)
+        : EventBase{ 0, 0 }, xOffset{ xOffset }, yOffset{ yOffset }, fileName{ details::TrimStr(fileName, "\"")}
+    {}
+private:
+    Background(std::array<std::string_view, 5> const& data)
+        : Background(data[2], data[3].empty()? 0:  std::stoi(data[3].data()), data[4].empty()?  0: std::stoi(data[4].data()))
+    {}
+public:
+    Background(std::string_view line)
+        :Background(details::SplitString<5>(line, ','))
+    {
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, Background const& data)
+    {
+        os << "0,0,"<< data.fileName << "," << data.xOffset << "," << data.yOffset;
+        return os;
+    }
+};
+
+struct Video final : EventBase
+{
+    /**
+     * @brief Location of the background image relative to the originalBeatmap directory.
+     * @details Double quotes are usually included surrounding the filename, but they are not required.
+     */
+    std::string fileName;
+
+    /**
+     * @brief Offset in osu! pixels from the center of the screen.
+     * @details For example, an offset of 50,100 would have the background shown 50 osu! pixels to the right and 100 osu! pixels down from the center of the screen.
+     * @note If the offset is 0,0, writing it is optional.
+     */
+    int xOffset;
+
+    /**
+     * @brief Offset in osu! pixels from the center of the screen.
+     * @details For example, an offset of 50,100 would have the background shown 50 osu! pixels to the right and 100 osu! pixels down from the center of the screen.
+     * @note If the offset is 0,0, writing it is optional.
+     */
+    int yOffset;
+
+    Video(std::string_view video, std::string_view startTime, std::string_view fileName, int xOffset, int yOffset)
+        : EventBase{ video, std::stoi(startTime.data()) }, xOffset{ xOffset }, yOffset{ yOffset }
+    {}
+private:
+    Video(std::array<std::string_view, 5> const& data)
+        : Video(data[0], data[1], data[2], std::stoi(data[3].data()), std::stoi(data[4].data()))
+    {}
+public:
+    Video(std::string_view line)
+        :Video(details::SplitString<5>(line, ','))
+    {
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, Video const& data)
+    {
+        os << "1,"<< data.startTime << "," << data.fileName << "," << data.xOffset << "," << data.yOffset;
+        return os;
+    }
+};
+
+struct Break final : EventBase
+{
+    /**
+     * @brief End time of the break, in milliseconds from the beginning of the originalBeatmap's audio.
+     */
+    int endTime;
+
+    Break(int startTime, int endTime)
+        : EventBase{ 2, startTime }, endTime{ endTime }
+    {}
+private:
+    Break(std::array<std::string_view, 3> const& data)
+        : Break(std::stoi(data[1].data()), std::stoi(data[2].data()))
+    {}
+public:
+    Break(std::string_view line)
+        : Break(details::SplitString<3>(line, ','))
+    {}
+
+    [[nodiscard]] auto getDuration() const
+    {
+        return endTime - startTime;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, Break const& data)
+    {
+        os << "2," << data.startTime << "," << data.endTime;
+        return os;
+    }
+};
+
+struct Events
+{
+
+    enum class Type
+    {
+        Background = 0,
+        Video = 1,
+        Break = 2,
+    };
+
+    std::vector<Background> backgrounds;
+    std::vector<Video> videos;
+    std::vector<Break> breaks;
+
+    Events(std::ifstream& file, bool partial = true)
+    {
+        std::string line;
+
+        if (partial)
+            details::SkipUntil("[Events]", line, file);
+
+        while (details::GetLine(file, line))
+        {
+            auto [eventType, _, __] = details::SplitString<3>(line);
+            try {
+                auto const eventId = static_cast<Type>(std::stoi(eventType.data()));
+                switch (eventId)
+                {
+                    case Type::Background:
+                        backgrounds.emplace_back(line);
+                        break;
+                    case Type::Video:
+                        videos.emplace_back(line);
+                        break;
+                    case Type::Break:
+                        breaks.emplace_back(line);
+                        break;
+                    default:
+                        continue;
+                }
+            }
+            catch (...)
+            {
+                continue;
+            }
+        }
+    }
+
+    Events() = default;
+
+    Events& operator+=(Background backgroundEvent) { backgrounds.emplace_back(std::move(backgroundEvent)); return *this; }
+    Events& operator+=(Video videoEvent) { videos.emplace_back(std::move(videoEvent)); return *this; }
+    Events& operator+=(Break breakEvent) { breaks.emplace_back(std::move(breakEvent)); return *this; }
+    
+    /**
+     * @brief Get an event at a specified time
+     * @param time Time in milliseconds
+     * @tparam eventType Must be an enum from `Events::Type`
+     * @return An iterator pointing to the specified type of event that happens before the specified time
+     */
+    template<Type eventType>// typename = std::enable_if_t<std::is_base_of_v<Evc>
+    auto getEventAt(int time)
+    {
+        if constexpr(eventType == Type::Background)
+            return std::find_if(begin(backgrounds), end(backgrounds), [time](auto const& event) { return event.startTime <= time; });
+        else if constexpr(eventType == Type::Video)
+            return std::find_if(begin(videos), end(videos), [time](auto const& event) { return event.startTime <= time; });
+        else if constexpr(eventType == Type::Break)
+            return std::find_if(begin(breaks), end(breaks), [time](auto const& event) { return event.startTime <= time; });
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, Events const& events)
+    {
+        os << "[Events]\n";
+        auto PrintEventVec = [&os](auto const& vec) { std::copy(vec.cbegin(), vec.cend(), std::ostream_iterator<decltype(vec.front())> {os, "\n"}); };
+        
+        PrintEventVec(events.backgrounds);
+        PrintEventVec(events.breaks);
+        PrintEventVec(events.videos);
+        return os;
+    }
+};
+
 
 struct OsuFile
 {
@@ -1421,7 +1943,7 @@ struct OsuFile
     Editor editor;
     Metadata metaData;
     Difficulty difficulty;
-    std::vector<Event> events;
+    Events events;
     std::vector<TimingPoint> timingPoints;
     Colors colors;
     std::vector<std::unique_ptr<HitObject>> hitObjects;
@@ -1432,16 +1954,39 @@ struct OsuFile
         line.reserve(100);
         while (details::GetLine(file, line, false))
         {
-            if (line == "[General]")            general = General{ file };
-            else if (line == "[Editor]")        editor = Editor{ file };
-            else if (line == "[Metadata]")      metaData = Metadata{ file };
-            else if (line == "[Difficulty]")    difficulty = Difficulty{ file };
-            else if (line == "[Events]")        events = Event::HandleEvents(file);
-            else if (line == "[TimingPoints]")  timingPoints = TimingPoint::HandleTimingPoints(file);
-            else if (line == "[Colours]")       colors = Colors{ file };
-            else if (line == "[HitObjects]")    hitObjects = HitObject::HandleHitObjects(file);
+            if (line == "[General]")            general = General{ file, false };
+            else if (line == "[Editor]")        editor = Editor{ file, false };
+            else if (line == "[Metadata]")      metaData = Metadata{ file, false };
+            else if (line == "[Difficulty]")    difficulty = Difficulty{ file, false };
+            else if (line == "[Events]")        events = Events(file, false);
+            else if (line == "[TimingPoints]")  timingPoints = TimingPoint::HandleTimingPoints(file, false);
+            else if (line == "[Colours]")       colors = Colors{ file, false };
+            else if (line == "[HitObjects]")    hitObjects = HitObject::HandleHitObjects(file, false);
         }
     }
+
+    OsuFile(General const& general, Editor const& editor, Metadata const& metaData, Difficulty const& difficulty, Events const& events, std::vector<TimingPoint> const& timingPoints = {}, Colors const& colors = {})
+        : general{ general }, editor{ editor }, metaData{ metaData }, difficulty{ difficulty }, events{ events }, timingPoints{ timingPoints }, colors{ colors }
+    {
+    }
+
+    OsuFile(General const& general, Editor const& editor, Metadata const& metaData, Difficulty const& difficulty, Events const& events, std::vector<TimingPoint> const& timingPoints, Colors const& colors, std::vector<std::unique_ptr<HitObject>> hitObjects)
+        : general{ general }, editor{ editor }, metaData{ metaData }, difficulty{ difficulty }, events{ events }, timingPoints{ timingPoints }, colors{ colors }, hitObjects{ std::move(hitObjects) }
+    {
+    }
+
+    /**
+     * @brief Construct a new originalBeatmap with the original originalBeatmap's information and no hit objects
+     */
+    OsuFile(OsuFile const& original)
+        : OsuFile{ original.general, original.editor, original.metaData, original.difficulty, original.events, original.timingPoints, original.colors }
+    {
+    }
+
+    OsuFile(OsuFile&& temp) = default;
+
+
+    OsuFile() = default;
     
     auto& operator[](size_t index)
     {
@@ -1477,9 +2022,130 @@ struct OsuFile
      *    The bpm is stored in the first line in the [TimingPoints] section, as beatLength in milliseconds
      *    As a result, to get BPM, use 60000 (milliseconds per minute) / this number
      */
-    [[nodiscard]] float getBPM() const
+    [[nodiscard]] auto getBPM() const
     {
         return timingPoints.empty() ? 0.0 : 60'000 / timingPoints.front().beatLength;
+    }
+
+    [[nodiscard]] auto getAverageBeatLength() const
+    {
+        int uninheritedTimingPointCount{};
+        return std::accumulate(
+                    timingPoints.cbegin(),
+                    timingPoints.cend(),
+                    0.0,
+                    [&uninheritedTimingPointCount](auto sum, auto const& timingPoint) 
+                    {
+                        if(timingPoint.uninherited)
+                            return sum;
+                        else
+                        {
+                            uninheritedTimingPointCount++;
+                            return sum + timingPoint.beatLength;
+                        }
+                    }
+                ) 
+        / uninheritedTimingPointCount;;
+    }
+
+    [[nodiscard]] auto getAverageBPM() const
+    {
+        return 60'000 / getAverageBeatLength();
+    }
+
+    /**
+     * @brief Get the nearest timing point to `time`, that is the one nearest timing point before time
+     */
+    [[nodiscard]] TimingPoint const& getNearestTimingPointAt(int time) const
+    {
+        if (auto it = std::lower_bound(timingPoints.cbegin(), timingPoints.cend(), time, [](TimingPoint const& timingPoint, int time)
+        {
+            return timingPoint.time < time;
+        }); it != timingPoints.begin())
+            return *(it - 1);
+        else
+            return *timingPoints.begin();
+    }
+
+    /**
+     * @brief Get timing point that actually controls `time`. If none, returns the first timing point
+     */
+    template<TimingPoint::Type type = TimingPoint::Type::All>
+    [[nodiscard]] TimingPoint const& getTimingPointAt(int time) const
+    {
+        if (timingPoints.empty())
+            throw std::logic_error{ "No timing points!" };
+
+        if (auto const it = std::find_if(timingPoints.cbegin(), timingPoints.cend(), [time](TimingPoint const& point)
+        {
+            return point.time == time && point.isType<type>();
+        }); it != timingPoints.cend())
+            return *it;
+        else
+            return *timingPoints.cbegin();
+    }
+
+    /**
+     * @brief Calculate total break time (in milliseconds) of a map
+     */
+    [[nodiscard]] int getTotalBreakTime() const
+    {
+        return std::accumulate(
+            events.breaks.cbegin(), 
+            events.breaks.cend(), 
+            0, 
+            [](auto value, auto const& breakEvent)
+            {
+                return value + (breakEvent.endTime - breakEvent.startTime);
+            }
+        );
+    }
+
+
+    /**
+     * @brief Get percent of a certain type of hit objects
+     * @tparam types One of hit object type in `HitObject::Type` enumeration
+     */
+    template<HitObject::Type... types>
+    [[nodiscard]] float getPercentOf() const
+    {
+        if constexpr (sizeof...(types) == 0)
+            return 0;
+        else
+            return (getCount<types>() + ...) / static_cast<float>(hitObjects.size());
+    }
+
+    [[nodiscard]] int getNumHitObjectDuring(int startTime, int endTime) const
+    {
+        auto const iter = std::find_if(hitObjects.cbegin(), hitObjects.cend(), [startTime](auto const& obj)
+        {
+            return obj->time >= startTime;
+        });
+        if(iter != hitObjects.cend())
+        {
+            auto const iter2 = std::find_if(iter, hitObjects.cend(), [endTime](auto const& obj) { return obj->time >= endTime; });
+            return std::distance(iter, iter2);
+        }
+
+        return 0;
+    }
+
+    /**
+     * @brief Get percent of hit object of a certain column in Mania Mode
+     */
+    [[nodiscard]] float getPercentOfHitObjectInColumn(int columnIndex) const
+    {
+        if (general.mode != Mode::Mania || columnIndex < 0 || columnIndex >= difficulty.circleSize)
+            throw std::logic_error{ "Invalid call to getPercentOfHitObjectInColumn()" };
+
+        return std::count_if(
+            hitObjects.cbegin(),
+            hitObjects.cend(),
+            [columnIndex, totalColumn = difficulty.circleSize](auto const& obj)
+            {
+                return obj->getColumnIndex(totalColumn) == columnIndex;
+            }
+        ) / static_cast<float>(hitObjects.size());
     }
 
     /**
@@ -1499,7 +2165,11 @@ struct OsuFile
             .printLn(difficulty)
             .printLn("[TimingPoints]")
             .printLn(timingPoints)
+            .printLn("")
             .printLn(colors)
+            .printLn("")
+            .printLn(events)
+            .printLn("")
             .printLn("[HitObjects]")
             .printLn(hitObjects);
     }
@@ -1511,26 +2181,122 @@ struct OsuFile
     void save(char const* fileName) const
     {
         constexpr auto suffix = ".osu";
-        save(std::ofstream{ std::string{fileName} + suffix });
+        auto const saveFileName = std::string{ fileName } + suffix;
+        std::cout << "Map saved -> " << saveFileName << '\n';
+        save(std::ofstream{ saveFileName });
     }
 
-private:
     /**
      * @brief Return the default file name according to song title, artist and difficulty
-     * @
+     * @param withExtension Controls whether `.osu` should be added
+     * @details On Windows, some special characters are not allowed in filename, therefore
+     * the fields needs to be handled.
      */
-    auto getSaveFileName(bool withSuffix = false) const
+    auto getSaveFileName(bool withExtension = false) const
     {
-        return metaData.artistUnicode
+        return details::RemoveInStr(metaData.artist)
             + " - "
-            + metaData.titleUnicode
+            + details::RemoveInStr(metaData.title)
             + " ("
-            + metaData.creator
+            + details::RemoveInStr(metaData.creator)
             + ") ["
-            + metaData.version
-            + (withSuffix ? "].osu" : "]");
+            + details::RemoveInStr(metaData.version)
+            + (withExtension ? "].osu" : "]");
     }
 public:
+
+    /**
+     * @brief Get artist (singer) from an osu file name
+     */
+    [[nodiscard]] static auto ParseArtistFrom(std::string_view fileName)
+    {
+        if (auto const pos = fileName.find(" - "); pos != std::string::npos)
+            return std::string{ fileName.substr(0, pos) };
+        return std::string{};
+    }
+
+    /**
+     * @brief Get artist (singer) from an osu file path
+     */
+    [[nodiscard]] static auto ParseArtistFrom(std::filesystem::path const& path)
+    {
+        return ParseArtistFrom(std::string_view{ path.filename().string() });
+    }
+
+    /**
+     * @brief Get song title (song name) from an osu file name
+     */
+    [[nodiscard]] static auto ParseTitleFrom(std::string_view fileName)
+    {
+        auto const start = fileName.find(" - ");
+        auto const end = fileName.find(" (", start);
+
+        if (start != std::string::npos && end != std::string::npos)
+        {
+            auto const realStart = start + sizeof(" - ") - 1;
+            return std::string{ &fileName[realStart], end - realStart };
+        }
+
+        return std::string{};
+    }
+
+    /**
+     * @brief Get song title (song name) from an osu file path
+     */
+    [[nodiscard]] static auto ParseTitleFrom(std::filesystem::path const& path)
+    {
+        return ParseTitleFrom(std::string_view{ path.filename().string() });
+    }
+
+    /**
+     * @brief Get map creator (mapper) from an osu file name
+     */
+    [[nodiscard]] static auto ParseCreatorFrom(std::string_view fileName)
+    {
+        auto const start = fileName.find(" (");
+        auto const end = fileName.find('[', start);
+
+        if (start != std::string::npos && end != std::string::npos)
+        {
+            auto const realStart = start + sizeof(" (") - 1;
+            return std::string{ &fileName[realStart], end - realStart };
+        }
+
+        return std::string{};
+    }
+
+    /**
+     * @breif Get map creator (mapper) from an osu file path
+     */
+    [[nodiscard]] static auto ParseCreatorFrom(std::filesystem::path const& path)
+    {
+        return ParseCreatorFrom(std::string_view{ path.filename().string() });
+    }
+
+    /**
+     * @brief Get version (difficulty) from an osu file name
+     */
+    [[nodiscard]] static auto ParseVersionFrom(std::string_view fileName)
+    {
+        auto const start = fileName.find(" [");
+        auto const end = fileName.find(']', start);
+
+        if (start != std::string::npos && end != std::string::npos)
+        {
+            auto const realStart = start + sizeof(" [") - 1;
+            return std::string{ &fileName[realStart], end - realStart };
+        }
+
+        return std::string{};
+    }
+
+    /**
+     * @brief Get version (difficulty) from an osu file name
+     */
+    [[nodiscard]] static auto ParseVersionFrom(std::filesystem::path const& path)
+    {
+        return ParseVersionFrom(std::string_view{ path.filename().string() });
+    }
 
     /**
      * @brief Serialize everything to a `<SongName>[<difficulty>].osu`
@@ -1623,6 +2389,19 @@ public:
         return ObjectIterator<decltype(hitObjects), type, typename HitObject::ToType_t<type>>{hitObjects.end(), hitObjects.begin(), hitObjects.end()};
     }
 
+    /**
+     * @brief Get drain time in milliseconds
+     */
+    [[nodiscard]] auto getDrainTime() const
+    {
+        if (auto const count = hitObjects.size(); count == 0 || count == 1)
+            return 0;
+
+        if (auto const drainTime = hitObjects.back()->time - hitObjects.front()->time; drainTime > 0)
+            return drainTime;
+
+        throw std::logic_error{ "Drain time <= 0" };
+    }
 };
 
 /**
@@ -1644,14 +2423,16 @@ public:
     HitObject* operator->() const { return iter->get(); }
     ObjectIterator& operator++()
     {
-        if (iter + 1 != last)
-            ++iter;
+        //if (iter + 1 != last)
+        //    ++iter;
+        ++iter;
         return *this;
     }
     ObjectIterator& operator--()
     {
-        if (iter != first)
-            --iter;
+        //if (iter != first)
+        //    --iter;
+        --iter;
         return *this;
     }
     bool operator==(ObjectIterator const& rhs) const { return iter == rhs.iter; }
@@ -1661,3 +2442,30 @@ private:
     typename ObjectContainer::iterator const first;
     typename ObjectContainer::iterator const last;
 };
+
+namespace Utils
+{
+    /**
+     * @brief Get all the entries of beatmaps from a folder
+     * @param folder The folder to enumerate
+     * @return A vector of `std::filesystem::directory_entry` that have the extension of `.osu`
+     */
+    inline std::vector<std::filesystem::directory_entry> GetAllBeatmapsFrom(std::filesystem::directory_entry const& folder)
+    {
+        if (!folder.exists() || !folder.is_directory())
+            return {};
+        
+        std::vector<std::filesystem::directory_entry> result;
+        std::copy_if(
+            std::filesystem::directory_iterator{ folder.path() },
+            std::filesystem::directory_iterator{},
+            std::back_inserter(result), 
+            [] (auto const& entry)
+            {
+                return entry.path().extension() == ".osu";
+            }
+        );
+
+        return result;
+    }
+}

@@ -1,0 +1,1 @@
+add_executable(ManiaAutoMapper main.cpp ManiaAutoMapper.cpp)

@@ -17,6 +17,7 @@ add_executable(Main main.cpp
 )
 if(UNIX)
     target_link_libraries(Main pthread)
+    add_compile_definitions(DEBUG)
 endif()
 
 #Add testing if found gtest

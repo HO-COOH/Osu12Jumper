@@ -10,18 +10,24 @@
 
 int main(int argc, char const** argv)
 {
+	//#ifdef DEBUG
+	//	argc = 2;
+	//	char arg[] = "./test/Testmapv11.osu";
+	//	argv[1] = (char*)malloc(sizeof arg);
+	//	strcpy((char*)argv[1], arg);
+	//#endif
 	if(argc > 1)
 	{
 		/*convert the specified files*/
 		auto const numFileToConvert = argc - 1;
 		std::vector<std::future<void>> threads;
 		threads.reserve(numFileToConvert);
-		for(auto i = 1; i < numFileToConvert; ++i)
+		for(auto i = 0; i < numFileToConvert; ++i)
 		{
 			threads.emplace_back(
 				std::async(
 					std::launch::async,
-					[file = argv[i - 1]]()
+					[file = argv[i + 1]]()
 					{
 						if(!std::filesystem::directory_entry{std::filesystem::path{file}}.exists())
 						{

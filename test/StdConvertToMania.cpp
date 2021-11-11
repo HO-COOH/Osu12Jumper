@@ -51,7 +51,24 @@ TEST_F(ManiaConvertFixture, SliderEndTime)
 		*originalMap,
 		7
 	};
-
-
-
 }
+
+#ifdef WIN32
+TEST(ResursiveConvert, RecursiveSaveOnWindows)
+{
+	Mania::ConvertAll(".");
+
+	EXPECT_TRUE(std::filesystem::directory_entry{ std::filesystem::path{"./test/3L - Three Magic (cRyo[iceeicee]) [CollabConvertedBreak].osu"} }.exists());
+	//EXPECT_TRUE(std::filesystem::directory_entry{ std::filesystem::path{"./test/HAG - Colorful (Sotarks) [PrismaticConvertedBreak].osu"} }.exists());
+}
+#endif
+
+#ifdef UNIX
+TEST(ResursiveConvert, RecursiveSaveOnLinux)
+{
+	Mania::ConvertAll(".");
+
+	EXPECT_TRUE(std::filesystem::directory_entry{ std::filesystem::path{"./test/3L - Three Magic (cRyo[iceeicee]) [CollabConvertedBreak].osu"} }.exists());
+	//EXPECT_TRUE(std::filesystem::directory_entry{ std::filesystem::path{"./test/HAG - Colorful (Sotarks) [PrismaticConvertedBreak].osu"} }.exists());
+}
+#endif

@@ -15,6 +15,7 @@
 #include "Mania.Pattern.hpp"
 #include "BeatmapConverter.hpp"
 #include "PatternGenerator.hpp"
+#include <future>
 
 namespace Mania
 {
@@ -271,4 +272,6 @@ namespace Mania
      * @param beatmap The beatmap to be processed
      */
     void RemoveShortHolds(OsuFile& beatmap);
+
+    [[nodiscard]] std::future<void> ConvertImpl(std::filesystem::directory_entry const& entry);
 }

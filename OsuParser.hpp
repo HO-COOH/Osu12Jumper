@@ -2306,6 +2306,19 @@ public:
         save(getSaveFileName(false).data());
     }
 
+    /**
+     * 
+     */
+    static inline auto IsOsuBeatmap(std::filesystem::directory_entry file)
+    {
+        return file.exists() && file.path().extension() == ".osu";
+    }
+
+    static inline auto IsOsuBeatmap(std::string_view file)
+    {
+        return IsOsuBeatmap(std::filesystem::directory_entry{ std::filesystem::path{ file } });
+    }
+
 private:
 
     /**

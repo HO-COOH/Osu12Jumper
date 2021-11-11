@@ -1018,7 +1018,7 @@ static inline bool ShouldConvert(std::filesystem::directory_entry const& entry)
     return entry.path().extension() == ".osu" && toLowerInplace(entry.path().filename().string()).find("convert") == std::string::npos;
 }
 
-static auto ConvertImpl(std::filesystem::directory_entry const& entry)
+std::future<void> Mania::ConvertImpl(std::filesystem::directory_entry const& entry)
 {
     return
         std::async(
@@ -1053,7 +1053,12 @@ static auto ConvertImpl(std::filesystem::directory_entry const& entry)
                 {
                     return dir.empty() || dir == ".";
                 };
-                auto path = IsRootCurrent(rootDir)? fileName : rootDir + "\\" + fileName;
+
+                #ifdef WIN32
+                    auto path = IsRootCurrent(rootDir)? fileName : rootDir + "\\" + fileName;
+                #else
+                    auto path = IsRootCurrent(rootDir)? fileName : rootDir + "/" + fileName;
+                #endif
                 try 
                 {
                     convertedMap.save(path.c_str());
@@ -1065,7 +1070,12 @@ static auto ConvertImpl(std::filesystem::directory_entry const& entry)
                     /*Maybe because of file too long, make shorter then retry*/
                     convertedMap.metaData.version = "test";
                     fileName = convertedMap.getSaveFileName();
-                    path = IsRootCurrent(rootDir) ? fileName : rootDir + "\\" + fileName;
+
+                    #ifdef WIN32
+                        path = IsRootCurrent(rootDir) ? fileName : rootDir + "\\" + fileName;
+                    #else
+                        path = IsRootCurrent(rootDir) ? fileName : rootDir + "/" + fileName;
+                    #endif
                     try 
                     {
                         convertedMap.save(path.c_str());
@@ -1090,7 +1100,7 @@ void ConvertAllImpl(DirectoryIterator&& dir)
     {
         /*Do not convert maps that's already converted*/
         if (ShouldConvert(entry))
-            futures.emplace_back(ConvertImpl(entry));
+            futures.emplace_back(Mania::ConvertImpl(entry));
     }
 
     for (auto& future : futures)
